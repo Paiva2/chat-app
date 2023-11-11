@@ -1,17 +1,19 @@
+import { Router, Express } from "express"
 import express from "express"
-
-import { Router, Request, Response } from "express"
-
-const app = express()
-
-const route = Router()
+import "dotenv/config"
+import http from "node:http"
+import WebSocketConnection from "./websocket"
+export const app: Express = express()
 
 app.use(express.json())
 
-route.get("/", (req: Request, res: Response) => {
-  res.json({ message: "test init" })
-})
+const route = Router()
+
+const webSocketServer = http.createServer()
+const port = process.env.WS_PORT as string
+
+const ws = new WebSocketConnection(webSocketServer, port)
+
+ws.init()
 
 app.use(route)
-
-app.listen(3000, () => console.log("server running on port 3000"))

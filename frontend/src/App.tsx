@@ -1,33 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
+import style from "./styles.module.css"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [messages, setMessages] = useState<string[]>([])
+  const newMessageInputRef = useRef<HTMLInputElement | null>(null)
+
+  const ws: WebSocket = useMemo(() => {
+    return new WebSocket("ws://localhost:6969")
+  }, [])
+
+  useEffect(() => {
+    if ("WebSocket" in window) {
+      ws.onmessage = ({ data }) => {
+        setMessages((oldValue) => [...oldValue, String(data)])
+      }
+    }
+  }, [ws])
+
+  function handleSendMessage(e: FormEvent) {
+    e.preventDefault()
+
+    if (ws.readyState === 1) {
+      if (newMessageInputRef?.current) {
+        ws.send(newMessageInputRef.current.value)
+
+        newMessageInputRef.current.value = ""
+        newMessageInputRef.current.focus()
+      }
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <form onSubmit={handleSendMessage}>
+        <h1 className={style.test}>Teste</h1>
+        <div>
+          <h1>Messages</h1>
+
+          <ul>
+            {messages.map((msg, idx) => {
+              return <li key={idx}>{msg}</li>
+            })}
+          </ul>
+        </div>
+        <input ref={newMessageInputRef} type="text" />
+        <button type="submit">Send</button>
+      </form>
     </>
   )
 }
