@@ -1,16 +1,141 @@
 .chatContainer {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 0.9375rem;
   display: flex;
-  align-items: center;
-}
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  height: 600px;
 
-.usersAside {
-  ul {
+  .chatWrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    width: 100%;
+    height: 100%;
+    gap: 0.9375rem;
 
-    li {
-      cursor: pointer;
+    .messagesWrapper {
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem;
+      height: 100%;
+      width: 100%;
+      gap: 1.875rem;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 0.4375rem;
+        height: 0.5rem;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: #d9dde5;
+        border-radius: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #261f5d;
+        border-radius: 8px;
+      }
+
+      .messageInfos {
+        width: 100%;
+
+        &.sentByMe {
+          display: flex;
+          justify-content: end;
+        }
+
+        .message {
+          display: flex;
+          flex-direction: column;
+          gap: 0.9375rem;
+
+          .messageSender {
+            display: flex;
+            gap: 0.625rem;
+
+            .avatar {
+              background-color: rgb(185, 171, 171);
+              width: 2.1875rem;
+              height: 2.1875rem;
+              border-radius: 100%;
+            }
+
+            .sentBy {
+              display: flex;
+              align-items: center;
+              gap: 0.625rem;
+
+              .personName {
+                color: #27235a;
+                font-weight: 500;
+                font-size: 0.875rem;
+              }
+
+              .sentTime {
+                font-weight: 400;
+                font-size: 0.875rem;
+                color: #b7b4c8;
+              }
+            }
+          }
+
+          .messageTextWrapper {
+            max-width: fit-content;
+            background-color: #f6f7fb;
+            padding: 0.9375rem;
+            border-radius: 8px;
+          }
+        }
+      }
+    }
+
+    .sendMessageBox {
+      width: 100%;
+      background-color: #f6f7fb;
+      border-radius: 10px;
+      height: 3.75rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .sendMessageInput {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding-left: 1.25rem;
+
+        input {
+          border: none;
+          height: 100%;
+          width: 100%;
+          background-color: transparent;
+          padding-right: 1.25rem;
+          font-size: 1rem;
+          color: #8d8aac;
+
+          &::placeholder {
+            color: #c7c6da;
+          }
+        }
+
+        button {
+          all: unset;
+          cursor: pointer;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          padding-right: 1.25rem;
+
+          svg {
+            width: 22px;
+            height: 22px;
+          }
+        }
+      }
     }
   }
 }

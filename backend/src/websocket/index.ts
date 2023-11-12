@@ -23,11 +23,7 @@ export default class WebSocketConnection {
 
   public init() {
     this.wsServer.on("connection", (ws: CustomWebSocket) => {
-      const randomUserId = faker.internet.userName()
-
-      ws.id = randomUserId
-
-      this.newUserConnection(ws.id, ws)
+      const randomUserId = `User${faker.number.int({ max: 10000 })}`
 
       ws.on("message", (data) => {
         const { action, data: clientData } = JSON.parse(String(data))
@@ -41,6 +37,29 @@ export default class WebSocketConnection {
 
           case "get-connected-users": {
             this.getConnectedUsers()
+          }
+
+          case "personal-user-id": {
+            if (clientData === null) {
+              ws.id = randomUserId
+            } else {
+              ws.id = clientData
+            }
+
+            this.wsServer.clients.forEach((client) => {
+              if (client.readyState === WebSocket.OPEN) {
+                if (client["id" as keyof typeof client] === ws.id) {
+                  client.send(
+                    JSON.stringify({
+                      action: "my-personal-id",
+                      data: ws.id,
+                    })
+                  )
+                }
+              }
+            })
+
+            this.newUserConnection(ws.id, ws)
           }
 
           default:
@@ -72,7 +91,12 @@ export default class WebSocketConnection {
         client.send(
           JSON.stringify({
             action: "global-message",
-            data: `${randomUserId}: ${parsedMessage}`,
+            data: {
+              type: "message",
+              userId: randomUserId,
+              message: parsedMessage,
+              time: new Date(),
+            },
           })
         )
       }
@@ -89,7 +113,12 @@ export default class WebSocketConnection {
         client.send(
           JSON.stringify({
             action: "global-message",
-            data: `User has connected: ${userId}`,
+            data: {
+              type: "new-connection",
+              userId: userId,
+              message: `User has connected: ${userId}`,
+              time: new Date().toISOString(),
+            },
           })
         )
       }
@@ -106,7 +135,12 @@ export default class WebSocketConnection {
         client.send(
           JSON.stringify({
             action: "global-message",
-            data: `User has disconnected: ${disconnectedId}`,
+            data: {
+              type: "new-connection",
+              userId: disconnectedId,
+              message: `User has disconnected: ${disconnectedId}`,
+              time: new Date().toISOString(),
+            },
           })
         )
 
