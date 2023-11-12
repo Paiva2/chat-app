@@ -1,0 +1,16 @@
+.chatContainer {
+  display: flex;
+  align-items: center;
+}
+
+.usersAside {
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+
+    li {
+      cursor: pointer;
+    }
+  }
+}
