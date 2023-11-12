@@ -10,7 +10,7 @@ export default class WebSocketConnection {
   private server
   private wsServer
   private port
-  private connectedUsers: string[] = []
+  private connectedUsers: { id: string; connection: CustomWebSocket }[] = []
 
   constructor(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
@@ -25,16 +25,12 @@ export default class WebSocketConnection {
     this.wsServer.on("connection", (ws: CustomWebSocket) => {
       const randomUserId = faker.internet.userName()
 
-      this.wsServer.emit("new-user-connection", randomUserId)
-
       ws.id = randomUserId
 
-      this.getConnectedUsers()
+      this.newUserConnection(ws.id, ws)
 
       ws.on("message", (data) => {
         const { action, data: clientData } = JSON.parse(String(data))
-
-        this.wsServer.emit("user-closed-connection", randomUserId)
 
         switch (action) {
           case "new-message": {
@@ -53,25 +49,14 @@ export default class WebSocketConnection {
       })
 
       ws.on("close", () => {
-        this.globalChatCloseConnection(randomUserId)
+        //console.log("User has disconnected: " + ws.id)
+
+        this.globalChatCloseConnection(ws.id)
+
+        ws.close()
       })
 
       ws.on("error", console.error)
-
-      console.log(ws.id)
-    })
-
-    this.wsServer.on("new-user-connection", (randomUserId) => {
-      this.wsServer.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(
-            JSON.stringify({
-              action: "global-message",
-              data: `User has connected: ${randomUserId}`,
-            })
-          )
-        }
-      })
     })
 
     this.server.listen(this.port, () => {
@@ -80,61 +65,66 @@ export default class WebSocketConnection {
   }
 
   private globalChatMessage(clientData: WebSocket, randomUserId: string) {
-    this.wsServer.emit("global-message", clientData, randomUserId)
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        const parsedMessage = String(clientData)
 
-    this.wsServer.on("global-message", (data, randomUserId) => {
-      this.wsServer.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          const parsedMessage = String(data)
-
-          client.send(
-            JSON.stringify({
-              action: "global-message",
-              data: `${randomUserId}: ${parsedMessage}`,
-            })
-          )
-        }
-      })
+        client.send(
+          JSON.stringify({
+            action: "global-message",
+            data: `${randomUserId}: ${parsedMessage}`,
+          })
+        )
+      }
     })
   }
 
-  private globalChatCloseConnection(randomUserId: string) {
-    this.wsServer.emit("user-closed-connection", randomUserId)
+  private newUserConnection(userId: string, newConnection: CustomWebSocket) {
+    this.connectedUsers.push({ id: userId, connection: newConnection })
 
-    this.wsServer.on("user-closed-connection", (randomUserId) => {
-      this.wsServer.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          this.connectedUsers = this.connectedUsers.filter(
-            (user) => user !== randomUserId
-          )
+    this.getConnectedUsers()
 
-          client.send(
-            JSON.stringify({
-              action: "global-message",
-              data: `User has disconnected: ${randomUserId}`,
-            })
-          )
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            action: "global-message",
+            data: `User has connected: ${userId}`,
+          })
+        )
+      }
+    })
+  }
 
-          this.getConnectedUsers()
-        }
-      })
+  private globalChatCloseConnection(disconnectedId: string) {
+    this.connectedUsers = this.connectedUsers.filter(
+      (user) => user.id !== disconnectedId
+    )
+
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            action: "global-message",
+            data: `User has disconnected: ${disconnectedId}`,
+          })
+        )
+
+        this.getConnectedUsers()
+      }
     })
   }
 
   private getConnectedUsers() {
-    this.wsServer.emit("get-connected-users")
-
-    this.wsServer.on("get-connected-users", () => {
-      this.wsServer.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(
-            JSON.stringify({
-              action: "get-connected-users",
-              data: this.connectedUsers,
-            })
-          )
-        }
-      })
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            action: "get-connected-users",
+            data: this.connectedUsers.map((user) => user.id),
+          })
+        )
+      }
     })
   }
 }
