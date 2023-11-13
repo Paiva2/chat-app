@@ -1,9 +1,9 @@
-import ChatBox from "./components/ChatBox"
+import ChatComponent from "./components/ChatComponent"
 
 function App() {
   return (
     <main className="main-app">
-      <ChatBox />
+      <ChatComponent />
     </main>
   )
 }

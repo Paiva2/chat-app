@@ -1,0 +1,40 @@
+.listContainer {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5625rem;
+  display: flex;
+  flex-direction: column;
+  height: 37.5rem;
+  box-shadow: -1px 5px 17px -5px rgba(186, 181, 181, 0.26);
+  -webkit-box-shadow: -1px 5px 17px -5px rgba(186, 181, 181, 0.26);
+  -moz-box-shadow: -1px 5px 17px -5px rgba(186, 181, 181, 0.26);
+  display: flex;
+  gap: 1.875rem;
+
+  @media (min-width: 940px) {
+    min-width: 15.625rem;
+  }
+
+  .roomName {
+    text-align: center;
+    color: #0f084e;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3125rem;
+
+    li {
+      font-size: 0.875rem;
+      cursor: pointer;
+      padding: 12px;
+      color: #0f084e;
+      border-radius: 8px;
+
+      &:hover {
+        background-color: #f6f7fb;
+      }
+    }
+  }
+}

@@ -1,64 +1,23 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
+import { FormEvent, useEffect, useRef, useContext } from "react"
 import s from "./styles.module.css"
 import { SendHorizontal } from "lucide-react"
-
-interface WebSocketPayload {
-  type: string
-  userId: string
-  message: string
-  time: Date
-}
+import { ChatContextProvider } from "../../context/chatContext"
+import ws from "../../lib/socket.config"
 
 const ChatBox = () => {
-  const [messages, setMessages] = useState<WebSocketPayload[]>([])
-  const [usersList, setUsersList] = useState<string[]>([])
-  const [myId, setMyId] = useState<string | null>(null)
-
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
 
-  const ws: WebSocket = useMemo(() => {
-    return new WebSocket("ws://localhost:6969")
-  }, [])
+  const { messages, myId } = useContext(ChatContextProvider)
 
-  useEffect(() => {
-    ws.onopen = () => {
-      let determineId: string | null = ""
-      const getId = null //localStorage.getItem("temp-chat-id")
-
-      if (!getId) {
-        determineId = null
-      } else {
-        determineId = getId
-      }
-
-      ws.send(
-        JSON.stringify({
-          action: "personal-user-id",
-          data: determineId,
-        })
-      )
-    }
-
-    ws.onmessage = ({ data }) => {
-      const parseData = JSON.parse(data)
-
-      const dataParsed: WebSocketPayload = parseData.data
-
-      if (parseData.action === "global-message") {
-        setMessages((oldValue) => [...oldValue, dataParsed])
-      }
-
-      if (parseData.action === "get-connected-users") {
-        //setUsersList(parseData.data)
-      }
-
-      if (parseData.action === "my-personal-id") {
-        //localStorage.setItem("temp-chat-id", parseData.data)
-        setMyId(parseData.data)
-      }
-    }
-  }, [ws, myId])
+  const displayTimeOptions: Intl.DateTimeFormatOptions = {
+    hour12: true,
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }
 
   useEffect(() => {
     if (messagesListRef.current) {
@@ -71,6 +30,8 @@ const ChatBox = () => {
 
   function handleSendMessage(e: FormEvent) {
     e.preventDefault()
+
+    if (!newMessageInputRef?.current?.value) return
 
     if (ws.readyState === 1) {
       if (newMessageInputRef?.current) {
@@ -85,15 +46,6 @@ const ChatBox = () => {
         newMessageInputRef.current.focus()
       }
     }
-  }
-
-  const displayTimeOptions: Intl.DateTimeFormatOptions = {
-    hour12: true,
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
   }
 
   return (
