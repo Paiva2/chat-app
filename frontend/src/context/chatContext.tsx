@@ -1,9 +1,9 @@
 import React, {
   createContext,
   useState,
-  useEffect,
   Dispatch,
   SetStateAction,
+  useLayoutEffect,
 } from "react"
 import ws from "../lib/socket.config"
 import { WebSocketPayload } from "../@types/types"
@@ -16,13 +16,19 @@ interface ChatContextInterface {
   messages: WebSocketPayload[]
   setMessages: Dispatch<SetStateAction<WebSocketPayload[]>>
 
-  myId: string | null
-  setMyId: Dispatch<SetStateAction<string | null>>
+  myId: { id: string; username: string } | null
+  setMyId: Dispatch<SetStateAction<{ id: string; username: string } | null>>
 
-  usersList: string[]
-  setUsersList: Dispatch<SetStateAction<string[]>>
+  usersList: { id: string; username: string }[]
+  setUsersList: Dispatch<SetStateAction<{ id: string; username: string }[]>>
 
   ws: WebSocket
+
+  openedProfiles: string
+  setOpenedProfiles: Dispatch<SetStateAction<string>>
+
+  activeMenu: string
+  setActiveMenu: Dispatch<SetStateAction<string>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -30,9 +36,16 @@ export const ChatContextProvider = createContext<ChatContextInterface>(
 )
 
 const ChatContext = ({ children }: ChatContextProviderProps) => {
+  const [myId, setMyId] = useState<{ id: string; username: string } | null>(null)
+
   const [messages, setMessages] = useState<WebSocketPayload[]>([])
-  const [myId, setMyId] = useState<string | null>(null)
-  const [usersList, setUsersList] = useState<string[]>([])
+  const [privateMessages, setPrivateMessages] = useState<WebSocketPayload[]>([])
+
+  const [openedProfiles, setOpenedProfiles] = useState("")
+  const [activeMenu, setActiveMenu] = useState("Home")
+
+  const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([])
+  const [privateMessagesList, setPrivateMessagesList] = useState([])
 
   function handleEventMessagesWs() {
     ws.onmessage = ({ data }) => {
@@ -83,12 +96,14 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     }
   }
 
-  useEffect(() => {
-    if (ws) {
-      handleWithOpenConnectionWs()
+  useLayoutEffect(() => {
+    handleEventMessagesWs()
+  }, [ws])
 
-      handleEventMessagesWs()
-    }
+  useLayoutEffect(() => {
+    handleWithOpenConnectionWs()
+
+    return () => ws.close()
   }, [ws])
 
   return (
@@ -98,6 +113,12 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         myId,
         usersList,
         ws,
+        openedProfiles,
+        activeMenu,
+        privateMessages,
+        privateMessagesList,
+        setActiveMenu,
+        setOpenedProfiles,
         setMessages,
         setMyId,
         setUsersList,

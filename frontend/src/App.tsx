@@ -1,10 +1,15 @@
 import ChatComponent from "./components/ChatComponent"
+import ControlBar from "./components/ControlBar"
+import ChatContext from "./context/chatContext"
 
 function App() {
   return (
-    <main className="main-app">
-      <ChatComponent />
-    </main>
+    <ChatContext>
+      <main className="main-app">
+        <ChatComponent />
+        <ControlBar />
+      </main>
+    </ChatContext>
   )
 }
 

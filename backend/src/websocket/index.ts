@@ -1,6 +1,9 @@
 import http from "http"
 import { faker } from "@faker-js/faker"
+import "url"
 import { WebSocketServer, WebSocket } from "ws"
+import { Request } from "express"
+import { randomUUID } from "crypto"
 
 interface CustomWebSocket extends WebSocketServer {
   id: string
@@ -10,7 +13,11 @@ export default class WebSocketConnection {
   private server
   private wsServer
   private port
-  private connectedUsers: { id: string; connection: CustomWebSocket }[] = []
+  private connectedUsers: {
+    id: string
+    username: string
+    connection: CustomWebSocket
+  }[] = []
 
   constructor(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
@@ -22,8 +29,9 @@ export default class WebSocketConnection {
   }
 
   public init() {
-    this.wsServer.on("connection", (ws: CustomWebSocket) => {
-      const randomUserId = `User${faker.number.int({ max: 10000 })}`
+    this.wsServer.on("connection", (ws: CustomWebSocket, request: Request) => {
+      const randomUserId = randomUUID()
+      const randomUserName = `User${faker.number.int({ max: 10000 })}`
 
       ws.on("message", (data) => {
         const { action, data: clientData } = JSON.parse(String(data))
@@ -52,14 +60,17 @@ export default class WebSocketConnection {
                   client.send(
                     JSON.stringify({
                       action: "my-personal-id",
-                      data: ws.id,
+                      data: {
+                        id: ws.id,
+                        username: randomUserName,
+                      },
                     })
                   )
                 }
               }
             })
 
-            this.newUserConnection(ws.id, ws)
+            this.newUserConnection(ws.id, randomUserName, ws)
           }
 
           default:
@@ -103,8 +114,16 @@ export default class WebSocketConnection {
     })
   }
 
-  private newUserConnection(userId: string, newConnection: CustomWebSocket) {
-    this.connectedUsers.push({ id: userId, connection: newConnection })
+  private newUserConnection(
+    userId: string,
+    randomUserName: string,
+    newConnection: CustomWebSocket
+  ) {
+    this.connectedUsers.push({
+      id: userId,
+      username: randomUserName,
+      connection: newConnection,
+    })
 
     this.getConnectedUsers()
 
@@ -116,7 +135,7 @@ export default class WebSocketConnection {
             data: {
               type: "new-connection",
               userId: userId,
-              message: `User has connected: ${userId}`,
+              message: `User has connected: ${randomUserName}`,
               time: new Date().toISOString(),
             },
           })
@@ -126,6 +145,8 @@ export default class WebSocketConnection {
   }
 
   private globalChatCloseConnection(disconnectedId: string) {
+    const getDc = this.connectedUsers.find((conn) => conn.id === disconnectedId)
+
     this.connectedUsers = this.connectedUsers.filter(
       (user) => user.id !== disconnectedId
     )
@@ -138,7 +159,7 @@ export default class WebSocketConnection {
             data: {
               type: "new-connection",
               userId: disconnectedId,
-              message: `User has disconnected: ${disconnectedId}`,
+              message: `User has disconnected: ${getDc?.username}`,
               time: new Date().toISOString(),
             },
           })
@@ -150,12 +171,21 @@ export default class WebSocketConnection {
   }
 
   private getConnectedUsers() {
+    const formatUsersList: { id: string; username: string }[] = []
+
+    for (let user of this.connectedUsers) {
+      formatUsersList.push({
+        id: user.id,
+        username: user.username,
+      })
+    }
+
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(
           JSON.stringify({
             action: "get-connected-users",
-            data: this.connectedUsers.map((user) => user.id),
+            data: formatUsersList,
           })
         )
       }

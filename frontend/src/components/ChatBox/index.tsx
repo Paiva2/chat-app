@@ -3,12 +3,22 @@ import s from "./styles.module.css"
 import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
 import ws from "../../lib/socket.config"
+import { WebSocketPayload } from "../../@types/types"
 
 const ChatBox = () => {
+  const { messages, myId, activeMenu, privateMessages } =
+    useContext(ChatContextProvider)
+
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
 
-  const { messages, myId } = useContext(ChatContextProvider)
+  let messagesToDisplay: WebSocketPayload[] = []
+
+  if (activeMenu === "Home") {
+    messagesToDisplay = messages
+  } else if (activeMenu === "Messages") {
+    messagesToDisplay = privateMessages
+  }
 
   const displayTimeOptions: Intl.DateTimeFormatOptions = {
     hour12: true,
@@ -26,7 +36,38 @@ const ChatBox = () => {
         top: messagesListRef.current.scrollHeight,
       })
     }
-  }, [messages])
+  }, [messagesToDisplay])
+
+  function globalMessage() {
+    if (newMessageInputRef?.current) {
+      ws.send(
+        JSON.stringify({
+          action: "new-message",
+          data: newMessageInputRef.current.value,
+        })
+      )
+
+      newMessageInputRef.current.value = ""
+      newMessageInputRef.current.focus()
+    }
+  }
+
+  function privateMessage() {
+    if (newMessageInputRef?.current) {
+      ws.send(
+        JSON.stringify({
+          action: "new-private-message",
+          data: {
+            to: "",
+            data: newMessageInputRef.current.value,
+          },
+        })
+      )
+
+      newMessageInputRef.current.value = ""
+      newMessageInputRef.current.focus()
+    }
+  }
 
   function handleSendMessage(e: FormEvent) {
     e.preventDefault()
@@ -34,16 +75,10 @@ const ChatBox = () => {
     if (!newMessageInputRef?.current?.value) return
 
     if (ws.readyState === 1) {
-      if (newMessageInputRef?.current) {
-        ws.send(
-          JSON.stringify({
-            action: "new-message",
-            data: newMessageInputRef.current.value,
-          })
-        )
-
-        newMessageInputRef.current.value = ""
-        newMessageInputRef.current.focus()
+      if (activeMenu === "Home") {
+        globalMessage()
+      } else if (activeMenu === "Message") {
+        privateMessage()
       }
     }
   }
@@ -52,11 +87,13 @@ const ChatBox = () => {
     <main className={s.chatContainer}>
       <form onSubmit={handleSendMessage} className={s.chatWrapper}>
         <ul ref={messagesListRef} className={`${s.messagesWrapper} messagesWrapper`}>
-          {messages.map(({ message, time, type, userId }, idx) => {
+          {messagesToDisplay.map(({ message, time, type, userId }, idx) => {
             return (
               <li
                 key={idx}
-                className={`${s.messageInfos} ${userId === myId ? s.sentByMe : ""}`}
+                className={`${s.messageInfos} ${
+                  userId === myId.username ? s.sentByMe : ""
+                }`}
               >
                 <span className={s.message}>
                   {type === "message" && (
