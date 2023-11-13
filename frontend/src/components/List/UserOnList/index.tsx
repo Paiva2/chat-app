@@ -8,8 +8,14 @@ interface UserOnListProps {
 }
 
 const UserOnList = ({ user }: UserOnListProps) => {
-  const { myId, openedProfiles, setOpenedProfiles, setActiveMenu } =
-    useContext(ChatContextProvider)
+  const {
+    myId,
+    openedProfiles,
+    setOpenedProfiles,
+    setActiveMenu,
+    setWhoIsReceivingPrivate,
+    whoIsReceivingPrivate,
+  } = useContext(ChatContextProvider)
 
   const [openUserProfile, setOpenUserProfile] = useState(false)
   const [toggleProfile, setToggleProfile] = useState(false)
@@ -55,7 +61,19 @@ const UserOnList = ({ user }: UserOnListProps) => {
         </div>
         <button
           className={s.privateMsgButton}
-          onClick={() => setActiveMenu("Messages")}
+          onClick={() => {
+            setActiveMenu("Messages")
+
+            setWhoIsReceivingPrivate({
+              ...whoIsReceivingPrivate,
+              to: {
+                id: user.id,
+                username: user.username,
+              },
+            })
+
+            setOpenedProfiles("")
+          }}
           type="button"
         >
           Private message{" "}

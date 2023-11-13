@@ -7,6 +7,18 @@ import { randomUUID } from "crypto"
 
 interface CustomWebSocket extends WebSocketServer {
   id: string
+  username: string
+}
+
+interface PrivateMessageRequest {
+  from: { id: string; username: string }
+  destiny: {
+    to: {
+      id: string
+      username: string
+    }
+  }
+  message: string
 }
 
 export default class WebSocketConnection {
@@ -38,7 +50,13 @@ export default class WebSocketConnection {
 
         switch (action) {
           case "new-message": {
-            this.globalChatMessage(clientData, randomUserId)
+            this.globalChatMessage(clientData, randomUserId, randomUserName)
+
+            break
+          }
+
+          case "new-private-message": {
+            this.privateChatMessage(ws.id, ws.username, clientData)
 
             break
           }
@@ -50,8 +68,10 @@ export default class WebSocketConnection {
           case "personal-user-id": {
             if (clientData === null) {
               ws.id = randomUserId
+              ws.username = randomUserName
             } else {
               ws.id = clientData
+              ws.username = clientData
             }
 
             this.wsServer.clients.forEach((client) => {
@@ -62,7 +82,7 @@ export default class WebSocketConnection {
                       action: "my-personal-id",
                       data: {
                         id: ws.id,
-                        username: randomUserName,
+                        username: ws.username,
                       },
                     })
                   )
@@ -70,7 +90,7 @@ export default class WebSocketConnection {
               }
             })
 
-            this.newUserConnection(ws.id, randomUserName, ws)
+            this.newUserConnection(ws.id, ws.username, ws)
           }
 
           default:
@@ -94,7 +114,11 @@ export default class WebSocketConnection {
     })
   }
 
-  private globalChatMessage(clientData: WebSocket, randomUserId: string) {
+  private globalChatMessage(
+    clientData: WebSocket,
+    randomUserId: string,
+    username: string
+  ) {
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         const parsedMessage = String(clientData)
@@ -105,11 +129,46 @@ export default class WebSocketConnection {
             data: {
               type: "message",
               userId: randomUserId,
+              username,
               message: parsedMessage,
               time: new Date(),
             },
           })
         )
+      }
+    })
+  }
+
+  private privateChatMessage(
+    myId: string,
+    myUsername: string,
+    messageInformations: PrivateMessageRequest
+  ) {
+    const destinationId = messageInformations.destiny.to.id
+
+    const sendToUsername = this.connectedUsers.find(
+      (user) => user.id === destinationId
+    )
+
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        const clientId = client["id" as keyof typeof client]
+
+        if (clientId === destinationId || clientId === myId)
+          client.send(
+            JSON.stringify({
+              action: "private-message",
+              data: {
+                type: "private-message",
+                userId: myId,
+                username: myUsername,
+                sendToId: destinationId,
+                sendToUsername: sendToUsername?.username,
+                message: messageInformations.message,
+                time: new Date(),
+              },
+            })
+          )
       }
     })
   }

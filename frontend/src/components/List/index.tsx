@@ -19,15 +19,29 @@ const List = () => {
     }
   }
 
+  console.log(privateMessagesList)
+
   return (
     <div className={s.listContainer}>
       {activeMenu === "Messages" && (
         <>
           <h1 className={s.roomName}>Messages</h1>
           <ul>
-            {/* {privateMessagesList.map((message) => {
-              return <li key={message}>{message}</li>
-            })} */}
+            {privateMessagesList?.map((message, idx) => {
+              return (
+                <li key={idx}>
+                  <div>
+                    <p>
+                      {message.sendToId === myId?.id
+                        ? message.username
+                        : message.sendToUsername}
+                    </p>
+
+                    <p>{message.message}</p>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         </>
       )}

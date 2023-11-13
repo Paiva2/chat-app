@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useContext } from "react"
+import { FormEvent, useRef, useContext, useEffect } from "react"
 import s from "./styles.module.css"
 import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
@@ -6,18 +6,18 @@ import ws from "../../lib/socket.config"
 import { WebSocketPayload } from "../../@types/types"
 
 const ChatBox = () => {
-  const { messages, myId, activeMenu, privateMessages } =
+  const { messages, myId, activeMenu, whoIsReceivingPrivate, privateMessages } =
     useContext(ChatContextProvider)
 
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
 
-  let messagesToDisplay: WebSocketPayload[] = []
+  let messagesToDisplay: WebSocketPayload[] = messages
 
-  if (activeMenu === "Home") {
-    messagesToDisplay = messages
-  } else if (activeMenu === "Messages") {
+  if (activeMenu === "Messages" && whoIsReceivingPrivate.to.id) {
     messagesToDisplay = privateMessages
+  } else if (activeMenu === "Home") {
+    messagesToDisplay = messages
   }
 
   const displayTimeOptions: Intl.DateTimeFormatOptions = {
@@ -53,13 +53,16 @@ const ChatBox = () => {
   }
 
   function privateMessage() {
+    const from = { id: myId?.id, username: myId?.username }
+
     if (newMessageInputRef?.current) {
       ws.send(
         JSON.stringify({
           action: "new-private-message",
           data: {
-            to: "",
-            data: newMessageInputRef.current.value,
+            from: from,
+            destiny: whoIsReceivingPrivate,
+            message: newMessageInputRef.current.value,
           },
         })
       )
@@ -77,7 +80,7 @@ const ChatBox = () => {
     if (ws.readyState === 1) {
       if (activeMenu === "Home") {
         globalMessage()
-      } else if (activeMenu === "Message") {
+      } else if (whoIsReceivingPrivate.to.id) {
         privateMessage()
       }
     }
@@ -86,38 +89,41 @@ const ChatBox = () => {
   return (
     <main className={s.chatContainer}>
       <form onSubmit={handleSendMessage} className={s.chatWrapper}>
+        {whoIsReceivingPrivate.to.id && <h1>{whoIsReceivingPrivate.to.username}</h1>}
         <ul ref={messagesListRef} className={`${s.messagesWrapper} messagesWrapper`}>
-          {messagesToDisplay.map(({ message, time, type, userId }, idx) => {
-            return (
-              <li
-                key={idx}
-                className={`${s.messageInfos} ${
-                  userId === myId.username ? s.sentByMe : ""
-                }`}
-              >
-                <span className={s.message}>
-                  {type === "message" && (
-                    <span className={s.messageSender}>
-                      <div className={s.avatar} />
-                      <span className={s.sentBy}>
-                        <p className={s.personName}>{userId}</p>
-                        <span className={s.sentTime}>
-                          {new Date(time).toLocaleString(
-                            "en-US",
-                            displayTimeOptions
-                          )}
+          {messagesToDisplay.map(
+            ({ message, time, type, userId, username }, idx) => {
+              return (
+                <li
+                  key={idx}
+                  className={`${s.messageInfos} ${
+                    userId === myId?.id ? s.sentByMe : ""
+                  }`}
+                >
+                  <span className={s.message}>
+                    {type === "message" && (
+                      <span className={s.messageSender}>
+                        <div className={s.avatar} />
+                        <span className={s.sentBy}>
+                          <p className={s.personName}>{username}</p>
+                          <span className={s.sentTime}>
+                            {new Date(time).toLocaleString(
+                              "en-US",
+                              displayTimeOptions
+                            )}
+                          </span>
                         </span>
                       </span>
-                    </span>
-                  )}
+                    )}
 
-                  <div className={s.messageTextWrapper}>
-                    <p>{message}</p>
-                  </div>
-                </span>
-              </li>
-            )
-          })}
+                    <div className={s.messageTextWrapper}>
+                      <p>{message}</p>
+                    </div>
+                  </span>
+                </li>
+              )
+            }
+          )}
         </ul>
 
         <div className={s.sendMessageBox}>
