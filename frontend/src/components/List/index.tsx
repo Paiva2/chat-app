@@ -19,6 +19,8 @@ const List = () => {
     }
   }
 
+  console.log(privateMessagesList)
+
   return (
     <div className={s.listContainer}>
       {activeMenu === "Messages" && (
@@ -31,17 +33,19 @@ const List = () => {
                   {connection.data.map((msg, index) => {
                     return (
                       <Fragment key={index}>
-                        <li>
-                          <div>
-                            <p>
-                              {msg.sendToId === myId?.id
-                                ? msg.username
-                                : msg.sendToUsername}
-                            </p>
+                        {index === connection.data.length - 1 && (
+                          <li>
+                            <div>
+                              <p>
+                                {msg.sendToId === myId?.id
+                                  ? msg.username
+                                  : msg.sendToUsername}
+                              </p>
 
-                            <p>{msg.message}</p>
-                          </div>
-                        </li>
+                              <p>{msg.message}</p>
+                            </div>
+                          </li>
+                        )}
                       </Fragment>
                     )
                   })}

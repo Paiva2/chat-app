@@ -4,6 +4,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useLayoutEffect,
+  useEffect,
 } from "react"
 import ws from "../lib/socket.config"
 import { WebSocketPayload } from "../@types/types"
@@ -91,36 +92,32 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "private-message": {
-          if (privateMessagesList.length) {
-            const copyPrivateMsgList = privateMessagesList
+          const copyPrivateMsgList = [...privateMessagesList]
 
-            for (const msg of copyPrivateMsgList) {
-              if (
+          if (!privateMessagesList.length) {
+            copyPrivateMsgList.push({
+              connections: [parseData.data.sendToId, parseData.data.userId],
+              data: [parseData.data],
+            })
+          } else {
+            const findSimilarConnections = copyPrivateMsgList.find((msg) => {
+              return (
                 msg.connections.includes(dataParsed.sendToId as string) &&
                 msg.connections.includes(dataParsed.userId)
-              ) {
-                msg.data.push(parseData.data)
+              )
+            })
 
-                setPrivateMessagesList(copyPrivateMsgList)
-              } else {
-                setPrivateMessagesList((oldValue) => [
-                  ...oldValue,
-                  {
-                    connections: [parseData.data.sendToId, parseData.data.userId],
-                    data: [parseData.data],
-                  },
-                ])
-              }
-            }
-          } else {
-            setPrivateMessagesList((oldValue) => [
-              ...oldValue,
-              {
+            if (findSimilarConnections) {
+              findSimilarConnections.data.push(parseData.data)
+            } else {
+              copyPrivateMsgList.push({
                 connections: [parseData.data.sendToId, parseData.data.userId],
                 data: [parseData.data],
-              },
-            ])
+              })
+            }
           }
+
+          setPrivateMessagesList(copyPrivateMsgList)
 
           break
         }
@@ -128,7 +125,9 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         case "my-personal-id": {
           //localStorage.setItem("temp-chat-id", parseData.data)
 
-          setMyId(parseData.data)
+          if (!myId) {
+            setMyId(parseData.data)
+          }
 
           break
         }
@@ -164,7 +163,9 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     }
   }
 
-  handleEventMessagesWs()
+  useEffect(() => {
+    handleEventMessagesWs()
+  }, [ws, privateMessagesList])
 
   useLayoutEffect(() => {
     handleWithOpenConnectionWs()
