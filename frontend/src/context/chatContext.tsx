@@ -4,13 +4,26 @@ import React, {
   Dispatch,
   SetStateAction,
   useLayoutEffect,
-  useEffect,
 } from "react"
 import ws from "../lib/socket.config"
 import { WebSocketPayload } from "../@types/types"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
+}
+
+interface PrivateMessaSchema {
+  connections: string[]
+
+  data: {
+    type: string
+    userId: string
+    username: string
+    sendToId: string
+    sendToUsername: string
+    message: string
+    time: Date
+  }[]
 }
 
 interface ChatContextInterface {
@@ -35,6 +48,9 @@ interface ChatContextInterface {
   setWhoIsReceivingPrivate: Dispatch<
     SetStateAction<{ to: { id: string; username: string } }>
   >
+
+  privateMessagesList: PrivateMessaSchema[]
+  setPrivateMessagesList: Dispatch<SetStateAction<PrivateMessaSchema[]>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -51,7 +67,10 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   const [activeMenu, setActiveMenu] = useState("Home")
 
   const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([])
-  const [privateMessagesList, setPrivateMessagesList] = useState([])
+  const [privateMessagesList, setPrivateMessagesList] = useState<
+    PrivateMessaSchema[]
+  >([])
+
   const [whoIsReceivingPrivate, setWhoIsReceivingPrivate] = useState({
     to: {
       id: "",
@@ -72,25 +91,35 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "private-message": {
-          const checkIfUserAlreadyHasMessageReceived = privateMessagesList.find(
-            (user) =>
-              user.sendToId === dataParsed.sendToId &&
-              user.userId === dataParsed.userId
-          )
+          if (privateMessagesList.length) {
+            const copyPrivateMsgList = privateMessagesList
 
-          console.log(dataParsed)
+            for (const msg of copyPrivateMsgList) {
+              if (
+                msg.connections.includes(dataParsed.sendToId as string) &&
+                msg.connections.includes(dataParsed.userId)
+              ) {
+                msg.data.push(parseData.data)
 
-          if (checkIfUserAlreadyHasMessageReceived) {
-            const thisMessageIndex = privateMessagesList.indexOf(
-              checkIfUserAlreadyHasMessageReceived
-            )
-            const currentList = privateMessagesList
-
-            currentList.splice(thisMessageIndex, 1, dataParsed)
-
-            setPrivateMessagesList(currentList)
+                setPrivateMessagesList(copyPrivateMsgList)
+              } else {
+                setPrivateMessagesList((oldValue) => [
+                  ...oldValue,
+                  {
+                    connections: [parseData.data.sendToId, parseData.data.userId],
+                    data: [parseData.data],
+                  },
+                ])
+              }
+            }
           } else {
-            setPrivateMessagesList((oldValue) => [...oldValue, dataParsed])
+            setPrivateMessagesList((oldValue) => [
+              ...oldValue,
+              {
+                connections: [parseData.data.sendToId, parseData.data.userId],
+                data: [parseData.data],
+              },
+            ])
           }
 
           break
@@ -98,12 +127,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
         case "my-personal-id": {
           //localStorage.setItem("temp-chat-id", parseData.data)
-
-          if (myId) {
-            setMyId(null)
-          }
-
-          console.log(parseData.data)
 
           setMyId(parseData.data)
 
@@ -141,16 +164,14 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     }
   }
 
-  /*  useLayoutEffect(() => {
-  }, []) */
   handleEventMessagesWs()
 
-  handleWithOpenConnectionWs()
-  /*   useLayoutEffect(() => {
+  useLayoutEffect(() => {
+    handleWithOpenConnectionWs()
 
     return () => ws.close()
   }, [])
- */
+
   return (
     <ChatContextProvider.Provider
       value={{

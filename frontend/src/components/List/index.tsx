@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { Fragment, useContext } from "react"
 import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
 import UserOnList from "./UserOnList"
@@ -19,35 +19,41 @@ const List = () => {
     }
   }
 
-  console.log(privateMessagesList)
-
   return (
     <div className={s.listContainer}>
       {activeMenu === "Messages" && (
-        <>
+        <Fragment>
           <h1 className={s.roomName}>Messages</h1>
           <ul>
-            {privateMessagesList?.map((message, idx) => {
+            {privateMessagesList?.map((connection, idx) => {
               return (
-                <li key={idx}>
-                  <div>
-                    <p>
-                      {message.sendToId === myId?.id
-                        ? message.username
-                        : message.sendToUsername}
-                    </p>
+                <Fragment key={idx}>
+                  {connection.data.map((msg, index) => {
+                    return (
+                      <Fragment key={index}>
+                        <li>
+                          <div>
+                            <p>
+                              {msg.sendToId === myId?.id
+                                ? msg.username
+                                : msg.sendToUsername}
+                            </p>
 
-                    <p>{message.message}</p>
-                  </div>
-                </li>
+                            <p>{msg.message}</p>
+                          </div>
+                        </li>
+                      </Fragment>
+                    )
+                  })}
+                </Fragment>
               )
             })}
           </ul>
-        </>
+        </Fragment>
       )}
 
       {activeMenu === "Home" && (
-        <>
+        <Fragment>
           <h1 className={s.roomName}>Public Messages</h1>
           <p className={s.onlineText}>Online</p>
           <ul>
@@ -55,7 +61,7 @@ const List = () => {
               return <UserOnList key={user.id} user={user} />
             })}
           </ul>
-        </>
+        </Fragment>
       )}
     </div>
   )

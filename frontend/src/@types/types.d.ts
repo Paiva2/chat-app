@@ -4,4 +4,5 @@ export interface WebSocketPayload {
   username: string
   message: string
   time: Date
+  sendToId?: string
 }
