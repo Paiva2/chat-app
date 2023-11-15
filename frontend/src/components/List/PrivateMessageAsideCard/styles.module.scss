@@ -40,12 +40,13 @@
         justify-content: space-between;
         flex-direction: column;
         max-width: 5.625rem;
+        white-space: nowrap;
       }
 
       .userImage {
         background-color: #929296;
-        width: 35px;
-        height: 35px;
+        min-width: 35px;
+        min-height: 35px;
         border-radius: 100%;
       }
 

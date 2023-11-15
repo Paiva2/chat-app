@@ -10,6 +10,7 @@ export interface WebSocketPayload {
 
 export interface PrivateMessageSchema {
   connections: string[]
+  updatedAt: Date
 
   data: {
     type: string

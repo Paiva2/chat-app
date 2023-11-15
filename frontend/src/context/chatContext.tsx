@@ -130,14 +130,20 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
           if (findSimilarConnections) {
             findSimilarConnections.data.push(parseData.data)
+            findSimilarConnections.updatedAt = parseData.data.time
           } else {
             copyPrivateMsgList.push({
+              updatedAt: parseData.data.time,
               connections: [parseData.data.sendToId, parseData.data.userId],
               data: [parseData.data],
             })
           }
 
-          setPrivateMessagesList(copyPrivateMsgList)
+          const sortByDate = copyPrivateMsgList.sort((a, b) => {
+            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          })
+
+          setPrivateMessagesList(sortByDate)
 
           handleWithPrivateMessagesDisplaying(dataParsed)
 

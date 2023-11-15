@@ -83,7 +83,15 @@ const ChatBox = () => {
   return (
     <main className={s.chatContainer}>
       <form onSubmit={handleSendMessage} className={s.chatWrapper}>
-        {whoIsReceivingPrivate.to.id && <h1>{whoIsReceivingPrivate.to.username}</h1>}
+        {whoIsReceivingPrivate.to.id && (
+          <div className={s.userNameHeader}>
+            <span className={s.headerMessageSender}>
+              <div className={s.headerAvatar} />
+            </span>
+            <h1>{whoIsReceivingPrivate.to.username}</h1>
+          </div>
+        )}
+
         <ul ref={messagesListRef} className={`${s.messagesWrapper} messagesWrapper`}>
           {messagesToDisplay.map(
             ({ message, time, type, userId, username, messageId }) => {
