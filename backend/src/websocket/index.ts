@@ -128,6 +128,7 @@ export default class WebSocketConnection {
             action: "global-message",
             data: {
               type: "message",
+              messageId: randomUUID(),
               userId: randomUserId,
               username,
               message: parsedMessage,
@@ -160,6 +161,7 @@ export default class WebSocketConnection {
               action: "private-message",
               data: {
                 type: "private-message",
+                messageId: randomUUID(),
                 userId: myId,
                 username: myUsername,
                 sendToId: destinationId,
@@ -193,9 +195,10 @@ export default class WebSocketConnection {
             action: "global-message",
             data: {
               type: "new-connection",
+              messageId: randomUUID(),
               userId: userId,
               message: `User has connected: ${randomUserName}`,
-              time: new Date().toISOString(),
+              time: new Date(),
             },
           })
         )
@@ -217,9 +220,10 @@ export default class WebSocketConnection {
             action: "global-message",
             data: {
               type: "new-connection",
+              messageId: randomUUID(),
               userId: disconnectedId,
               message: `User has disconnected: ${getDc?.username}`,
-              time: new Date().toISOString(),
+              time: new Date(),
             },
           })
         )

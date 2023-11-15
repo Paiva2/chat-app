@@ -4,6 +4,7 @@ import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
 import ws from "../../lib/socket.config"
 import { WebSocketPayload } from "../../@types/types"
+import { displayTimeOptions } from "../../utils/displayTimeOptions"
 
 const ChatBox = () => {
   const { messages, myId, activeMenu, whoIsReceivingPrivate, privateMessages } =
@@ -16,17 +17,10 @@ const ChatBox = () => {
 
   if (activeMenu === "Messages" && whoIsReceivingPrivate.to.id) {
     messagesToDisplay = privateMessages
+  } else if (privateMessages.length) {
+    messagesToDisplay = privateMessages
   } else if (activeMenu === "Home") {
     messagesToDisplay = messages
-  }
-
-  const displayTimeOptions: Intl.DateTimeFormatOptions = {
-    hour12: true,
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
   }
 
   useEffect(() => {
@@ -36,7 +30,7 @@ const ChatBox = () => {
         top: messagesListRef.current.scrollHeight,
       })
     }
-  }, [messagesToDisplay])
+  }, [messagesToDisplay, privateMessages.length])
 
   function globalMessage() {
     if (newMessageInputRef?.current) {
@@ -92,29 +86,30 @@ const ChatBox = () => {
         {whoIsReceivingPrivate.to.id && <h1>{whoIsReceivingPrivate.to.username}</h1>}
         <ul ref={messagesListRef} className={`${s.messagesWrapper} messagesWrapper`}>
           {messagesToDisplay.map(
-            ({ message, time, type, userId, username }, idx) => {
+            ({ message, time, type, userId, username, messageId }) => {
               return (
                 <li
-                  key={idx}
+                  key={messageId}
                   className={`${s.messageInfos} ${
                     userId === myId?.id ? s.sentByMe : ""
                   }`}
                 >
                   <span className={s.message}>
-                    {type === "message" && (
-                      <span className={s.messageSender}>
-                        <div className={s.avatar} />
-                        <span className={s.sentBy}>
-                          <p className={s.personName}>{username}</p>
-                          <span className={s.sentTime}>
-                            {new Date(time).toLocaleString(
-                              "en-US",
-                              displayTimeOptions
-                            )}
+                    {type === "message" ||
+                      (type === "private-message" && (
+                        <span className={s.messageSender}>
+                          <div className={s.avatar} />
+                          <span className={s.sentBy}>
+                            <p className={s.personName}>{username}</p>
+                            <span className={s.sentTime}>
+                              {new Date(time).toLocaleString(
+                                "en-US",
+                                displayTimeOptions
+                              )}
+                            </span>
                           </span>
                         </span>
-                      </span>
-                    )}
+                      ))}
 
                     <div className={s.messageTextWrapper}>
                       <p>{message}</p>

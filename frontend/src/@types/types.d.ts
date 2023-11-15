@@ -4,5 +4,21 @@ export interface WebSocketPayload {
   username: string
   message: string
   time: Date
-  sendToId?: string
+  messageId: string
+  sendToId: string
+}
+
+export interface PrivateMessageSchema {
+  connections: string[]
+
+  data: {
+    type: string
+    userId: string
+    messageId: string
+    username: string
+    sendToId: string
+    sendToUsername: string
+    message: string
+    time: Date
+  }[]
 }

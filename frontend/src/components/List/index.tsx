@@ -2,6 +2,7 @@ import { Fragment, useContext } from "react"
 import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
 import UserOnList from "./UserOnList"
+import PrivateMessageAsideCard from "./PrivateMessageAsideCard"
 
 const List = () => {
   const { usersList, myId, activeMenu, privateMessagesList } =
@@ -19,38 +20,14 @@ const List = () => {
     }
   }
 
-  console.log(privateMessagesList)
-
   return (
     <div className={s.listContainer}>
       {activeMenu === "Messages" && (
         <Fragment>
           <h1 className={s.roomName}>Messages</h1>
-          <ul>
+          <ul className={s.privateList}>
             {privateMessagesList?.map((connection, idx) => {
-              return (
-                <Fragment key={idx}>
-                  {connection.data.map((msg, index) => {
-                    return (
-                      <Fragment key={index}>
-                        {index === connection.data.length - 1 && (
-                          <li>
-                            <div>
-                              <p>
-                                {msg.sendToId === myId?.id
-                                  ? msg.username
-                                  : msg.sendToUsername}
-                              </p>
-
-                              <p>{msg.message}</p>
-                            </div>
-                          </li>
-                        )}
-                      </Fragment>
-                    )
-                  })}
-                </Fragment>
-              )
+              return <PrivateMessageAsideCard key={idx} connection={connection} />
             })}
           </ul>
         </Fragment>
@@ -58,8 +35,8 @@ const List = () => {
 
       {activeMenu === "Home" && (
         <Fragment>
-          <h1 className={s.roomName}>Public Messages</h1>
-          <p className={s.onlineText}>Online</p>
+          <h1 className={s.roomName}>Public Room</h1>
+          <p className={s.onlineText}>Online Users</p>
           <ul>
             {usersList?.map((user) => {
               return <UserOnList key={user.id} user={user} />

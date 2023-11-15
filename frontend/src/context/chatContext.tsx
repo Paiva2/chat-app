@@ -7,24 +7,10 @@ import React, {
   useEffect,
 } from "react"
 import ws from "../lib/socket.config"
-import { WebSocketPayload } from "../@types/types"
+import { PrivateMessageSchema, WebSocketPayload } from "../@types/types"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
-}
-
-interface PrivateMessaSchema {
-  connections: string[]
-
-  data: {
-    type: string
-    userId: string
-    username: string
-    sendToId: string
-    sendToUsername: string
-    message: string
-    time: Date
-  }[]
 }
 
 interface ChatContextInterface {
@@ -50,8 +36,10 @@ interface ChatContextInterface {
     SetStateAction<{ to: { id: string; username: string } }>
   >
 
-  privateMessagesList: PrivateMessaSchema[]
-  setPrivateMessagesList: Dispatch<SetStateAction<PrivateMessaSchema[]>>
+  privateMessagesList: PrivateMessageSchema[]
+
+  privateMessages: WebSocketPayload[]
+  setPrivateMessages: Dispatch<SetStateAction<WebSocketPayload[]>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -69,7 +57,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
   const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([])
   const [privateMessagesList, setPrivateMessagesList] = useState<
-    PrivateMessaSchema[]
+    PrivateMessageSchema[]
   >([])
 
   const [whoIsReceivingPrivate, setWhoIsReceivingPrivate] = useState({
@@ -78,6 +66,45 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
       username: "",
     },
   })
+
+  function handleWithPrivateMessagesDisplaying(dataParsed: WebSocketPayload) {
+    if (whoIsReceivingPrivate.to.id) {
+      const checkIfUserHasConversationsPreviously = privateMessagesList.filter(
+        (message) => {
+          return (
+            message.connections.includes(whoIsReceivingPrivate.to.id) &&
+            message.connections.includes(myId?.id as string)
+          )
+        }
+      )
+
+      if (checkIfUserHasConversationsPreviously.length > 0) {
+        setPrivateMessages(checkIfUserHasConversationsPreviously[0].data)
+      } else {
+        setPrivateMessages(Array(dataParsed))
+      }
+    }
+  }
+
+  function handleWithOpenConnectionWs() {
+    ws.onopen = () => {
+      let determineId: string | null = ""
+      const getId = null //localStorage.getItem("temp-chat-id")
+
+      if (!getId) {
+        determineId = null
+      } else {
+        determineId = getId
+      }
+
+      ws.send(
+        JSON.stringify({
+          action: "personal-user-id",
+          data: determineId,
+        })
+      )
+    }
+  }
 
   function handleEventMessagesWs() {
     ws.onmessage = ({ data }) => {
@@ -94,30 +121,25 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         case "private-message": {
           const copyPrivateMsgList = [...privateMessagesList]
 
-          if (!privateMessagesList.length) {
+          const findSimilarConnections = copyPrivateMsgList.find((msg) => {
+            return (
+              msg.connections.includes(dataParsed.sendToId as string) &&
+              msg.connections.includes(dataParsed.userId)
+            )
+          })
+
+          if (findSimilarConnections) {
+            findSimilarConnections.data.push(parseData.data)
+          } else {
             copyPrivateMsgList.push({
               connections: [parseData.data.sendToId, parseData.data.userId],
               data: [parseData.data],
             })
-          } else {
-            const findSimilarConnections = copyPrivateMsgList.find((msg) => {
-              return (
-                msg.connections.includes(dataParsed.sendToId as string) &&
-                msg.connections.includes(dataParsed.userId)
-              )
-            })
-
-            if (findSimilarConnections) {
-              findSimilarConnections.data.push(parseData.data)
-            } else {
-              copyPrivateMsgList.push({
-                connections: [parseData.data.sendToId, parseData.data.userId],
-                data: [parseData.data],
-              })
-            }
           }
 
           setPrivateMessagesList(copyPrivateMsgList)
+
+          handleWithPrivateMessagesDisplaying(dataParsed)
 
           break
         }
@@ -143,29 +165,9 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     }
   }
 
-  function handleWithOpenConnectionWs() {
-    ws.onopen = () => {
-      let determineId: string | null = ""
-      const getId = null //localStorage.getItem("temp-chat-id")
-
-      if (!getId) {
-        determineId = null
-      } else {
-        determineId = getId
-      }
-
-      ws.send(
-        JSON.stringify({
-          action: "personal-user-id",
-          data: determineId,
-        })
-      )
-    }
-  }
-
   useEffect(() => {
     handleEventMessagesWs()
-  }, [ws, privateMessagesList])
+  }, [ws, privateMessagesList, privateMessages, whoIsReceivingPrivate])
 
   useLayoutEffect(() => {
     handleWithOpenConnectionWs()
@@ -185,6 +187,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         privateMessages,
         privateMessagesList,
         whoIsReceivingPrivate,
+        setPrivateMessages,
         setWhoIsReceivingPrivate,
         setActiveMenu,
         setOpenedProfiles,

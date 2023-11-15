@@ -1,16 +1,16 @@
 .listContainer {
-  padding: 1.5625rem 0.9375rem;
+  padding: 1.5625rem 0.625rem;
   display: flex;
   flex-direction: column;
   height: 100%;
   max-height: 37.5rem;
   display: flex;
-  gap: 1.875rem;
+  gap: 0.9375rem;
   overflow-y: auto;
   border-left: 2px solid #ededef;
 
   @media (min-width: 940px) {
-    min-width: 12.5rem;
+    min-width: 17.5rem;
   }
 
   .roomName {
@@ -21,6 +21,7 @@
   .onlineText {
     color: #0f084e;
     font-weight: 500;
+    text-align: center;
   }
 
   ul {
@@ -30,6 +31,7 @@
     overflow-y: auto;
     height: 100%;
     max-width: 37.5rem;
+    padding: 0.4375rem 0.9375rem;
 
     &::-webkit-scrollbar {
       width: 0.4375rem;
@@ -70,7 +72,7 @@
         background-color: #fff;
         border-radius: 8px;
         padding: 0.9375rem;
-        width: 12.5rem;
+        width: 17.5rem;
         margin-top: 2.8125rem;
         min-height: 100px;
         z-index: 1000;

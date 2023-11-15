@@ -7,9 +7,10 @@ import { ChatContextProvider } from "../../context/chatContext"
 const ControlBar = () => {
   const {
     activeMenu,
+    whoIsReceivingPrivate,
+    setPrivateMessages,
     setActiveMenu,
     setWhoIsReceivingPrivate,
-    whoIsReceivingPrivate,
     setOpenedProfiles,
   } = useContext(ChatContextProvider)
 
@@ -43,6 +44,7 @@ const ControlBar = () => {
                 onClick={() => {
                   if (item.name === "Home") {
                     handleClearProfilePopup()
+                    setPrivateMessages([])
                   }
 
                   setActiveMenu(item.name)

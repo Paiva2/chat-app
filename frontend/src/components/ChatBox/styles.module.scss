@@ -45,11 +45,6 @@
       .messageInfos {
         width: 100%;
 
-        &.sentByMe {
-          display: flex;
-          justify-content: end;
-        }
-
         .message {
           display: flex;
           flex-direction: column;
@@ -96,6 +91,16 @@
               font-size: 0.875rem;
               color: #696391;
             }
+          }
+        }
+
+        &.sentByMe {
+          display: flex;
+          justify-content: end;
+
+          .message,
+          .messageTextWrapper {
+            align-self: end;
           }
         }
       }

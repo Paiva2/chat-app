@@ -11,10 +11,12 @@ const UserOnList = ({ user }: UserOnListProps) => {
   const {
     myId,
     openedProfiles,
+    whoIsReceivingPrivate,
+    privateMessagesList,
+    setPrivateMessages,
     setOpenedProfiles,
     setActiveMenu,
     setWhoIsReceivingPrivate,
-    whoIsReceivingPrivate,
   } = useContext(ChatContextProvider)
 
   const [openUserProfile, setOpenUserProfile] = useState(false)
@@ -34,6 +36,33 @@ const UserOnList = ({ user }: UserOnListProps) => {
       setOpenUserProfile(false)
     }
   }, [openedProfiles, toggleProfile])
+
+  const handleOpenPrivateMessage = () => {
+    setActiveMenu("Messages")
+
+    setWhoIsReceivingPrivate({
+      ...whoIsReceivingPrivate,
+      to: {
+        id: user.id,
+        username: user.username,
+      },
+    })
+
+    const checkIfUserHasConversationsPreviously = privateMessagesList.filter(
+      (message) => {
+        return (
+          message.connections.includes(user.id) &&
+          message.connections.includes(myId?.id as string)
+        )
+      }
+    )
+
+    if (checkIfUserHasConversationsPreviously.length) {
+      setPrivateMessages(checkIfUserHasConversationsPreviously[0].data)
+    }
+
+    setOpenedProfiles("")
+  }
 
   if (!user) return <></>
 
@@ -61,19 +90,7 @@ const UserOnList = ({ user }: UserOnListProps) => {
         </div>
         <button
           className={s.privateMsgButton}
-          onClick={() => {
-            setActiveMenu("Messages")
-
-            setWhoIsReceivingPrivate({
-              ...whoIsReceivingPrivate,
-              to: {
-                id: user.id,
-                username: user.username,
-              },
-            })
-
-            setOpenedProfiles("")
-          }}
+          onClick={handleOpenPrivateMessage}
           type="button"
         >
           Private message{" "}
