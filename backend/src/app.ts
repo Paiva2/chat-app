@@ -5,10 +5,12 @@ import express from "express"
 import WebSocketConnection from "./websocket"
 import { TypeOrm } from "./data-source"
 import userRoutes from "./api/routes/userRoutes"
+import cors from "cors"
 
 export const app: Express = express()
 
 app.use(express.json())
+app.use(cors())
 
 const webSocketServer = http.createServer()
 const port = process.env.WS_PORT as string

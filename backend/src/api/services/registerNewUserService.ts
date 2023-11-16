@@ -1,5 +1,6 @@
-import UserInterface from "../interfaces/userInterface"
+import { User } from "../@types/types"
 import { hash } from "bcryptjs"
+import UserInterface from "../interfaces/userInterface"
 
 type RegisterNewUserServiceRequest = {
   username: string
@@ -8,6 +9,7 @@ type RegisterNewUserServiceRequest = {
   passwordConfirmation: string
 }
 
+type RegisterNewUserServiceResponse = User
 export default class RegisterNewUserService {
   constructor(private userInterface: UserInterface) {}
 
@@ -16,7 +18,7 @@ export default class RegisterNewUserService {
     email,
     password,
     passwordConfirmation,
-  }: RegisterNewUserServiceRequest) {
+  }: RegisterNewUserServiceRequest): Promise<RegisterNewUserServiceResponse> {
     if (!username || !email || !password || !passwordConfirmation) {
       throw {
         status: 422,
