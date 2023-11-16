@@ -1,0 +1,15 @@
+.placeHolderWrapper {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.9375rem;
+
+  h1 {
+    font-weight: 600;
+    font-size: 1.5625rem;
+    color: #0f084e;
+  }
+}

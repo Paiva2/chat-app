@@ -1,8 +1,10 @@
 import { LogOut } from "lucide-react"
 import { asideMenu } from "../../content/asideMenu"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
+import Cookies from "js-cookie"
+import { UserContextProvider } from "../../context/userContext"
 
 const ControlBar = () => {
   const {
@@ -13,6 +15,10 @@ const ControlBar = () => {
     setWhoIsReceivingPrivate,
     setOpenedProfiles,
   } = useContext(ChatContextProvider)
+
+  const { openLoginModal, setOpenLoginModal } = useContext(UserContextProvider)
+
+  const [userAuthToken, setUserAuthToken] = useState("")
 
   function handleClearProfilePopup() {
     setWhoIsReceivingPrivate({
@@ -26,9 +32,24 @@ const ControlBar = () => {
     setOpenedProfiles("")
   }
 
+  useEffect(() => {
+    const getToken = Cookies.get("chatapp-auth")
+
+    if (getToken) {
+      setUserAuthToken(getToken)
+    }
+  }, [])
+
   return (
     <div className={s.controlBarContainer}>
       <ul className={s.menuList}>
+        {!userAuthToken && (
+          <li className={s.loginButton}>
+            <button onClick={() => setOpenLoginModal(!openLoginModal)} type="button">
+              Login
+            </button>
+          </li>
+        )}
         <li className={s.profileIcon}>
           <button className={s.openProfileTrigger}>
             <div className={s.icon} />
@@ -56,11 +77,13 @@ const ControlBar = () => {
             </li>
           )
         })}
-        <li className={s.logoutButton}>
-          <button type="button">
-            <LogOut size={23} />
-          </button>
-        </li>
+        {userAuthToken && (
+          <li className={s.logoutButton}>
+            <button type="button">
+              <LogOut size={23} />
+            </button>
+          </li>
+        )}
       </ul>
     </div>
   )

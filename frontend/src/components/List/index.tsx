@@ -3,6 +3,7 @@ import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
 import UserOnList from "./UserOnList"
 import PrivateMessageAsideCard from "./PrivateMessageAsideCard"
+import EmptyListPlaceholder from "../EmptyListPlaceholder"
 
 const List = () => {
   const { usersList, myId, activeMenu, privateMessagesList } =
@@ -24,18 +25,25 @@ const List = () => {
     <div className={s.listContainer}>
       {activeMenu === "Messages" && (
         <Fragment>
-          <h1 className={s.roomName}>Messages</h1>
           <ul className={s.privateList}>
-            {privateMessagesList?.map((connection, idx) => {
-              return <PrivateMessageAsideCard key={idx} connection={connection} />
-            })}
+            {privateMessagesList.length > 0 ? (
+              <Fragment>
+                <h1 className={s.roomName}>Messages</h1>
+                {privateMessagesList?.map((connection, idx) => {
+                  return (
+                    <PrivateMessageAsideCard key={idx} connection={connection} />
+                  )
+                })}
+              </Fragment>
+            ) : (
+              <EmptyListPlaceholder />
+            )}
           </ul>
         </Fragment>
       )}
 
       {activeMenu === "Home" && (
         <Fragment>
-          <h1 className={s.roomName}>Public Room</h1>
           <p className={s.onlineText}>Online Users</p>
           <ul>
             {usersList?.map((user) => {

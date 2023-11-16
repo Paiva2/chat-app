@@ -17,6 +17,14 @@
     position: relative;
     height: 100%;
 
+    .loginButton {
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
     .active {
       position: relative;
 
