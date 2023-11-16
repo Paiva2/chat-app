@@ -99,8 +99,6 @@ export default class WebSocketConnection {
       })
 
       ws.on("close", () => {
-        //console.log("User has disconnected: " + ws.id)
-
         this.globalChatCloseConnection(ws.id)
 
         ws.close()
