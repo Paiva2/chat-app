@@ -38,14 +38,16 @@ const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
       ...whoIsReceivingPrivate,
       to: {
         id: getIdToSend,
-        username: usernameToSend,
+        username: usernameToSend ?? "Disconnected.",
       },
     })
   }
 
   return connection.data.map((msg, index) => {
     const userSendingMessage =
-      msg.sendToId === myId?.id ? msg.username : msg.sendToUsername
+      msg.sendToId === myId?.id
+        ? msg.username
+        : msg.sendToUsername ?? "Disconnected."
 
     return (
       <Fragment key={msg.messageId}>

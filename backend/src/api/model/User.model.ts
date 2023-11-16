@@ -25,4 +25,19 @@ export default class UserModel implements UserInterface {
 
     return getUser
   }
+
+  async updatePassword(userId: string, newPassword: string): Promise<User | null> {
+    const getUser = await this.userRepository.findOneBy({
+      id: userId,
+    })
+
+    if (!getUser) return null
+
+    getUser.password = newPassword
+    getUser.updatedAt = new Date()
+
+    await this.userRepository.save(getUser)
+
+    return getUser
+  }
 }

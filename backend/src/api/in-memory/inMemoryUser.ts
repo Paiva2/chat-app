@@ -29,8 +29,10 @@ export default class InMemoryUser implements UserInterface {
     return findUser
   }
 
-  async updatePassword(userId: string, newPassword: string): Promise<User> {
-    const findUser = this.users.find(({ id }) => id === userId)!
+  async updatePassword(userId: string, newPassword: string): Promise<User | null> {
+    const findUser = this.users.find(({ id }) => id === userId)
+
+    if (!findUser) return null
 
     findUser.password = newPassword
     findUser.updatedAt = new Date()

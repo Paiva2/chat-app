@@ -7,9 +7,9 @@ export default class RegisterNewUserController {
   static async handle(req: Request, res: Response) {
     const { username, email, password, passwordConfirmation } = req.body
 
-    const inMemoryUser = new UserModel()
+    const userModel = new UserModel()
 
-    const registerNewUserService = new RegisterNewUserService(inMemoryUser)
+    const registerNewUserService = new RegisterNewUserService(userModel)
 
     try {
       await registerNewUserService.exec({
@@ -19,7 +19,7 @@ export default class RegisterNewUserController {
         passwordConfirmation,
       })
 
-      return res.status(201).send({ message: "User sucessfull registered." })
+      return res.status(201).send({ message: "User successfully registered." })
     } catch (e) {
       const error = e as ErrorHandling
 

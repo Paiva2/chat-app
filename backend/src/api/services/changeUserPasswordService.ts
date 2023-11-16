@@ -49,6 +49,6 @@ export default class ChangeUserPasswordService {
       hashNewPassword
     )
 
-    return updatedUser
+    return updatedUser as User
   }
 }
