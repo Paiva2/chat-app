@@ -7,6 +7,9 @@ interface UserContextProviderProps {
 interface UserContextInterface {
   openLoginModal: boolean
   setOpenLoginModal: Dispatch<SetStateAction<boolean>>
+
+  openRegisterModal: boolean
+  setOpenRegisterModal: Dispatch<SetStateAction<boolean>>
 }
 
 export const UserContextProvider = createContext<UserContextInterface>(
@@ -15,11 +18,14 @@ export const UserContextProvider = createContext<UserContextInterface>(
 
 const UserContext = ({ children }: UserContextProviderProps) => {
   const [openLoginModal, setOpenLoginModal] = useState(false)
+  const [openRegisterModal, setOpenRegisterModal] = useState(false)
 
   return (
     <UserContextProvider.Provider
       value={{
         openLoginModal,
+        openRegisterModal,
+        setOpenRegisterModal,
         setOpenLoginModal,
       }}
     >

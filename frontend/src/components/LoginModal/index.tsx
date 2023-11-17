@@ -5,6 +5,7 @@ import { AxiosError } from "axios"
 import Cookies from "js-cookie"
 import api from "../../lib/api"
 import s from "./styles.module.css"
+import AuthModal from "../AuthModal"
 
 const formInitialState = {
   email: {
@@ -18,11 +19,19 @@ const formInitialState = {
 }
 
 const LoginModal = () => {
-  const { openLoginModal, setOpenLoginModal } = useContext(UserContextProvider)
+  const { openLoginModal, setOpenLoginModal, setOpenRegisterModal } =
+    useContext(UserContextProvider)
 
   const [formFields, setFormFields] = useState(formInitialState)
   const [loginLoading, setLoginLoading] = useState(false)
   const [apiErrors, setApiErrors] = useState<string[]>([])
+
+  function closeModalTotally() {
+    setOpenLoginModal(false)
+    setLoginLoading(false)
+    setFormFields(formInitialState)
+    setApiErrors([])
+  }
 
   function handleChangeInputValue(
     field: string,
@@ -54,7 +63,7 @@ const LoginModal = () => {
     })
 
     const doesAnyFieldHasError = Object.values(formFields).some(
-      (value) => value.error
+      ({ value }) => !value
     )
 
     if (doesAnyFieldHasError) return
@@ -69,8 +78,9 @@ const LoginModal = () => {
       })
 
       if (loginResponse.status === 200) {
-        Cookies.set("chatapp-token", loginResponse.data.token)
         setFormFields(formInitialState)
+
+        Cookies.set("chatapp-token", loginResponse.data.token)
 
         window.location.reload()
       }
@@ -86,92 +96,87 @@ const LoginModal = () => {
   }
 
   return (
-    <div
-      className={`${openLoginModal ? s.activeLogin : ""} ${s.loginModalOverlay}`}
-      onClick={() => setOpenLoginModal(false)}
+    <AuthModal
+      closeModalByOverlay={closeModalTotally}
+      openModal={openLoginModal}
+      key="loginModal"
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`${openLoginModal ? s.activeLogin : ""} ${s.loginWrapper}`}
-      >
-        <div className={s.formTitle}>
-          <h1>Login</h1>
-          <p>Welcome! Sign In to see your messages and contact friends.</p>
+      <div className={s.formTitle}>
+        <h1>Login</h1>
+        <p>Welcome! Sign In to see your messages and contact friends.</p>
+      </div>
+
+      <form onSubmit={handleLogin} className={s.loginForm}>
+        <div className={s.formFields}>
+          <label>
+            <input
+              onChange={({ target }) =>
+                handleChangeInputValue("email", "value", target.value)
+              }
+              type="text"
+              value={formFields.email.value}
+              className={formFields.email.value ? s.active : ""}
+            />
+            <p className={s.floatingText}>E-mail</p>
+            {formFields.email.error && (
+              <p className={s.errorField}>Invalid e-mail.</p>
+            )}
+          </label>
+
+          <label>
+            <input
+              onChange={({ target }) =>
+                handleChangeInputValue("password", "value", target.value)
+              }
+              type="password"
+              className={formFields.password.value ? s.active : ""}
+              value={formFields.password.value}
+            />
+            <p className={s.floatingText}>Password</p>
+            {formFields.password.error && (
+              <p className={s.errorField}>Invalid password.</p>
+            )}
+          </label>
         </div>
 
-        <form onSubmit={handleLogin} className={s.loginForm}>
-          <div className={s.formFields}>
-            <label>
-              <input
-                onChange={({ target }) =>
-                  handleChangeInputValue("email", "value", target.value)
-                }
-                type="text"
-                value={formFields.email.value}
-                className={formFields.email.value ? s.active : ""}
-              />
-              <p className={s.floatingText}>E-mail</p>
-              {formFields.email.error && (
-                <p className={s.errorField}>Invalid e-mail.</p>
-              )}
-            </label>
+        <button disabled={loginLoading} className={s.forgotPassButton} type="button">
+          Forgot your password?
+        </button>
 
-            <label>
-              <input
-                onChange={({ target }) =>
-                  handleChangeInputValue("password", "value", target.value)
-                }
-                type="password"
-                className={formFields.password.value ? s.active : ""}
-                value={formFields.password.value}
-              />
-              <p className={s.floatingText}>Password</p>
-              {formFields.password.error && (
-                <p className={s.errorField}>Invalid password.</p>
-              )}
-            </label>
-          </div>
+        <button disabled={loginLoading} className={s.loginButton} type="submit">
+          Login
+        </button>
 
+        <span className={s.registerNow}>
+          Not registered yet?{" "}
           <button
+            onClick={() => {
+              closeModalTotally()
+              setOpenRegisterModal(true)
+            }}
             disabled={loginLoading}
-            className={s.forgotPassButton}
             type="button"
           >
-            Forgot your password?
+            Register now
           </button>
+        </span>
 
-          <button disabled={loginLoading} className={s.loginButton} type="submit">
-            Login
+        <span className={s.closeModalButton}>
+          <button onClick={closeModalTotally} title="Back" type="button">
+            <ChevronLeft color="#6263fb" />
           </button>
+        </span>
 
-          <span className={s.registerNow}>
-            Not registered yet?{" "}
-            <button disabled={loginLoading} type="button">
-              Register now
-            </button>
-          </span>
-
-          <span className={s.closeModalButton}>
-            <button
-              onClick={() => setOpenLoginModal(!openLoginModal)}
-              title="Back"
-              type="button"
-            >
-              <ChevronLeft color="#6263fb" />
-            </button>
-          </span>
-
-          {!!apiErrors.length &&
-            apiErrors.map((error, idx) => {
-              return (
-                <p key={idx} className={s.errorField}>
-                  {error}
-                </p>
-              )
-            })}
-        </form>
-      </div>
-    </div>
+        {!!apiErrors.length &&
+          apiErrors.map((error, idx) => {
+            return (
+              <p key={idx} className={s.errorField}>
+                {error}
+              </p>
+            )
+          })}
+      </form>
+    </AuthModal>
   )
 }
 

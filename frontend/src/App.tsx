@@ -1,6 +1,7 @@
 import ChatComponent from "./components/ChatComponent"
 import ControlBar from "./components/ControlBar"
 import LoginModal from "./components/LoginModal"
+import RegisterModal from "./components/RegisterModal"
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <ChatComponent />
       <ControlBar />
       <LoginModal />
+      <RegisterModal />
     </main>
   )
 }
