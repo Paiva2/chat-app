@@ -31,13 +31,7 @@ export default class AuthUserController {
         { expiresIn: jwtExpiration }
       )
 
-      return res
-        .status(200)
-        .setHeader(
-          "Set-Cookie",
-          `chatapp-auth=${authToken}; Path=/; Max-Age=${jwtExpiration}; SameSite=Strict; Secure`
-        )
-        .send()
+      return res.status(200).send({ token: authToken })
     } catch (e) {
       const error = e as ErrorHandling
 

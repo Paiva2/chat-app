@@ -24,8 +24,8 @@
     background-color: #f8f9fb;
     border-radius: 8px;
     width: 100%;
-    height: 100%;
-    max-height: 33.125rem;
+    height: auto;
+    min-height: 33.125rem;
     max-width: 34.375rem;
     padding: 3.125rem;
     gap: 1.25rem;
@@ -55,6 +55,12 @@
       width: 100%;
       gap: 1.25rem;
 
+      .errorField {
+        color: rgb(184, 44, 44);
+        font-size: 14px;
+        text-align: center;
+      }
+
       .formFields {
         display: flex;
         flex-direction: column;
@@ -67,6 +73,23 @@
         flex-direction: column;
         font-weight: 600;
         gap: 0.3125rem;
+        position: relative;
+
+        .floatingText {
+          position: absolute;
+          transform: translateY(-50%);
+          top: 23px;
+          left: 15px;
+          pointer-events: none;
+          transition: all 0.2s ease-in-out;
+          color: #b8b8b8;
+          font-weight: 400;
+        }
+
+        .errorField {
+          color: rgb(184, 44, 44);
+          font-size: 0.75rem;
+        }
 
         input {
           border-radius: 8px;
@@ -74,7 +97,21 @@
           border: 0;
           border: 1px solid #b4b3b3;
           padding: 0.9375rem;
-          color: #261f5d;
+
+          &.active {
+            border: 2px solid #6263fb;
+          }
+
+          &:focus ~ .floatingText,
+          &.active ~ .floatingText {
+            top: 0;
+            pointer-events: initial;
+            font-size: 14px;
+            background-color: #f8f9fb;
+            width: fit-content;
+            color: #261f5d;
+            font-weight: 600;
+          }
         }
       }
 
@@ -86,6 +123,11 @@
         text-align: center;
         border-radius: 8px;
         font-weight: 600;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: default;
+        }
       }
 
       .forgotPassButton {

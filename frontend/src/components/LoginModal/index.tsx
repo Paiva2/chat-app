@@ -1,10 +1,89 @@
 import { ChevronLeft } from "lucide-react"
-import s from "./styles.module.css"
-import { useContext } from "react"
+import { FormEvent, useContext, useState } from "react"
 import { UserContextProvider } from "../../context/userContext"
+import { AxiosError } from "axios"
+import Cookies from "js-cookie"
+import api from "../../lib/api"
+import s from "./styles.module.css"
+
+const formInitialState = {
+  email: {
+    value: "",
+    error: false,
+  },
+  password: {
+    value: "",
+    error: false,
+  },
+}
 
 const LoginModal = () => {
   const { openLoginModal, setOpenLoginModal } = useContext(UserContextProvider)
+
+  const [formFields, setFormFields] = useState(formInitialState)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [apiErrors, setApiErrors] = useState<string[]>([])
+
+  function handleChangeInputValue(
+    field: string,
+    subField: string,
+    value: string | boolean
+  ) {
+    setFormFields((oldValue) => {
+      return {
+        ...oldValue,
+        [field]: {
+          ...oldValue[field as keyof typeof oldValue],
+          [subField]: value,
+        },
+      }
+    })
+  }
+
+  async function handleLogin(e: FormEvent) {
+    e.preventDefault()
+
+    const getFormFields = Object.keys(formFields)
+
+    getFormFields.forEach((field) => {
+      if (!formFields[field as keyof typeof formFields].value) {
+        handleChangeInputValue(field, "error", true)
+      } else {
+        handleChangeInputValue(field, "error", false)
+      }
+    })
+
+    const doesAnyFieldHasError = Object.values(formFields).some(
+      (value) => value.error
+    )
+
+    if (doesAnyFieldHasError) return
+
+    setApiErrors([])
+    setLoginLoading(true)
+
+    try {
+      const loginResponse = await api.post("/login", {
+        email: formFields.email.value,
+        password: formFields.password.value,
+      })
+
+      if (loginResponse.status === 200) {
+        Cookies.set("chatapp-token", loginResponse.data.token)
+        setFormFields(formInitialState)
+
+        window.location.reload()
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorMessage = error?.response?.data.message
+
+        setApiErrors((oldValue) => [...oldValue, errorMessage])
+      }
+    } finally {
+      setLoginLoading(false)
+    }
+  }
 
   return (
     <div
@@ -17,32 +96,59 @@ const LoginModal = () => {
       >
         <div className={s.formTitle}>
           <h1>Login</h1>
-          <p>Welcome! SignIn to see your messages and contact friends.</p>
+          <p>Welcome! Sign In to see your messages and contact friends.</p>
         </div>
 
-        <form className={s.loginForm}>
+        <form onSubmit={handleLogin} className={s.loginForm}>
           <div className={s.formFields}>
             <label>
-              Username
-              <input type="Username" />
+              <input
+                onChange={({ target }) =>
+                  handleChangeInputValue("email", "value", target.value)
+                }
+                type="text"
+                value={formFields.email.value}
+                className={formFields.email.value ? s.active : ""}
+              />
+              <p className={s.floatingText}>E-mail</p>
+              {formFields.email.error && (
+                <p className={s.errorField}>Invalid e-mail.</p>
+              )}
             </label>
 
             <label>
-              Password
-              <input type="Username" />
+              <input
+                onChange={({ target }) =>
+                  handleChangeInputValue("password", "value", target.value)
+                }
+                type="password"
+                className={formFields.password.value ? s.active : ""}
+                value={formFields.password.value}
+              />
+              <p className={s.floatingText}>Password</p>
+              {formFields.password.error && (
+                <p className={s.errorField}>Invalid password.</p>
+              )}
             </label>
           </div>
 
-          <button className={s.forgotPassButton} type="button">
+          <button
+            disabled={loginLoading}
+            className={s.forgotPassButton}
+            type="button"
+          >
             Forgot your password?
           </button>
 
-          <button className={s.loginButton} type="button">
+          <button disabled={loginLoading} className={s.loginButton} type="submit">
             Login
           </button>
 
           <span className={s.registerNow}>
-            Not registered yet? <button type="button">Register now</button>
+            Not registered yet?{" "}
+            <button disabled={loginLoading} type="button">
+              Register now
+            </button>
           </span>
 
           <span className={s.closeModalButton}>
@@ -54,6 +160,15 @@ const LoginModal = () => {
               <ChevronLeft color="#6263fb" />
             </button>
           </span>
+
+          {!!apiErrors.length &&
+            apiErrors.map((error, idx) => {
+              return (
+                <p key={idx} className={s.errorField}>
+                  {error}
+                </p>
+              )
+            })}
         </form>
       </div>
     </div>

@@ -33,7 +33,7 @@ const ControlBar = () => {
   }
 
   useEffect(() => {
-    const getToken = Cookies.get("chatapp-auth")
+    const getToken = Cookies.get("chatapp-token")
 
     if (getToken) {
       setUserAuthToken(getToken)
