@@ -3,6 +3,7 @@ import RegisterNewUserController from "../controllers/registerNewUserController"
 import ChangeUserPasswordControler from "../controllers/changeUserPasswordController"
 import AuthUserController from "../controllers/authUserController"
 import GetUserProfileController from "../controllers/getUserProfileController"
+import FetchUserController from "../controllers/fetchUserController"
 import verifyJwt from "../middleware/verifyJwt"
 
 export default function userRoutes(app: Express) {
@@ -13,4 +14,6 @@ export default function userRoutes(app: Express) {
   app.post("/login", AuthUserController.handle)
 
   app.get("/profile", [verifyJwt], GetUserProfileController.handle)
+
+  app.get("/user/:userId", FetchUserController.handle)
 }

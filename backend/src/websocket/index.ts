@@ -8,14 +8,16 @@ import { randomUUID } from "crypto"
 interface CustomWebSocket extends WebSocketServer {
   id: string
   username: string
+  auth: boolean
 }
 
 interface PrivateMessageRequest {
-  from: { id: string; username: string }
+  from: { id: string; username: string; profilePic: string | null }
   destiny: {
     to: {
       id: string
       username: string
+      profilePic: string | null
     }
   }
   message: string
@@ -30,6 +32,7 @@ export default class WebSocketConnection {
     username: string
     connection: CustomWebSocket
   }[] = []
+  private defaultProfilePic = "https://i.imgur.com/jOkraDo.png"
 
   constructor(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
@@ -50,13 +53,11 @@ export default class WebSocketConnection {
 
         switch (action) {
           case "new-message": {
-            const defaultImage = "https://i.imgur.com/jOkraDo.png"
-
             this.globalChatMessage(
               clientData,
               ws.id,
               ws.username,
-              userProfile.user.profilePic ?? defaultImage
+              userProfile.user.profilePic ?? this.defaultProfilePic
             )
 
             break
@@ -76,9 +77,11 @@ export default class WebSocketConnection {
             if (clientData === null) {
               ws.id = randomUserId
               ws.username = randomUserName
+              ws.auth = false
             } else {
               ws.id = clientData.id
               ws.username = clientData.username
+              ws.auth = true
             }
 
             this.wsServer.clients.forEach((client) => {
@@ -90,6 +93,7 @@ export default class WebSocketConnection {
                       data: {
                         id: ws.id,
                         username: ws.username,
+                        auth: ws.auth,
                       },
                     })
                   )
@@ -136,7 +140,7 @@ export default class WebSocketConnection {
               type: "message",
               messageId: randomUUID(),
               userId: userId,
-              userProfilePic: profilePic,
+              userProfilePic: profilePic ?? this.defaultProfilePic,
               username,
               message: parsedMessage,
               time: new Date(),
@@ -174,6 +178,9 @@ export default class WebSocketConnection {
                 sendToId: destinationId,
                 sendToUsername: sendToUsername?.username,
                 message: messageInformations.message,
+                userProfilePic:
+                  messageInformations.from.profilePic ?? this.defaultProfilePic,
+                userProfilePicTo: messageInformations.destiny.to.profilePic,
                 time: new Date(),
               },
             })

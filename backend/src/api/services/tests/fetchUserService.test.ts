@@ -1,5 +1,6 @@
 import { User } from "../../@types/types"
 import InMemoryUser from "../../in-memory/inMemoryUser"
+import FetchUserService from "../fetchUserService"
 import GetUserProfileService from "../getUserProfileService"
 import RegisterNewUserService from "../registerNewUserService"
 
@@ -7,15 +8,15 @@ let inMemoryUser: InMemoryUser
 let registerNewUserService: RegisterNewUserService
 let userCreated: User
 
-let sut: GetUserProfileService
+let sut: FetchUserService
 
-describe("Get user profile service", () => {
+describe("Fetch User Service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
 
     registerNewUserService = new RegisterNewUserService(inMemoryUser)
 
-    sut = new GetUserProfileService(inMemoryUser)
+    sut = new FetchUserService(inMemoryUser)
 
     userCreated = await registerNewUserService.exec({
       email: "johndoe@email.com",
@@ -34,8 +35,6 @@ describe("Get user profile service", () => {
         username: "John Doe",
         email: "johndoe@email.com",
         profileImage: "",
-        createdAt: userCreated.createdAt,
-        updatedAt: userCreated.updatedAt,
       })
     )
   })

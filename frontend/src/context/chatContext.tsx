@@ -6,7 +6,7 @@ import React, {
   useLayoutEffect,
   useEffect,
 } from "react"
-import { PrivateMessageSchema, WebSocketPayload } from "../@types/types"
+import { MyIdSchema, PrivateMessageSchema, WebSocketPayload } from "../@types/types"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import { getUserProfile } from "../utils/getUserProfile"
@@ -19,8 +19,8 @@ interface ChatContextInterface {
   messages: WebSocketPayload[]
   setMessages: Dispatch<SetStateAction<WebSocketPayload[]>>
 
-  myId: { id: string; username: string } | null
-  setMyId: Dispatch<SetStateAction<{ id: string; username: string } | null>>
+  myId: MyIdSchema | null
+  setMyId: Dispatch<SetStateAction<MyIdSchema | null>>
 
   usersList: { id: string; username: string }[]
   setUsersList: Dispatch<SetStateAction<{ id: string; username: string }[]>>
@@ -49,7 +49,7 @@ export const ChatContextProvider = createContext<ChatContextInterface>(
 )
 
 const ChatContext = ({ children }: ChatContextProviderProps) => {
-  const [myId, setMyId] = useState<{ id: string; username: string } | null>(null)
+  const [myId, setMyId] = useState<MyIdSchema | null>(null)
 
   const [messages, setMessages] = useState<WebSocketPayload[]>([])
   const [privateMessages, setPrivateMessages] = useState<WebSocketPayload[]>([])
@@ -140,6 +140,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
             findSimilarConnections.data.push(parseData.data)
             findSimilarConnections.updatedAt = parseData.data.time
           } else {
+            console.log(parseData.data)
             copyPrivateMsgList.push({
               updatedAt: parseData.data.time,
               connections: [parseData.data.sendToId, parseData.data.userId],

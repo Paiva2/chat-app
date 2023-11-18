@@ -1,21 +1,46 @@
 import { Fragment, useContext } from "react"
 import { ChatContextProvider } from "../../../context/chatContext"
 import { PrivateMessageSchema } from "../../../@types/types"
-import s from "./styles.module.css"
 import { displayTimeOptions } from "../../../utils/displayTimeOptions"
+import { useQuery } from "@tanstack/react-query"
+import api from "../../../lib/api"
+import s from "./styles.module.css"
 
 interface PrivateMessageProps {
   connection: PrivateMessageSchema
 }
 
+interface FetchUserSchema {
+  username: string
+  email: string
+  id: string
+  profileImage: string
+}
+
 const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
   const {
     myId,
-    setPrivateMessages,
-    setWhoIsReceivingPrivate,
     privateMessagesList,
     whoIsReceivingPrivate,
+    setPrivateMessages,
+    setWhoIsReceivingPrivate,
   } = useContext(ChatContextProvider)
+
+  const getOthersideUserId = connection.connections.find(
+    (conn) => !conn?.includes(myId?.id as string)
+  )
+
+  const { data: userData } = useQuery({
+    queryKey: ["fetchUser"],
+    queryFn: async () => {
+      const { data } = await api.get(`/user/${getOthersideUserId}`)
+
+      return data as FetchUserSchema | null
+    },
+    enabled: Boolean(getOthersideUserId),
+    retry: false,
+    refetchOnMount: true,
+  })
 
   function handleSetPrivateMessageToShow(
     connectionsId: string[],
@@ -64,11 +89,16 @@ const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
             <button type="button">
               <div className={s.messageInformations}>
                 <div className={s.leftSideCard}>
-                  <div className={s.userImage} />
+                  <img
+                    src={userData?.profileImage ?? "https://i.imgur.com/jOkraDo.png"}
+                    className={s.userImage}
+                  />
                   <span className={s.userInfos}>
                     <p>{userSendingMessage}</p>
 
-                    <p className={s.messageResume}>{msg.message}</p>
+                    <p className={s.messageResume}>
+                      {msg.userId === myId?.id ? `Me: ${msg.message}` : msg.message}
+                    </p>
                   </span>
                 </div>
 

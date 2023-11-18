@@ -55,7 +55,11 @@ const ChatBox = () => {
   }
 
   function privateMessage() {
-    const from = { id: myId?.id, username: myId?.username }
+    const from = {
+      id: myId?.id,
+      username: myId?.username,
+      profilePic: userProfile?.profileImage ?? null,
+    }
 
     if (newMessageInputRef?.current) {
       ws.send(

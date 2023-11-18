@@ -34,3 +34,9 @@ export interface UserProfileSchema {
   updatedAt: string
   username: string
 }
+
+interface MyIdSchema {
+  id: string
+  username: string
+  auth: boolean
+}

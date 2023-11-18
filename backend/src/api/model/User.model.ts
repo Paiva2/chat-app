@@ -19,11 +19,17 @@ export default class UserModel implements UserInterface {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const getUser = await this.userRepository.findOneBy({
-      email,
-    })
+    try {
+      const getUser = await this.userRepository.findOneBy({
+        email,
+      })
 
-    return getUser
+      if (!getUser) return null
+
+      return getUser
+    } catch {
+      return null
+    }
   }
 
   async updatePassword(userId: string, newPassword: string): Promise<User | null> {
@@ -42,10 +48,16 @@ export default class UserModel implements UserInterface {
   }
 
   async findById(userId: string): Promise<User | null> {
-    const getUser = await this.userRepository.findOneBy({
-      id: userId,
-    })
+    try {
+      const getUser = await this.userRepository.findOneBy({
+        id: userId,
+      })
 
-    return getUser
+      if (!getUser) return null
+
+      return getUser
+    } catch {
+      return null
+    }
   }
 }
