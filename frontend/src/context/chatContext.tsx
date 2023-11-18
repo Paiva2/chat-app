@@ -121,8 +121,15 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
       const dataParsed: WebSocketPayload = parseData.data
 
       switch (parseData.action) {
+        case "stored_global_msgs": {
+          setMessages(parseData.data)
+
+          break
+        }
+
         case "global-message": {
           setMessages((oldValue) => [...oldValue, dataParsed])
+
           break
         }
 
@@ -140,7 +147,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
             findSimilarConnections.data.push(parseData.data)
             findSimilarConnections.updatedAt = parseData.data.time
           } else {
-            console.log(parseData.data)
             copyPrivateMsgList.push({
               updatedAt: parseData.data.time,
               connections: [parseData.data.sendToId, parseData.data.userId],
@@ -169,6 +175,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
         case "get-connected-users": {
           setUsersList(parseData.data)
+
           break
         }
 

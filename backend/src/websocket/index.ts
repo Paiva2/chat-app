@@ -1,11 +1,20 @@
-import http from "http"
 import { faker } from "@faker-js/faker"
-import "url"
 import { WebSocketServer, WebSocket } from "ws"
-import { Request } from "express"
 import { randomUUID } from "crypto"
+import http from "http"
+import "url"
+import { redisConn } from "../app"
 
-interface CustomWebSocket extends WebSocketServer {
+interface GlobalMessagesStored {
+  type: string
+  messageId: string
+  userId: string
+  userProfilePic: string
+  username: string
+  message: string
+  time: string
+}
+interface CustomWebSocket extends WebSocket {
   id: string
   username: string
   auth: boolean
@@ -23,6 +32,8 @@ interface PrivateMessageRequest {
   message: string
 }
 
+const defaultImg = "https://i.imgur.com/jOkraDo.png"
+
 export default class WebSocketConnection {
   private server
   private wsServer
@@ -32,7 +43,8 @@ export default class WebSocketConnection {
     username: string
     connection: CustomWebSocket
   }[] = []
-  private defaultProfilePic = "https://i.imgur.com/jOkraDo.png"
+  private defaultProfilePic = defaultImg
+  private globalMessagesStored = [] as GlobalMessagesStored[]
 
   constructor(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
@@ -44,9 +56,38 @@ export default class WebSocketConnection {
   }
 
   public init() {
-    this.wsServer.on("connection", (ws: CustomWebSocket, request: Request) => {
+    this.wsServer.on("connection", async (ws: CustomWebSocket) => {
+      this.globalMessagesStored = []
+
       const randomUserId = randomUUID()
       const randomUserName = `User${faker.number.int({ max: 10000 })}`
+
+      const [_, globalMessagesKeys] = await redisConn.scan(
+        0,
+        "MATCH",
+        "global_message*"
+      )
+
+      if (globalMessagesKeys.length > 0) {
+        for await (let msg of globalMessagesKeys) {
+          const message = await redisConn.get(msg)
+
+          if (message) {
+            this.globalMessagesStored.push(
+              JSON.parse(message) as GlobalMessagesStored
+            )
+          }
+        }
+      }
+
+      if (this.globalMessagesStored.length > 0) {
+        ws.send(
+          JSON.stringify({
+            action: "stored_global_msgs",
+            data: this.globalMessagesStored,
+          })
+        )
+      }
 
       ws.on("message", (data) => {
         const { action, data: clientData, ...userProfile } = JSON.parse(String(data))
@@ -123,30 +164,39 @@ export default class WebSocketConnection {
     })
   }
 
-  private globalChatMessage(
+  private async globalChatMessage(
     clientData: WebSocket,
     userId: string,
     username: string,
     profilePic: string
   ) {
+    const parsedMessage = String(clientData)
+
+    const newMessage = {
+      action: "global-message",
+      data: {
+        type: "message",
+        messageId: randomUUID(),
+        userId: userId,
+        userProfilePic: profilePic ?? this.defaultProfilePic,
+        username,
+        message: parsedMessage,
+        time: new Date(),
+      },
+    }
+
+    const REDIS_GLOBAL_MESSAGES_EXP = 24 * 60 * 60 // 1 day
+
+    await redisConn.set(
+      `global_message${randomUUID()}`,
+      JSON.stringify(newMessage.data),
+      "EX",
+      REDIS_GLOBAL_MESSAGES_EXP
+    )
+
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        const parsedMessage = String(clientData)
-
-        client.send(
-          JSON.stringify({
-            action: "global-message",
-            data: {
-              type: "message",
-              messageId: randomUUID(),
-              userId: userId,
-              userProfilePic: profilePic ?? this.defaultProfilePic,
-              username,
-              message: parsedMessage,
-              time: new Date(),
-            },
-          })
-        )
+        client.send(JSON.stringify(newMessage))
       }
     })
   }
@@ -162,29 +212,29 @@ export default class WebSocketConnection {
       (user) => user.id === destinationId
     )
 
+    const newPrivateMessage = JSON.stringify({
+      action: "private-message",
+      data: {
+        type: "private-message",
+        messageId: randomUUID(),
+        userId: myId,
+        username: myUsername,
+        sendToId: destinationId,
+        sendToUsername: sendToUsername?.username,
+        message: messageInformations.message,
+        userProfilePic:
+          messageInformations.from.profilePic ?? this.defaultProfilePic,
+        userProfilePicTo: messageInformations.destiny.to.profilePic,
+        time: new Date(),
+      },
+    })
+
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         const clientId = client["id" as keyof typeof client]
 
         if (clientId === destinationId || clientId === myId)
-          client.send(
-            JSON.stringify({
-              action: "private-message",
-              data: {
-                type: "private-message",
-                messageId: randomUUID(),
-                userId: myId,
-                username: myUsername,
-                sendToId: destinationId,
-                sendToUsername: sendToUsername?.username,
-                message: messageInformations.message,
-                userProfilePic:
-                  messageInformations.from.profilePic ?? this.defaultProfilePic,
-                userProfilePicTo: messageInformations.destiny.to.profilePic,
-                time: new Date(),
-              },
-            })
-          )
+          client.send(newPrivateMessage)
       }
     })
   }
@@ -202,20 +252,20 @@ export default class WebSocketConnection {
 
     this.getConnectedUsers()
 
+    const newConnectionMsg = JSON.stringify({
+      action: "global-message",
+      data: {
+        type: "new-connection",
+        messageId: randomUUID(),
+        userId: userId,
+        message: `User has connected: ${username}`,
+        time: new Date(),
+      },
+    })
+
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(
-          JSON.stringify({
-            action: "global-message",
-            data: {
-              type: "new-connection",
-              messageId: randomUUID(),
-              userId: userId,
-              message: `User has connected: ${username}`,
-              time: new Date(),
-            },
-          })
-        )
+        client.send(newConnectionMsg)
       }
     })
   }
@@ -227,20 +277,20 @@ export default class WebSocketConnection {
       (user) => user.id !== disconnectedId
     )
 
+    const disconnectionMsg = JSON.stringify({
+      action: "global-message",
+      data: {
+        type: "new-connection",
+        messageId: randomUUID(),
+        userId: disconnectedId,
+        message: `User has disconnected: ${getDc?.username}`,
+        time: new Date(),
+      },
+    })
+
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(
-          JSON.stringify({
-            action: "global-message",
-            data: {
-              type: "new-connection",
-              messageId: randomUUID(),
-              userId: disconnectedId,
-              message: `User has disconnected: ${getDc?.username}`,
-              time: new Date(),
-            },
-          })
-        )
+        client.send(disconnectionMsg)
 
         this.getConnectedUsers()
       }

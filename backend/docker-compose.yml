@@ -5,9 +5,17 @@ services:
     image: postgres
     ports:
       - 5433:5432
+  redis-chat-app:
+    image: redis:7.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
     env_file:
       - .env
     environment:
       - POSTGRES_USERNAME=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
       - POSTGRES_DB=${POSTGRES_DB}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASS}

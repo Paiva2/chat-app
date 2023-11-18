@@ -1,11 +1,12 @@
 import { Express } from "express"
-import "dotenv/config"
+import { TypeOrm } from "./data-source"
 import http from "node:http"
 import express from "express"
 import WebSocketConnection from "./websocket"
-import { TypeOrm } from "./data-source"
 import userRoutes from "./api/routes/userRoutes"
 import cors from "cors"
+import Redis from "ioredis"
+import "dotenv/config"
 
 export const app: Express = express()
 
@@ -18,6 +19,8 @@ const port = process.env.WS_PORT as string
 const ws = new WebSocketConnection(webSocketServer, port)
 
 userRoutes(app)
+
+export const redisConn = new Redis()
 
 ws.init()
 

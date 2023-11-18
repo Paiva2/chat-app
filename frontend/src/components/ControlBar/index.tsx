@@ -56,18 +56,22 @@ const ControlBar = () => {
             </button>
           </li>
         )}
-        <li className={s.profileIcon}>
-          <button className={s.openProfileTrigger}>
-            {!validatingProfile ? (
-              <img
-                src={userProfile?.profileImage ?? "https://i.imgur.com/jOkraDo.png"}
-                className={s.icon}
-              />
-            ) : (
-              <div className={s.loadingProfile} />
-            )}
-          </button>
-        </li>
+        {userAuthToken && (
+          <li className={s.profileIcon}>
+            <button className={s.openProfileTrigger}>
+              {!validatingProfile ? (
+                <img
+                  src={
+                    userProfile?.profileImage ?? "https://i.imgur.com/jOkraDo.png"
+                  }
+                  className={s.icon}
+                />
+              ) : (
+                <div className={s.loadingProfile} />
+              )}
+            </button>
+          </li>
+        )}
         {asideMenu.map((item) => {
           return (
             <li
