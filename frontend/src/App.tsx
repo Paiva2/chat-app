@@ -1,5 +1,6 @@
 import ChatComponent from "./components/ChatComponent"
 import ControlBar from "./components/ControlBar"
+import ForgotPasswordModal from "./components/ForgotPasswordModal"
 import LoginModal from "./components/LoginModal"
 import RegisterModal from "./components/RegisterModal"
 
@@ -10,6 +11,7 @@ function App() {
       <ControlBar />
       <LoginModal />
       <RegisterModal />
+      <ForgotPasswordModal />
     </main>
   )
 }

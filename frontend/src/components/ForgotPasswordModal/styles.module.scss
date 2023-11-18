@@ -17,7 +17,7 @@
   }
 }
 
-.registerForm {
+.forgotPasswordForm {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -29,7 +29,7 @@
     text-align: center;
   }
 
-  .registerSuccess {
+  .updateSuccess {
     color: rgb(18, 122, 18);
     font-size: 1rem;
     text-align: center;
@@ -92,7 +92,7 @@
     }
   }
 
-  .registerButton {
+  .updatePassButton {
     padding: 0.75rem;
     background-color: #6263fb;
     color: #fff;

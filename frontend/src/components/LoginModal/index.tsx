@@ -1,28 +1,34 @@
 import { ChevronLeft } from "lucide-react"
-import { FormEvent, useContext, useState } from "react"
+import { FormEvent, useContext, useState, useEffect } from "react"
 import { UserContextProvider } from "../../context/userContext"
 import { AxiosError } from "axios"
 import Cookies from "js-cookie"
 import api from "../../lib/api"
-import s from "./styles.module.css"
 import AuthModal from "../AuthModal"
+import s from "./styles.module.css"
+
+interface ErrorInput {
+  email: boolean
+  password: boolean
+}
 
 const formInitialState = {
-  email: {
-    value: "",
-    error: false,
-  },
-  password: {
-    value: "",
-    error: false,
-  },
+  email: "",
+  password: "",
 }
 
 const LoginModal = () => {
-  const { openLoginModal, setOpenLoginModal, setOpenRegisterModal } =
-    useContext(UserContextProvider)
+  const {
+    openLoginModal,
+    setOpenLoginModal,
+    setOpenRegisterModal,
+    setOpenForgotPassModal,
+  } = useContext(UserContextProvider)
 
   const [formFields, setFormFields] = useState(formInitialState)
+  const [formErrors, setFormErrors] = useState<ErrorInput>({} as ErrorInput)
+  const [isLoginSubmitting, setIsLoginSubmitting] = useState(false)
+
   const [loginLoading, setLoginLoading] = useState(false)
   const [apiErrors, setApiErrors] = useState<string[]>([])
 
@@ -33,48 +39,39 @@ const LoginModal = () => {
     setApiErrors([])
   }
 
-  function handleChangeInputValue(
-    field: string,
-    subField: string,
-    value: string | boolean
-  ) {
+  function handleChangeInputValue(field: string, value: string | boolean) {
     setFormFields((oldValue) => {
       return {
         ...oldValue,
-        [field]: {
-          ...oldValue[field as keyof typeof oldValue],
-          [subField]: value,
-        },
+        [field]: value,
       }
     })
   }
 
-  async function handleLogin(e: FormEvent) {
-    e.preventDefault()
+  function toggleFormErrors() {
+    const errors = {} as ErrorInput
 
     const getFormFields = Object.keys(formFields)
 
-    getFormFields.forEach((field) => {
-      if (!formFields[field as keyof typeof formFields].value) {
-        handleChangeInputValue(field, "error", true)
-      } else {
-        handleChangeInputValue(field, "error", false)
+    for (const field of getFormFields) {
+      const fieldValue = formFields[field as keyof typeof formFields]
+
+      if (!fieldValue) {
+        errors[field as keyof typeof errors] = true
       }
-    })
+    }
 
-    const doesAnyFieldHasError = Object.values(formFields).some(
-      ({ value }) => !value
-    )
+    return errors
+  }
 
-    if (doesAnyFieldHasError) return
-
+  async function handleSubmitLogin() {
     setApiErrors([])
     setLoginLoading(true)
 
     try {
       const loginResponse = await api.post("/login", {
-        email: formFields.email.value,
-        password: formFields.password.value,
+        email: formFields.email,
+        password: formFields.password,
       })
 
       if (loginResponse.status === 200) {
@@ -92,8 +89,25 @@ const LoginModal = () => {
       }
     } finally {
       setLoginLoading(false)
+      setIsLoginSubmitting(false)
     }
   }
+
+  function handleLogin(e: FormEvent) {
+    e.preventDefault()
+
+    setFormErrors(toggleFormErrors())
+
+    setIsLoginSubmitting(true)
+  }
+
+  useEffect(() => {
+    const doesFormHasErrors = Object.keys(formErrors)
+
+    if (!doesFormHasErrors.length && isLoginSubmitting) {
+      handleSubmitLogin()
+    }
+  }, [formErrors])
 
   return (
     <AuthModal
@@ -111,35 +125,41 @@ const LoginModal = () => {
           <label>
             <input
               onChange={({ target }) =>
-                handleChangeInputValue("email", "value", target.value)
+                handleChangeInputValue("email", target.value)
               }
               type="text"
-              value={formFields.email.value}
-              className={formFields.email.value ? s.active : ""}
+              value={formFields.email}
+              className={formFields.email ? s.active : ""}
             />
             <p className={s.floatingText}>E-mail</p>
-            {formFields.email.error && (
-              <p className={s.errorField}>Invalid e-mail.</p>
-            )}
+            {formErrors.email && <p className={s.errorField}>Invalid e-mail.</p>}
           </label>
 
           <label>
             <input
               onChange={({ target }) =>
-                handleChangeInputValue("password", "value", target.value)
+                handleChangeInputValue("password", target.value)
               }
               type="password"
-              className={formFields.password.value ? s.active : ""}
-              value={formFields.password.value}
+              className={formFields.password ? s.active : ""}
+              value={formFields.password}
             />
             <p className={s.floatingText}>Password</p>
-            {formFields.password.error && (
+            {formErrors.password && (
               <p className={s.errorField}>Invalid password.</p>
             )}
           </label>
         </div>
 
-        <button disabled={loginLoading} className={s.forgotPassButton} type="button">
+        <button
+          onClick={() => {
+            closeModalTotally()
+            setOpenForgotPassModal(true)
+          }}
+          disabled={loginLoading}
+          className={s.forgotPassButton}
+          type="button"
+        >
           Forgot your password?
         </button>
 
