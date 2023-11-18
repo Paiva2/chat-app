@@ -82,10 +82,10 @@
             gap: 0.625rem;
 
             .avatar {
-              background-color: rgb(185, 171, 171);
-              width: 2.1875rem;
-              height: 2.1875rem;
+              width: 2.5rem;
+              height: 2.5rem;
               border-radius: 100%;
+              object-fit: cover;
             }
 
             .sentBy {

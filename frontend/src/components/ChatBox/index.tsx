@@ -5,10 +5,13 @@ import { ChatContextProvider } from "../../context/chatContext"
 import ws from "../../lib/socket.config"
 import { WebSocketPayload } from "../../@types/types"
 import { displayTimeOptions } from "../../utils/displayTimeOptions"
+import { UserContextProvider } from "../../context/userContext"
 
 const ChatBox = () => {
   const { messages, myId, activeMenu, whoIsReceivingPrivate, privateMessages } =
     useContext(ChatContextProvider)
+
+  const { userProfile } = useContext(UserContextProvider)
 
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
@@ -37,6 +40,11 @@ const ChatBox = () => {
       ws.send(
         JSON.stringify({
           action: "new-message",
+          user: {
+            id: myId?.id,
+            username: myId?.username,
+            profilePic: userProfile?.profileImage ?? null,
+          },
           data: newMessageInputRef.current.value,
         })
       )
@@ -94,7 +102,18 @@ const ChatBox = () => {
 
         <ul ref={messagesListRef} className={`${s.messagesWrapper} messagesWrapper`}>
           {messagesToDisplay.map(
-            ({ message, time, type, userId, username, messageId }) => {
+            ({
+              message,
+              time,
+              type,
+              userId,
+              username,
+              messageId,
+              userProfilePic,
+            }) => {
+              const messageTypesAllowedToImg =
+                type === "message" || type === "private-message"
+
               return (
                 <li
                   key={messageId}
@@ -103,21 +122,24 @@ const ChatBox = () => {
                   }`}
                 >
                   <span className={s.message}>
-                    {type === "message" ||
-                      (type === "private-message" && (
-                        <span className={s.messageSender}>
-                          <div className={s.avatar} />
-                          <span className={s.sentBy}>
-                            <p className={s.personName}>{username}</p>
-                            <span className={s.sentTime}>
-                              {new Date(time).toLocaleString(
-                                "en-US",
-                                displayTimeOptions
-                              )}
-                            </span>
+                    {messageTypesAllowedToImg && (
+                      <span className={s.messageSender}>
+                        <img
+                          alt="Profile Picture"
+                          src={userProfilePic}
+                          className={s.avatar}
+                        />
+                        <span className={s.sentBy}>
+                          <p className={s.personName}>{username}</p>
+                          <span className={s.sentTime}>
+                            {new Date(time).toLocaleString(
+                              "en-US",
+                              displayTimeOptions
+                            )}
                           </span>
                         </span>
-                      ))}
+                      </span>
+                    )}
 
                     <div className={s.messageTextWrapper}>
                       <p>{message}</p>

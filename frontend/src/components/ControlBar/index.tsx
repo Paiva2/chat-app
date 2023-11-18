@@ -1,10 +1,10 @@
 import { LogOut } from "lucide-react"
 import { asideMenu } from "../../content/asideMenu"
 import { useContext, useEffect, useState } from "react"
-import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
-import Cookies from "js-cookie"
 import { UserContextProvider } from "../../context/userContext"
+import Cookies from "js-cookie"
+import s from "./styles.module.css"
 
 const ControlBar = () => {
   const {
@@ -16,9 +16,11 @@ const ControlBar = () => {
     setOpenedProfiles,
   } = useContext(ChatContextProvider)
 
-  const { openLoginModal, setOpenLoginModal } = useContext(UserContextProvider)
+  const { openLoginModal, setOpenLoginModal, userProfile } =
+    useContext(UserContextProvider)
 
   const [userAuthToken, setUserAuthToken] = useState("")
+  const [validatingProfile, setValidatingProfile] = useState(true)
 
   function handleClearProfilePopup() {
     setWhoIsReceivingPrivate({
@@ -38,7 +40,11 @@ const ControlBar = () => {
     if (getToken) {
       setUserAuthToken(getToken)
     }
-  }, [])
+
+    return () => {
+      setValidatingProfile(false)
+    }
+  }, [userProfile])
 
   return (
     <div className={s.controlBarContainer}>
@@ -52,7 +58,14 @@ const ControlBar = () => {
         )}
         <li className={s.profileIcon}>
           <button className={s.openProfileTrigger}>
-            <div className={s.icon} />
+            {!validatingProfile ? (
+              <img
+                src={userProfile?.profileImage ?? "https://i.imgur.com/jOkraDo.png"}
+                className={s.icon}
+              />
+            ) : (
+              <div className={s.loadingProfile} />
+            )}
           </button>
         </li>
         {asideMenu.map((item) => {

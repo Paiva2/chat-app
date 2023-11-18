@@ -232,11 +232,7 @@ const RegisterModal = () => {
         </span>
 
         <span className={s.closeModalButton}>
-          <button
-            onClick={() => setOpenRegisterModal(false)}
-            title="Back"
-            type="button"
-          >
+          <button onClick={closeModalTotally} title="Back" type="button">
             <ChevronLeft color="#6263fb" />
           </button>
         </span>

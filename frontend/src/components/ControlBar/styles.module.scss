@@ -47,9 +47,16 @@
 
         .icon {
           border-radius: 100%;
-          width: 40px;
-          height: 40px;
-          background-color: rgb(255, 255, 255);
+          width: 3.4375rem;
+          height: 3.4375rem;
+          object-fit: cover;
+        }
+
+        .loadingProfile {
+          border-radius: 100%;
+          width: 3.4375rem;
+          height: 3.4375rem;
+          background-color: rgb(22, 22, 22);
         }
       }
     }

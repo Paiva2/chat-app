@@ -6,8 +6,10 @@ import React, {
   useLayoutEffect,
   useEffect,
 } from "react"
-import ws from "../lib/socket.config"
 import { PrivateMessageSchema, WebSocketPayload } from "../@types/types"
+import ws from "../lib/socket.config"
+import Cookies from "js-cookie"
+import { getUserProfile } from "../utils/getUserProfile"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
@@ -87,20 +89,26 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   }
 
   function handleWithOpenConnectionWs() {
-    ws.onopen = () => {
-      let determineId: string | null = ""
-      const getId = null //localStorage.getItem("temp-chat-id")
+    ws.onopen = async () => {
+      const authToken = Cookies.get("chatapp-token")
 
-      if (!getId) {
-        determineId = null
+      let determineUser: { id: string; username: string } | null = null
+
+      if (!authToken) {
+        determineUser = null
       } else {
-        determineId = getId
+        const userData = await getUserProfile(authToken)
+
+        determineUser = {
+          id: userData.id,
+          username: userData.username,
+        }
       }
 
       ws.send(
         JSON.stringify({
           action: "personal-user-id",
-          data: determineId,
+          data: determineUser,
         })
       )
     }
@@ -151,8 +159,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "my-personal-id": {
-          //localStorage.setItem("temp-chat-id", parseData.data)
-
           if (!myId) {
             setMyId(parseData.data)
           }

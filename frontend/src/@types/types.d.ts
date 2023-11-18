@@ -6,6 +6,7 @@ export interface WebSocketPayload {
   time: Date
   messageId: string
   sendToId: string
+  userProfilePic: string
 }
 
 export interface PrivateMessageSchema {
@@ -21,5 +22,15 @@ export interface PrivateMessageSchema {
     sendToUsername: string
     message: string
     time: Date
+    userProfilePic: string
   }[]
+}
+
+export interface UserProfileSchema {
+  createdAt: string
+  email: string
+  id: string
+  profileImage: string
+  updatedAt: string
+  username: string
 }

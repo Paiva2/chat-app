@@ -33,10 +33,13 @@ const LoginModal = () => {
   const [apiErrors, setApiErrors] = useState<string[]>([])
 
   function closeModalTotally() {
-    setOpenLoginModal(false)
-    setLoginLoading(false)
-    setFormFields(formInitialState)
-    setApiErrors([])
+    if (!isLoginSubmitting) {
+      setOpenLoginModal(false)
+      setLoginLoading(false)
+      setFormFields(formInitialState)
+      setApiErrors([])
+      setFormErrors({} as ErrorInput)
+    }
   }
 
   function handleChangeInputValue(field: string, value: string | boolean) {
