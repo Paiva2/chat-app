@@ -46,11 +46,18 @@ export default class WebSocketConnection {
       const randomUserName = `User${faker.number.int({ max: 10000 })}`
 
       ws.on("message", (data) => {
-        const { action, data: clientData } = JSON.parse(String(data))
+        const { action, data: clientData, ...userProfile } = JSON.parse(String(data))
 
         switch (action) {
           case "new-message": {
-            this.globalChatMessage(clientData, randomUserId, randomUserName)
+            const defaultImage = "https://i.imgur.com/jOkraDo.png"
+
+            this.globalChatMessage(
+              clientData,
+              ws.id,
+              ws.username,
+              userProfile.user.profilePic ?? defaultImage
+            )
 
             break
           }
@@ -70,8 +77,8 @@ export default class WebSocketConnection {
               ws.id = randomUserId
               ws.username = randomUserName
             } else {
-              ws.id = clientData
-              ws.username = clientData
+              ws.id = clientData.id
+              ws.username = clientData.username
             }
 
             this.wsServer.clients.forEach((client) => {
@@ -114,8 +121,9 @@ export default class WebSocketConnection {
 
   private globalChatMessage(
     clientData: WebSocket,
-    randomUserId: string,
-    username: string
+    userId: string,
+    username: string,
+    profilePic: string
   ) {
     this.wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
@@ -127,7 +135,8 @@ export default class WebSocketConnection {
             data: {
               type: "message",
               messageId: randomUUID(),
-              userId: randomUserId,
+              userId: userId,
+              userProfilePic: profilePic,
               username,
               message: parsedMessage,
               time: new Date(),
@@ -175,12 +184,12 @@ export default class WebSocketConnection {
 
   private newUserConnection(
     userId: string,
-    randomUserName: string,
+    username: string,
     newConnection: CustomWebSocket
   ) {
     this.connectedUsers.push({
       id: userId,
-      username: randomUserName,
+      username: username,
       connection: newConnection,
     })
 
@@ -195,7 +204,7 @@ export default class WebSocketConnection {
               type: "new-connection",
               messageId: randomUUID(),
               userId: userId,
-              message: `User has connected: ${randomUserName}`,
+              message: `User has connected: ${username}`,
               time: new Date(),
             },
           })

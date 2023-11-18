@@ -11,7 +11,7 @@ export default class UserModel implements UserInterface {
     this.user.username = username
     this.user.email = email
     this.user.password = password
-    this.user.profileImage = ""
+    this.user.profileImage = "https://i.imgur.com/jOkraDo.png"
 
     await this.userRepository.save(this.user)
 
@@ -37,6 +37,14 @@ export default class UserModel implements UserInterface {
     getUser.updatedAt = new Date()
 
     await this.userRepository.save(getUser)
+
+    return getUser
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    const getUser = await this.userRepository.findOneBy({
+      id: userId,
+    })
 
     return getUser
   }
