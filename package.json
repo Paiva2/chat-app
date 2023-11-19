@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "name": "chat-app",
+  "description": "",
+  "version": "1.0.0",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\" \"cd frontend && yarn sass\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paiva2/websocket-chat.git"
+  },
+  "keywords": [],
+  "author": "João Vitor Paiva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Paiva2/websocket-chat/issues"
+  },
+  "homepage": "https://github.com/Paiva2/websocket-chat#readme"
+}

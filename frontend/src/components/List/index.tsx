@@ -52,6 +52,12 @@ const List = () => {
           </ul>
         </Fragment>
       )}
+
+      {activeMenu === "Friend List" && (
+        <Fragment>
+          <h1>Friend List</h1>
+        </Fragment>
+      )}
     </div>
   )
 }

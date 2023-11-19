@@ -20,7 +20,7 @@ export default class ChangeUserPasswordService {
   }: ChangeUserPasswordServiceRequest): Promise<ChangeUserPasswordServiceResponse> {
     if (!email || !confirmNewPassword || !newPassword) {
       throw {
-        status: 422,
+        status: 403,
         error:
           "You must provide all user informations. Ex: email, password and password confirmation.",
       }

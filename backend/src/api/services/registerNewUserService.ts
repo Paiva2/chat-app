@@ -21,7 +21,7 @@ export default class RegisterNewUserService {
   }: RegisterNewUserServiceRequest): Promise<RegisterNewUserServiceResponse> {
     if (!username || !email || !password || !passwordConfirmation) {
       throw {
-        status: 422,
+        status: 403,
         error:
           "You must provide all user informations. Ex: email, username, password and password confirmation.",
       }

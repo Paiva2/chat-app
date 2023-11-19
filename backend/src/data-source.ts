@@ -1,7 +1,8 @@
-import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { User } from "./api/database/entities/User.entity"
+import "reflect-metadata"
 import "dotenv/config"
+import { UserEntity } from "./api/database/entities/User.entity"
+import { UserFriendEntity } from "./api/database/entities/UserFriend.entity"
 
 // typeorm migration:generate -- MigrationName -d ./src/data-source.ts
 
@@ -14,7 +15,7 @@ export const TypeOrm = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: false,
-  entities: [User],
+  entities: [UserEntity, UserFriendEntity],
   migrations: ["./api/database/migrations/*.{ts}"],
   migrationsTableName: "migrations_table",
 })

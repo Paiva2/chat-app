@@ -8,6 +8,14 @@ export interface User {
   updatedAt: Date
 }
 
+export interface UserFriend {
+  id: string
+  username: string
+  profileImage: string
+  addedAt: Date
+  fkUser: string
+}
+
 export interface ErrorHandling {
   status: number
   error: string

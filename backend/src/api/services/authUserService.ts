@@ -18,7 +18,7 @@ export default class AuthUserService {
   }: AuthUserServiceRequest): Promise<AuthUserServiceResponse> {
     if (!email || !password) {
       throw {
-        status: 422,
+        status: 403,
         error: "E-mail and password should be provided.",
       }
     }

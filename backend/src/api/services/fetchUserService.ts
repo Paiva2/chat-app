@@ -18,7 +18,7 @@ export default class FetchUserService {
   }: FetchUserServiceRequest): Promise<FetchUserServiceResponse> {
     if (!userId) {
       throw {
-        status: 422,
+        status: 403,
         error: "Invalid user id.",
       }
     }

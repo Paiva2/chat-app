@@ -1,7 +1,7 @@
 import { TypeOrm } from "../../data-source"
 import { User } from "../@types/types"
+import { UserEntity } from "../database/entities/User.entity"
 import UserInterface from "../interfaces/userInterface"
-import { User as UserEntity } from "../database/entities/User.entity"
 
 export default class UserModel implements UserInterface {
   private user = new UserEntity()

@@ -16,7 +16,7 @@ const ControlBar = () => {
     setOpenedProfiles,
   } = useContext(ChatContextProvider)
 
-  const { openLoginModal, setOpenLoginModal, userProfile } =
+  const { openLoginModal, userProfile, setOpenLoginModal } =
     useContext(UserContextProvider)
 
   const [userAuthToken, setUserAuthToken] = useState("")
@@ -46,6 +46,14 @@ const ControlBar = () => {
     }
   }, [userProfile])
 
+  function handleLogout() {
+    if (userAuthToken) {
+      Cookies.remove("chatapp-token")
+
+      window.location.reload()
+    }
+  }
+
   return (
     <div className={s.controlBarContainer}>
       <ul className={s.menuList}>
@@ -62,8 +70,11 @@ const ControlBar = () => {
               {!validatingProfile ? (
                 <img
                   src={
-                    userProfile?.profileImage ?? "https://i.imgur.com/jOkraDo.png"
+                    userProfile?.profileImage
+                      ? userProfile?.profileImage
+                      : "https://i.imgur.com/jOkraDo.png"
                   }
+                  alt="Profile Picture"
                   className={s.icon}
                 />
               ) : (
@@ -96,7 +107,7 @@ const ControlBar = () => {
         })}
         {userAuthToken && (
           <li className={s.logoutButton}>
-            <button type="button">
+            <button onClick={handleLogout} type="button">
               <LogOut size={23} />
             </button>
           </li>

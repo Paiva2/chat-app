@@ -15,7 +15,7 @@ export default class GetUserProfileService {
   }: GetUserProfileServiceRequest): Promise<GetUserProfileServiceResponse> {
     if (!userId) {
       throw {
-        status: 422,
+        status: 403,
         error: "Invalid user id.",
       }
     }
