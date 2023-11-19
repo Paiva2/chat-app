@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from "typeorm"
 import { UserEntity } from "./User.entity"
 
@@ -21,6 +22,13 @@ export class UserFriendEntity {
   @CreateDateColumn({ default: () => "NOW()" })
   addedAt: Date
 
-  @ManyToOne(() => UserEntity, (user) => user.id)
-  fkUser: UserEntity
+  @Column("varchar", { nullable: false })
+  fkUser: string
+
+  @ManyToOne(() => UserEntity, (user) => user.id, {
+    onDelete: "CASCADE",
+    eager: true,
+  })
+  @JoinColumn({ name: "fkUser" })
+  user: UserEntity
 }

@@ -34,18 +34,8 @@ export class UserEntity {
   updatedAt: Date
 
   @OneToMany(() => UserFriendEntity, (friend) => friend.fkUser, {
-    cascade: true,
-  })
-  @JoinTable({
-    name: "user",
-    joinColumn: {
-      name: "user",
-      referencedColumnName: "id",
-    },
-    inverseJoinColumn: {
-      name: "friend_list",
-      referencedColumnName: "fkUser",
-    },
+    onDelete: "CASCADE",
+    cascade: ["remove"],
   })
   friendList: UserFriendEntity[]
 }

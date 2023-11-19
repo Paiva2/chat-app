@@ -1,4 +1,5 @@
 import { UserFriend } from "../@types/types"
+import { UserFriendEntity } from "../database/entities/UserFriend.entity"
 
 export interface UserFriendInterface {
   create(
@@ -8,5 +9,8 @@ export interface UserFriendInterface {
     id?: string
   ): Promise<UserFriend>
 
-  findFriendListUser(friendId: string, fkUser: string): Promise<UserFriend | null>
+  findFriendListUser(
+    friendId: string,
+    fkUser: string
+  ): Promise<UserFriend | UserFriendEntity | null>
 }

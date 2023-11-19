@@ -5,6 +5,7 @@ import AuthUserController from "../controllers/authUserController"
 import GetUserProfileController from "../controllers/getUserProfileController"
 import FetchUserController from "../controllers/fetchUserController"
 import verifyJwt from "../middleware/verifyJwt"
+import InsertToFriendListController from "../controllers/InsertToFriendListController"
 
 export default function userRoutes(app: Express) {
   app.post("/register", RegisterNewUserController.handle)
@@ -16,4 +17,6 @@ export default function userRoutes(app: Express) {
   app.get("/profile", [verifyJwt], GetUserProfileController.handle)
 
   app.get("/user/:userId", FetchUserController.handle)
+
+  app.post("/friend", InsertToFriendListController.handle)
 }
