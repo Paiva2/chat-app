@@ -6,7 +6,12 @@ import React, {
   useLayoutEffect,
   useEffect,
 } from "react"
-import { MyIdSchema, PrivateMessageSchema, WebSocketPayload } from "../@types/types"
+import {
+  MyIdSchema,
+  PrivateMessageSchema,
+  UserOnListSchema,
+  WebSocketPayload,
+} from "../@types/types"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import { getUserProfile } from "../utils/getUserProfile"
@@ -22,8 +27,8 @@ interface ChatContextInterface {
   myId: MyIdSchema | null
   setMyId: Dispatch<SetStateAction<MyIdSchema | null>>
 
-  usersList: { id: string; username: string }[]
-  setUsersList: Dispatch<SetStateAction<{ id: string; username: string }[]>>
+  usersList: UserOnListSchema[]
+  setUsersList: Dispatch<SetStateAction<UserOnListSchema[]>>
 
   ws: WebSocket
 
@@ -57,7 +62,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   const [openedProfiles, setOpenedProfiles] = useState("")
   const [activeMenu, setActiveMenu] = useState("Home")
 
-  const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([])
+  const [usersList, setUsersList] = useState<UserOnListSchema[]>([])
   const [privateMessagesList, setPrivateMessagesList] = useState<
     PrivateMessageSchema[]
   >([])
@@ -174,6 +179,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "get-connected-users": {
+          console.log(parseData.data)
           setUsersList(parseData.data)
 
           break

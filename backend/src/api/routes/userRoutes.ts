@@ -18,5 +18,5 @@ export default function userRoutes(app: Express) {
 
   app.get("/user/:userId", FetchUserController.handle)
 
-  app.post("/friend", InsertToFriendListController.handle)
+  app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
 }

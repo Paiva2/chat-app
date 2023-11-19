@@ -1,6 +1,6 @@
 import { Fragment, useContext } from "react"
 import { ChatContextProvider } from "../../../context/chatContext"
-import { PrivateMessageSchema } from "../../../@types/types"
+import { FetchUserSchema, PrivateMessageSchema } from "../../../@types/types"
 import { displayTimeOptions } from "../../../utils/displayTimeOptions"
 import { useQuery } from "@tanstack/react-query"
 import api from "../../../lib/api"
@@ -8,13 +8,6 @@ import s from "./styles.module.css"
 
 interface PrivateMessageProps {
   connection: PrivateMessageSchema
-}
-
-interface FetchUserSchema {
-  username: string
-  email: string
-  id: string
-  profileImage: string
 }
 
 const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
@@ -31,7 +24,7 @@ const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
   )
 
   const { data: userData } = useQuery({
-    queryKey: ["fetchUser"],
+    queryKey: ["getOthersideUserId"],
     queryFn: async () => {
       const { data } = await api.get(`/user/${getOthersideUserId}`)
 

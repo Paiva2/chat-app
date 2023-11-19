@@ -35,7 +35,20 @@ export interface UserProfileSchema {
   username: string
 }
 
-interface MyIdSchema {
+export interface MyIdSchema {
+  id: string
+  username: string
+  auth: boolean
+}
+
+export interface FetchUserSchema {
+  username: string
+  email: string
+  id: string
+  profileImage: string
+}
+
+export interface UserOnListSchema {
   id: string
   username: string
   auth: boolean

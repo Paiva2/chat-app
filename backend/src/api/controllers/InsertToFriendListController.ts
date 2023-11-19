@@ -24,7 +24,7 @@ export default class InsertToFriendListController {
         userToInsert,
       })
 
-      return res.status(204).send({ message: "User added to friend list." })
+      return res.status(204).json({ message: "User added to friend list." })
     } catch (e) {
       const error = e as ErrorHandling
 

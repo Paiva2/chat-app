@@ -35,7 +35,6 @@ export class UserEntity {
 
   @OneToMany(() => UserFriendEntity, (friend) => friend.fkUser, {
     onDelete: "CASCADE",
-    cascade: ["remove"],
   })
   friendList: UserFriendEntity[]
 }

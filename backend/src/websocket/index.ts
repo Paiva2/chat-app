@@ -298,12 +298,13 @@ export default class WebSocketConnection {
   }
 
   private getConnectedUsers() {
-    const formatUsersList: { id: string; username: string }[] = []
+    const formatUsersList: { id: string; username: string; auth: boolean }[] = []
 
     for (let user of this.connectedUsers) {
       formatUsersList.push({
         id: user.id,
         username: user.username,
+        auth: user.connection.auth,
       })
     }
 

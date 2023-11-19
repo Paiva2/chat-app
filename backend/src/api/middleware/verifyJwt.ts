@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response } from "express"
-import decodeJwt from "../utils/decodeJwt"
+import jwt from "jsonwebtoken"
 
 export default function verifyJwt(req: Request, res: Response, next: NextFunction) {
   try {
-    const token = decodeJwt(req.headers.authorization as string)
+    const token = req.headers.authorization as string
 
-    if (token) {
+    const getToken = token?.replace("Bearer", "").trim()
+
+    const decodedJwt = jwt.verify(getToken, process.env.JWT_SECRET as string)
+
+    if (decodedJwt) {
       next()
     }
   } catch (e) {
-    console.log(e, process.env.JWT_SECRET)
     return res.status(403).send({ message: "Invalid authorization token." })
   }
 }
