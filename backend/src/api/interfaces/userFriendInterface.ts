@@ -13,4 +13,6 @@ export interface UserFriendInterface {
     friendId: string,
     fkUser: string
   ): Promise<UserFriend | UserFriendEntity | null>
+
+  findAllUserFriends(fkUser: string): Promise<UserFriend[]>
 }

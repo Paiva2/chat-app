@@ -43,4 +43,17 @@ export default class UserFriendModel implements UserFriendInterface {
       return null
     }
   }
+
+  async findAllUserFriends(fkUser: string): Promise<UserFriend[]> {
+    const getFriend = await this.userFriendRepository.find({
+      where: {
+        fkUser,
+      },
+      order: {
+        addedAt: "desc",
+      },
+    })
+
+    return getFriend
+  }
 }

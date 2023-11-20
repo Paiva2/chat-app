@@ -1,7 +1,6 @@
 import { User } from "../../@types/types"
 import InMemoryUser from "../../in-memory/inMemoryUser"
 import FetchUserService from "../fetchUserService"
-import GetUserProfileService from "../getUserProfileService"
 import RegisterNewUserService from "../registerNewUserService"
 
 let inMemoryUser: InMemoryUser

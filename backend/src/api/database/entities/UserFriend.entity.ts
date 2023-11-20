@@ -27,7 +27,7 @@ export class UserFriendEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.id, {
     onDelete: "CASCADE",
-    eager: true,
+    eager: false,
   })
   @JoinColumn({ name: "fkUser" })
   user: UserEntity

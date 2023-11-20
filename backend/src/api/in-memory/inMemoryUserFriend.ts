@@ -36,4 +36,12 @@ export default class InMemoryUserFriend implements UserFriendInterface {
 
     return findUser
   }
+
+  async findAllUserFriends(fkUser: string): Promise<UserFriend[]> {
+    const findUserFriends = this.userFriends.filter(
+      (friend) => friend.fkUser === fkUser
+    )
+
+    return findUserFriends
+  }
 }
