@@ -53,3 +53,11 @@ export interface UserOnListSchema {
   username: string
   auth: boolean
 }
+
+export interface UserFriend {
+  id: string
+  username: string
+  profileImage: string
+  addedAt: Date
+  fkUser: string
+}

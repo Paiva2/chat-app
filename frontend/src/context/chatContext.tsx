@@ -179,7 +179,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "get-connected-users": {
-          console.log(parseData.data)
           setUsersList(parseData.data)
 
           break

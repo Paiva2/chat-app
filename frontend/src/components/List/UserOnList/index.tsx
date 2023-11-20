@@ -1,9 +1,8 @@
 import { Unlock, UserPlus2, X } from "lucide-react"
 import { ChatContextProvider } from "../../../context/chatContext"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useState, useContext, useEffect } from "react"
-import { FetchUserSchema } from "../../../@types/types"
-import { AxiosError } from "axios"
+import { FetchUserSchema, UserFriend } from "../../../@types/types"
 import api from "../../../lib/api"
 import Cookies from "js-cookie"
 import s from "../styles.module.css"
@@ -26,7 +25,8 @@ const UserOnList = ({ user }: UserOnListProps) => {
 
   const [openUserProfile, setOpenUserProfile] = useState(false)
   const [toggleProfile, setToggleProfile] = useState(false)
-  const [apiLoading, setApiLoading] = useState(false)
+
+  const defaultImage = "https://i.imgur.com/jOkraDo.png"
 
   const handleOpenUserProfile = (userId: string) => {
     if (userId !== myId?.id) {
@@ -82,48 +82,97 @@ const UserOnList = ({ user }: UserOnListProps) => {
     refetchOnMount: true,
   })
 
+  const insertNewFriend = useMutation({
+    mutationKey: ["friendInsertion"],
+    mutationFn: async (friend: {
+      userId: string
+      userUsername: string
+      userProfilePic: string
+    }) => {
+      const getAuthToken = Cookies.get("chatapp-token")
+
+      if (!getAuthToken) throw new Error("Invalid token.")
+
+      const insertionResponse = await api.post(
+        "/friend",
+        {
+          id: friend.userId,
+          username: friend.userUsername,
+          profilePicture: friend.userProfilePic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getAuthToken}`,
+          },
+        }
+      )
+
+      return insertionResponse
+    },
+  })
+
+  function insertNewFriendForNoAuthUser(friend: {
+    userId: string
+    userUsername: string
+    userProfilePic: string
+  }) {
+    const doesUserHasFriends = localStorage.getItem("chat-app-FL")
+    const newFriend = {
+      id: friend.userId,
+      username: friend.userUsername,
+      profileImage: friend.userProfilePic,
+      addedAt: new Date(),
+      fkUser: myId?.id as string,
+    }
+
+    if (!doesUserHasFriends) {
+      const friendList: UserFriend[] = []
+
+      friendList.push(newFriend)
+
+      localStorage.setItem("chat-app-FL", JSON.stringify(friendList))
+
+      return
+    }
+
+    const getUserFriends: UserFriend[] = JSON.parse(doesUserHasFriends)
+
+    const doesUserAlreadyHasThisFriend = getUserFriends.find(
+      (friendsOnList) =>
+        friendsOnList.id === friend.userId && friendsOnList.fkUser === myId?.id
+    )
+
+    if (doesUserAlreadyHasThisFriend) {
+      throw new Error("User already has this friend on list.")
+    } else {
+      getUserFriends.push(newFriend)
+
+      localStorage.setItem("chat-app-FL", JSON.stringify(getUserFriends))
+    }
+  }
+
   async function handleFriend(
     userId: string,
     userUsername: string,
     userProfilePic: string,
     action: "insert" | "remove"
   ) {
+    const newFriend = {
+      userId,
+      userUsername,
+      userProfilePic,
+    }
+
     if (action === "insert") {
       if (myId?.auth) {
-        const getAuthToken = Cookies.get("chatapp-token")
-
-        if (!getAuthToken) throw new Error("Invalid token.")
-
-        setApiLoading(true)
-
-        try {
-          await api.post(
-            "/friend",
-            {
-              id: userId,
-              username: userUsername,
-              profilePicture: userProfilePic,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${getAuthToken}`,
-              },
-            }
-          )
-        } catch (e) {
-          if (e instanceof AxiosError) {
-            console.error(e)
-          }
-        } finally {
-          setApiLoading(false)
-        }
+        insertNewFriend.mutateAsync(newFriend)
+      } else {
+        insertNewFriendForNoAuthUser(newFriend)
       }
     }
   }
 
   if (!user) return <></>
-
-  const defaultImage = "https://i.imgur.com/jOkraDo.png"
 
   const determineProfilePicture = user.auth
     ? clickedUserData?.profileImage ?? defaultImage
@@ -152,7 +201,7 @@ const UserOnList = ({ user }: UserOnListProps) => {
           </button>
 
           <button
-            disabled={apiLoading}
+            disabled={insertNewFriend.isPending}
             onClick={() =>
               handleFriend(user.id, user.username, determineProfilePicture, "insert")
             }
