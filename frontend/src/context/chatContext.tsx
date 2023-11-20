@@ -38,9 +38,11 @@ interface ChatContextInterface {
   activeMenu: string
   setActiveMenu: Dispatch<SetStateAction<string>>
 
-  whoIsReceivingPrivate: { to: { id: string; username: string } }
+  whoIsReceivingPrivate: {
+    to: { id: string; username: string; profilePicture: string }
+  }
   setWhoIsReceivingPrivate: Dispatch<
-    SetStateAction<{ to: { id: string; username: string } }>
+    SetStateAction<{ to: { id: string; username: string; profilePicture: string } }>
   >
 
   privateMessagesList: PrivateMessageSchema[]
@@ -71,6 +73,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     to: {
       id: "",
       username: "",
+      profilePicture: "",
     },
   })
 

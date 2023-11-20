@@ -1,0 +1,58 @@
+.privateCard {
+  background-color: #fff;
+  border-bottom: 2px solid #ededef;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 8px;
+
+  .userProfile {
+    display: flex;
+    padding: 0.75rem;
+    padding-bottom: 0.3125rem;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    min-height: 4.6875rem;
+    align-items: center;
+    box-sizing: border-box;
+    max-width: 100%;
+    position: relative;
+
+    .miniProfileTrigger {
+      position: absolute;
+      cursor: pointer;
+      right: 5px;
+      top: 8px;
+    }
+  }
+
+  .userInformations {
+    width: 100%;
+    display: flex;
+    height: 100%;
+    align-items: center;
+
+    p {
+      color: #0f084e;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      overflow: hidden;
+      font-size: 0.875rem;
+    }
+
+    .cardLeftSide {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+
+      .userImage {
+        width: 2.1875rem;
+        height: 2.1875rem;
+        border-radius: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}

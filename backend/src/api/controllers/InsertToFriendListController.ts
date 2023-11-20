@@ -1,22 +1,14 @@
 import { Request, Response } from "express"
-import UserModel from "../model/User.model"
-import InsertToFriendListService from "../services/insertToFriendListService"
-import UserFriendModel from "../model/UserFriend.model"
 import { ErrorHandling } from "../@types/types"
 import decodeJwt from "../utils/decodeJwt"
+import Factory from "./factory"
 
 export default class InsertToFriendListController {
   static async handle(req: Request, res: Response) {
     const authToken = decodeJwt(req.headers.authorization as string)
     const userToInsert = req.body
 
-    const userModel = new UserModel()
-    const userFriendModel = new UserFriendModel()
-
-    const insertToFriendListService = new InsertToFriendListService(
-      userModel,
-      userFriendModel
-    )
+    const { insertToFriendListService } = Factory.exec()
 
     try {
       await insertToFriendListService.exec({

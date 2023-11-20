@@ -1,18 +1,15 @@
 import { Request, Response } from "express"
 import { ErrorHandling } from "../@types/types"
-import UserModel from "../model/User.model"
-import FetchUserService from "../services/fetchUserService"
+import Factory from "./factory"
 
 export default class FetchUserController {
   static async handle(req: Request, res: Response) {
     const { userId } = req.params
 
-    const userModel = new UserModel()
-
-    const getUserProfileService = new FetchUserService(userModel)
+    const { fetchUserService } = Factory.exec()
 
     try {
-      const userProfile = await getUserProfileService.exec({
+      const userProfile = await fetchUserService.exec({
         userId,
       })
 

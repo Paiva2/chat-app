@@ -96,6 +96,10 @@ const ControlBar = () => {
                     setPrivateMessages([])
                   }
 
+                  if (item.name === "Friend List") {
+                    handleClearProfilePopup()
+                  }
+
                   setActiveMenu(item.name)
                 }}
                 type="button"

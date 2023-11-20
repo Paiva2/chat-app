@@ -1,16 +1,13 @@
 import { Request, Response } from "express"
-import UserModel from "../model/User.model"
-import AuthUserService from "../services/authUserService"
 import { ErrorHandling } from "../@types/types"
 import jwt from "jsonwebtoken"
+import Factory from "./factory"
 
 export default class AuthUserController {
   static async handle(req: Request, res: Response) {
     const { email, password } = req.body
 
-    const userModel = new UserModel()
-
-    const authUserService = new AuthUserService(userModel)
+    const { authUserService } = Factory.exec()
 
     const jwtExpiration = 60 * 60 * 60 * 24 * 7 // 7 days
 
@@ -24,7 +21,7 @@ export default class AuthUserController {
         {
           data: {
             id: userAuth.id,
-            email: userAuth.email,
+            createdAt: userAuth.createdAt,
           },
         },
         process.env.JWT_SECRET as string,

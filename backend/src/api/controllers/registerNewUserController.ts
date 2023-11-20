@@ -1,15 +1,12 @@
 import { Request, Response } from "express"
-import RegisterNewUserService from "../services/registerNewUserService"
 import { ErrorHandling } from "../@types/types"
-import UserModel from "../model/User.model"
+import Factory from "./factory"
 
 export default class RegisterNewUserController {
   static async handle(req: Request, res: Response) {
     const { username, email, password, passwordConfirmation } = req.body
 
-    const userModel = new UserModel()
-
-    const registerNewUserService = new RegisterNewUserService(userModel)
+    const { registerNewUserService } = Factory.exec()
 
     try {
       await registerNewUserService.exec({

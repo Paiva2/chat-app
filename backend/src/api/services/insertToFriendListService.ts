@@ -46,6 +46,10 @@ export default class InsertToFriendListService {
       }
     }
 
+    const checkIfAddedFriendIsAuth = await this.userInterface.findById(
+      userToInsert.id
+    )
+
     const checkIfUserHasThisFriendAlready =
       await this.userFriendInterface.findFriendListUser(userToInsert.id, userId)
 
@@ -60,6 +64,7 @@ export default class InsertToFriendListService {
       userToInsert.username,
       userToInsert.profilePicture,
       userId,
+      Boolean(checkIfAddedFriendIsAuth),
       userToInsert.id
     )
 

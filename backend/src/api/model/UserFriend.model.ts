@@ -12,10 +12,12 @@ export default class UserFriendModel implements UserFriendInterface {
     username: string,
     profileImage: string,
     fkUser: string,
+    auth: boolean,
     id?: string | undefined
   ): Promise<UserFriend> {
     this.userFriend.username = username
     this.userFriend.fkUser = fkUser
+    this.userFriend.auth = auth
     this.userFriend.profileImage = profileImage
     this.userFriend.id = id ?? randomUUID()
 
@@ -53,6 +55,15 @@ export default class UserFriendModel implements UserFriendInterface {
         addedAt: "desc",
       },
     })
+
+    return getFriend
+  }
+
+  async removeById(friendOwnerId: string, friendId: string): Promise<UserFriend[]> {
+    const getFriend = (await this.userFriendRepository.delete({
+      id: friendId,
+      fkUser: friendOwnerId,
+    })) as unknown as UserFriend[] // Force type cuz delete operation does not return updated values
 
     return getFriend
   }

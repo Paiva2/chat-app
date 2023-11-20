@@ -1,11 +1,11 @@
 import { FormEvent, useRef, useContext, useEffect } from "react"
-import s from "./styles.module.css"
 import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
-import ws from "../../lib/socket.config"
 import { WebSocketPayload } from "../../@types/types"
 import { displayTimeOptions } from "../../utils/displayTimeOptions"
 import { UserContextProvider } from "../../context/userContext"
+import ws from "../../lib/socket.config"
+import s from "./styles.module.css"
 
 const ChatBox = () => {
   const { messages, myId, activeMenu, whoIsReceivingPrivate, privateMessages } =
@@ -98,7 +98,11 @@ const ChatBox = () => {
         {whoIsReceivingPrivate.to.id && (
           <div className={s.userNameHeader}>
             <span className={s.headerMessageSender}>
-              <div className={s.headerAvatar} />
+              <img
+                alt="Profile Picture"
+                src={whoIsReceivingPrivate.to.profilePicture}
+                className={s.headerAvatar}
+              />
             </span>
             <h1>{whoIsReceivingPrivate.to.username}</h1>
           </div>

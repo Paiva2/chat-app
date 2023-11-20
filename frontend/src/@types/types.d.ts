@@ -33,6 +33,7 @@ export interface UserProfileSchema {
   profileImage: string
   updatedAt: string
   username: string
+  token: string
 }
 
 export interface MyIdSchema {

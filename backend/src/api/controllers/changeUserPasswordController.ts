@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import UserModel from "../model/User.model"
-import ChangeUserPasswordService from "../services/changeUserPasswordService"
 import { ErrorHandling } from "../@types/types"
+import UserModel from "../model/User.model"
+import Factory from "./factory"
 
 export default class ChangeUserPasswordControler {
   static async handle(req: Request, res: Response) {
@@ -9,7 +9,7 @@ export default class ChangeUserPasswordControler {
 
     const userModel = new UserModel()
 
-    const changeUserPasswordService = new ChangeUserPasswordService(userModel)
+    const { changeUserPasswordService } = Factory.exec()
 
     try {
       await changeUserPasswordService.exec({

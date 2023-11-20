@@ -2,22 +2,26 @@ import { randomUUID } from "crypto"
 import { User } from "../../@types/types"
 import InMemoryUser from "../../in-memory/inMemoryUser"
 import InMemoryUserFriend from "../../in-memory/inMemoryUserFriend"
-import GetUserFriendListService from "../getUserFriendListService"
 import InsertToFriendListService from "../insertToFriendListService"
 import RegisterNewUserService from "../registerNewUserService"
+import RemoveFromFriendListService from "../removeFromFriendListService"
 
 let inMemoryUser: InMemoryUser
-let registerNewUserService: RegisterNewUserService
-let userCreated: User
 let inMemoryUserFriend: InMemoryUserFriend
+
+let registerNewUserService: RegisterNewUserService
 let insertToFriendListService: InsertToFriendListService
 
-let sut: GetUserFriendListService
+let userCreated: User
 
-describe("Get User Friend List Service", () => {
+let sut: RemoveFromFriendListService
+
+describe("Remove from friend list service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryUserFriend = new InMemoryUserFriend()
+
+    sut = new RemoveFromFriendListService(inMemoryUser, inMemoryUserFriend)
 
     registerNewUserService = new RegisterNewUserService(inMemoryUser)
 
@@ -26,70 +30,69 @@ describe("Get User Friend List Service", () => {
       inMemoryUserFriend
     )
 
-    sut = new GetUserFriendListService(inMemoryUser, inMemoryUserFriend)
-
     userCreated = await registerNewUserService.exec({
       email: "johndoe@email.com",
       username: "John Doe",
       password: "123456",
       passwordConfirmation: "123456",
     })
-
-    await insertToFriendListService.exec({
-      userId: userCreated.id,
-      userToInsert: {
-        id: randomUUID(),
-        profilePicture: "any pic",
-        username: "test friend",
-      },
-    })
-
-    await insertToFriendListService.exec({
-      userId: userCreated.id,
-      userToInsert: {
-        id: randomUUID(),
-        profilePicture: "any pic 2",
-        username: "test friend 2",
-      },
-    })
   })
 
-  it("should be possible to get all user friends", async () => {
-    const userFriends = await sut.exec({ userId: userCreated.id })
+  it("should be possible to remove an friend from user friend list", async () => {
+    const firstFriend = await insertToFriendListService.exec({
+      userId: userCreated.id,
+      userToInsert: {
+        id: randomUUID(),
+        profilePicture: "",
+        username: "Friend 1",
+      },
+    })
 
-    expect(userFriends).toEqual([
+    const secondFriend = await insertToFriendListService.exec({
+      userId: userCreated.id,
+      userToInsert: {
+        id: randomUUID(),
+        profilePicture: "friend 2 profile pic",
+        username: "Friend 2",
+      },
+    })
+
+    const friendRemoval = await sut.exec({
+      userId: userCreated.id,
+      friendId: firstFriend.id,
+    })
+
+    expect(friendRemoval).toEqual([
       expect.objectContaining({
-        id: expect.any(String),
-        username: "test friend",
-        profileImage: "any pic",
-        addedAt: expect.any(Date),
-        fkUser: userCreated.id,
-        auth: false,
-      }),
-      expect.objectContaining({
-        id: expect.any(String),
-        username: "test friend 2",
-        profileImage: "any pic 2",
-        addedAt: expect.any(Date),
+        id: secondFriend.id,
+        username: secondFriend.username,
+        profileImage: secondFriend.profileImage,
+        addedAt: secondFriend.addedAt,
         fkUser: userCreated.id,
         auth: false,
       }),
     ])
   })
 
-  it("should not be possible to get all user friends without an user id", async () => {
+  it("should not be possible to remove an friend from user friend list if user id or friend id are not provided", async () => {
     await expect(() => {
-      return sut.exec({ userId: "" })
+      return sut.exec({
+        userId: "",
+        friendId: "",
+      })
     }).rejects.toEqual(
       expect.objectContaining({
-        error: "Invalid user id.",
+        error: "You must provide an user id and an friend id.",
       })
     )
   })
 
-  it("should not be possible to get all user friends if user doesn't exists", async () => {
+  it("should not be possible to remove an friend from user friend list if user doesn't exists", async () => {
     await expect(() => {
-      return sut.exec({ userId: "Inexistent user ID." })
+      return sut.exec({
+        userId: "Inexistent user id",
+        friendId: "Any friend id",
+      })
     }).rejects.toEqual(
       expect.objectContaining({
         error: "User not found.",

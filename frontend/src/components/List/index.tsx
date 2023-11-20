@@ -4,10 +4,14 @@ import { ChatContextProvider } from "../../context/chatContext"
 import UserOnList from "./UserOnList"
 import PrivateMessageAsideCard from "./PrivateMessageAsideCard"
 import EmptyListPlaceholder from "../EmptyListPlaceholder"
+import UserFriend from "./UserFriend"
+import { UserContextProvider } from "../../context/userContext"
 
 const List = () => {
   const { usersList, myId, activeMenu, privateMessagesList } =
     useContext(ChatContextProvider)
+
+  const { userFriendList } = useContext(UserContextProvider)
 
   if (myId) {
     const getMyUser = usersList.find((user) => user.id === myId?.id)
@@ -23,6 +27,17 @@ const List = () => {
 
   return (
     <div className={s.listContainer}>
+      {activeMenu === "Home" && (
+        <Fragment>
+          <h1 className={s.onlineText}>Online Users</h1>
+          <ul>
+            {usersList?.map((user) => {
+              return <UserOnList key={user.id} user={user} />
+            })}
+          </ul>
+        </Fragment>
+      )}
+
       {activeMenu === "Messages" && (
         <Fragment>
           <ul className={s.privateList}>
@@ -36,26 +51,24 @@ const List = () => {
                 })}
               </Fragment>
             ) : (
-              <EmptyListPlaceholder />
+              <EmptyListPlaceholder iconNumber={0} text="No Messages to show..." />
             )}
-          </ul>
-        </Fragment>
-      )}
-
-      {activeMenu === "Home" && (
-        <Fragment>
-          <p className={s.onlineText}>Online Users</p>
-          <ul>
-            {usersList?.map((user) => {
-              return <UserOnList key={user.id} user={user} />
-            })}
           </ul>
         </Fragment>
       )}
 
       {activeMenu === "Friend List" && (
         <Fragment>
-          <h1>Friend List</h1>
+          <h1 className={s.friendListTitle}>Friend List</h1>
+          <ul>
+            {userFriendList.length > 0 ? (
+              userFriendList.map((friend) => {
+                return <UserFriend friend={friend} key={friend.id} />
+              })
+            ) : (
+              <EmptyListPlaceholder iconNumber={1} text="No friends were found..." />
+            )}
+          </ul>
         </Fragment>
       )}
     </div>

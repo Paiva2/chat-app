@@ -1,0 +1,1 @@
+.user{display:flex;flex-direction:column;position:relative}.user .profileTrigger{font-size:.875rem;padding:.75rem;color:#0f084e;border-radius:8px;cursor:pointer;width:100%;box-sizing:border-box}.user .profileTrigger.me{font-weight:600}.user .profileTrigger:hover{background-color:#fff}

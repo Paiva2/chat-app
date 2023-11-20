@@ -1,20 +1,23 @@
 import { Request, Response } from "express"
+import Factory from "./factory"
 import { ErrorHandling } from "../@types/types"
 import decodeJwt from "../utils/decodeJwt"
-import Factory from "./factory"
 
-export default class GetUserFriendListController {
+export default class RemoveFromFriendListController {
   static async handle(req: Request, res: Response) {
+    const { friendId } = req.body
+
     const authToken = decodeJwt(req.headers.authorization as string)
 
-    const { getUserFriendListService } = Factory.exec()
+    const { removeFromFriendListService } = Factory.exec()
 
     try {
-      const userFriends = await getUserFriendListService.exec({
+      await removeFromFriendListService.exec({
+        friendId,
         userId: authToken.data.id,
       })
 
-      return res.status(200).send(userFriends)
+      return res.status(204).send({ message: "Friend removed successfully." })
     } catch (e) {
       const error = e as ErrorHandling
 

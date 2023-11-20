@@ -1,0 +1,23 @@
+.user {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .profileTrigger {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+    color: #0f084e;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+
+    &.me {
+      font-weight: 600;
+    }
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}

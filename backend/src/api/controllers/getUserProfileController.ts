@@ -1,16 +1,13 @@
 import { Request, Response } from "express"
 import { ErrorHandling } from "../@types/types"
-import UserModel from "../model/User.model"
-import GetUserProfileService from "../services/getUserProfileService"
 import decodeJwt from "../utils/decodeJwt"
+import Factory from "./factory"
 
 export default class GetUserProfileController {
   static async handle(req: Request, res: Response) {
     const authToken = decodeJwt(req.headers.authorization as string)
 
-    const userModel = new UserModel()
-
-    const getUserProfileService = new GetUserProfileService(userModel)
+    const { getUserProfileService } = Factory.exec()
 
     try {
       const userProfile = await getUserProfileService.exec({

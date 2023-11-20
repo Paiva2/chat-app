@@ -46,6 +46,36 @@ describe("Insert to friend list service", () => {
         profileImage: "",
         addedAt: expect.any(Date),
         fkUser: userCreated.id,
+        auth: false,
+      })
+    )
+  })
+
+  it("should be possible to insert a new AUTH user to friend list", async () => {
+    const authFriend = await registerNewUserService.exec({
+      email: "friend@email.com",
+      username: "friend auth",
+      password: "123456",
+      passwordConfirmation: "123456",
+    })
+
+    const userInserted = await sut.exec({
+      userId: userCreated.id,
+      userToInsert: {
+        id: authFriend.id,
+        profilePicture: authFriend.profileImage,
+        username: authFriend.username,
+      },
+    })
+
+    expect(userInserted).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        username: authFriend.username,
+        profileImage: authFriend.profileImage,
+        addedAt: expect.any(Date),
+        fkUser: userCreated.id,
+        auth: true,
       })
     )
   })

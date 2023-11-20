@@ -6,6 +6,7 @@ export interface UserFriendInterface {
     username: string,
     profileImage: string,
     fkUser: string,
+    auth: boolean,
     id?: string
   ): Promise<UserFriend>
 
@@ -15,4 +16,6 @@ export interface UserFriendInterface {
   ): Promise<UserFriend | UserFriendEntity | null>
 
   findAllUserFriends(fkUser: string): Promise<UserFriend[]>
+
+  removeById(friendOwnerId: string, friendId: string): Promise<UserFriend[]>
 }

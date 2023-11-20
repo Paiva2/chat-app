@@ -1,11 +1,21 @@
-import { MessageSquareDashed } from "lucide-react"
+import { MessageSquareDashed, UserX2 } from "lucide-react"
 import s from "./styles.module.css"
 
-const EmptyListPlaceholder = () => {
+interface EmptyListPlaceholderProps {
+  text: string
+  iconNumber: number
+}
+
+const EmptyListPlaceholder = ({ text, iconNumber }: EmptyListPlaceholderProps) => {
+  const listIcons = [
+    <MessageSquareDashed size={70} color="#0f084e" />,
+    <UserX2 size={70} color="#0f084e" />,
+  ]
+
   return (
     <div className={s.placeHolderWrapper}>
-      <h1>No Messages to show...</h1>
-      <MessageSquareDashed size={70} color="#0f084e" />
+      <h1>{text}</h1>
+      {listIcons[iconNumber]}
     </div>
   )
 }

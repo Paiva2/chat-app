@@ -19,6 +19,9 @@ export class UserFriendEntity {
   @Column("varchar", { length: 300 })
   profileImage: string
 
+  @Column("boolean")
+  auth: boolean
+
   @CreateDateColumn({ default: () => "NOW()" })
   addedAt: Date
 
