@@ -8,8 +8,14 @@ import ws from "../../lib/socket.config"
 import s from "./styles.module.css"
 
 const ChatBox = () => {
-  const { messages, myId, activeMenu, whoIsReceivingPrivate, privateMessages } =
-    useContext(ChatContextProvider)
+  const {
+    messages,
+    myId,
+    activeMenu,
+    whoIsReceivingPrivate,
+    privateMessages,
+    usersList,
+  } = useContext(ChatContextProvider)
 
   const { userProfile } = useContext(UserContextProvider)
 
@@ -92,6 +98,10 @@ const ChatBox = () => {
     }
   }
 
+  const isUserOnline = usersList.some(
+    (user) => user.id === whoIsReceivingPrivate?.to?.id
+  )
+
   return (
     <main className={s.chatContainer}>
       <form onSubmit={handleSendMessage} className={s.chatWrapper}>
@@ -104,7 +114,14 @@ const ChatBox = () => {
                 className={s.headerAvatar}
               />
             </span>
-            <h1>{whoIsReceivingPrivate.to.username}</h1>
+            <div className={s.user}>
+              <h1>{whoIsReceivingPrivate.to.username}</h1>
+
+              <div className={s.userConnection}>
+                <span className={`${isUserOnline ? s.on : s.off}`} />
+                {isUserOnline ? "Online" : "Offline"}
+              </div>
+            </div>
           </div>
         )}
 

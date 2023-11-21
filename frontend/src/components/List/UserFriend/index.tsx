@@ -10,7 +10,7 @@ interface UserFriendProps {
 }
 
 const UserFriend = ({ friend }: UserFriendProps) => {
-  const { myId, setOpenedProfiles } = useContext(ChatContextProvider)
+  const { myId, setOpenedProfiles, usersList } = useContext(ChatContextProvider)
 
   const [toggleProfile, setToggleProfile] = useState(false)
 
@@ -20,6 +20,8 @@ const UserFriend = ({ friend }: UserFriendProps) => {
       setToggleProfile(!toggleProfile)
     }
   }
+
+  const isUserOnline = usersList.some((user) => user.id === friend.id)
 
   return (
     <li className={s.privateCard}>
@@ -45,28 +47,9 @@ const UserFriend = ({ friend }: UserFriendProps) => {
         </button>
       </div>
       <MiniProfileModal toggleProfile={toggleProfile} user={friend} />
-      <span
-        style={{
-          fontSize: "12px",
-          paddingTop: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: "5px",
-          position: "absolute",
-          top: "4px",
-          left: "10px",
-        }}
-      >
-        <span
-          style={{
-            display: "flex",
-            width: "8px",
-            borderRadius: "100%",
-            height: "8px",
-            backgroundColor: "green",
-          }}
-        />{" "}
-        Online
+      <span className={`${s.userConnection}`}>
+        <span className={`${isUserOnline ? s.on : s.off}`} />{" "}
+        {isUserOnline ? "Online" : "Offline"}
       </span>
     </li>
   )

@@ -25,7 +25,37 @@
       color: #261f5d;
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 0.9375rem;
+
+      .user {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3125rem;
+
+        .userConnection {
+          font-size: 12px;
+          padding-top: 0;
+          display: flex;
+          align-items: center;
+          gap: 0.3125rem;
+          padding: 0;
+
+          span {
+            display: flex;
+            border-radius: 100%;
+            width: 0.5rem;
+            height: 0.5rem;
+          }
+
+          .on {
+            background-color: green;
+          }
+
+          .off {
+            background-color: rgb(224, 64, 24);
+          }
+        }
+      }
 
       h1 {
         font-weight: 500;
