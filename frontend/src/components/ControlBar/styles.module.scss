@@ -41,6 +41,8 @@
     }
 
     .profileIcon {
+      position: relative;
+
       .openProfileTrigger {
         display: flex;
         align-items: center;
@@ -57,6 +59,153 @@
           width: 3.4375rem;
           height: 3.4375rem;
           background-color: rgb(22, 22, 22);
+        }
+      }
+
+      .profileOverlay {
+        background-color: rgb(22, 22, 22, 0.5);
+        width: 100%;
+        height: 100%;
+        inset: 0;
+        position: fixed;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+
+        &.activeModal {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .profileModal {
+          background-color: #fff;
+          border-radius: 8px;
+          width: 60%;
+          height: fit-content;
+          max-width: 25rem;
+          max-height: 40.625rem;
+          flex-direction: column;
+          position: relative;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateX(200%);
+          transition: 0.3s ease-in-out;
+
+          &.profileModalVisible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0%);
+          }
+
+          .closeModal {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+
+            button {
+              background-color: rgb(228, 23, 23);
+              border-radius: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 10px;
+              box-sizing: border-box;
+              transition: 0.2s ease-in-out;
+
+              &:hover {
+                background-color: rgb(245, 3, 3);
+              }
+            }
+          }
+
+          .profileForm {
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            padding: 1.875rem 1.25rem;
+            gap: 1.5rem;
+            height: 100%;
+            justify-content: space-between;
+
+            .profileFormWrapper {
+              display: flex;
+              flex-direction: column;
+              gap: 0.625rem;
+              align-items: center;
+              width: 100%;
+
+              .profilePic {
+                .profilePicInput {
+                  width: 9.375rem;
+                  height: 9.375rem;
+                  border-radius: 100%;
+                  position: relative;
+                  overflow: hidden;
+                  cursor: pointer;
+
+                  .profilePicOverlay {
+                    position: absolute;
+                    background-color: rgb(22, 22, 22, 0.5);
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: 0.2s ease-in-out;
+
+                    &:hover {
+                      background-color: rgb(22, 22, 22, 0.8);
+                    }
+                  }
+                }
+
+                input {
+                  display: none;
+                }
+              }
+
+              label {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                color: #261f5d;
+                font-weight: 500;
+                gap: 0.3125rem;
+              }
+
+              input {
+                border-radius: 8px;
+                height: 2.8125rem;
+                border: 0;
+                border: 1px solid #b4b3b3;
+                padding: 0.75rem;
+                color: #261f5d;
+              }
+            }
+
+            .updateProfileButton {
+              padding: 0.75rem;
+              background-color: #6263fb;
+              color: #fff;
+              font-size: 1.125rem;
+              text-align: center;
+              border-radius: 8px;
+              font-weight: 600;
+              transition: all 0.2s ease-in-out;
+
+              &:hover {
+                opacity: 0.8;
+              }
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: default;
+              }
+            }
+          }
         }
       }
     }
