@@ -1,4 +1,5 @@
 import { Express } from "express"
+import { upload } from "../../app"
 import verifyJwt from "../middleware/verifyJwt"
 import RegisterNewUserController from "../controllers/registerNewUserController"
 import ChangeUserPasswordControler from "../controllers/changeUserPasswordController"
@@ -8,6 +9,7 @@ import FetchUserController from "../controllers/fetchUserController"
 import InsertToFriendListController from "../controllers/InsertToFriendListController"
 import GetUserFriendListController from "../controllers/getUserFriendListController"
 import RemoveFromFriendListController from "../controllers/removeFromFriendListController"
+import UpdateUserProfileController from "../controllers/updateUserProfileController"
 
 export default function userRoutes(app: Express) {
   app.post("/register", RegisterNewUserController.handle)
@@ -27,4 +29,10 @@ export default function userRoutes(app: Express) {
   app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
 
   app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
+
+  app.post(
+    "/upload-profile-pic",
+    [verifyJwt, upload.single("files")],
+    UpdateUserProfileController.handleUpload
+  )
 }

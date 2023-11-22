@@ -6,9 +6,22 @@ import WebSocketConnection from "./websocket"
 import userRoutes from "./api/routes/userRoutes"
 import cors from "cors"
 import Redis from "ioredis"
+import cloudinary from "cloudinary"
+import multer from "multer"
 import "dotenv/config"
 
 export const app: Express = express()
+
+export const upload = multer({ dest: "temp/" })
+
+cloudinary.v2.config({
+  secure: true,
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+})
+
+export const cloudinaryInit = cloudinary.v2
 
 app.use(express.json())
 app.use(cors())
