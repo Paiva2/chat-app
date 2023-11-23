@@ -24,15 +24,17 @@ export default function userRoutes(app: Express) {
 
   app.get("/profile", [verifyJwt], GetUserProfileController.handle)
 
+  app.patch("/profile", [verifyJwt], UpdateUserProfileController.handle)
+
   app.get("/profile/friend-list", [verifyJwt], GetUserFriendListController.handle)
-
-  app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
-
-  app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
 
   app.post(
     "/upload-profile-pic",
     [verifyJwt, upload.single("files")],
     UpdateUserProfileController.handleUpload
   )
+
+  app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
+
+  app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
 }

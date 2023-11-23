@@ -60,4 +60,35 @@ export default class UserModel implements UserInterface {
       return null
     }
   }
+
+  async dynamicUpdate(
+    userId: string,
+    infosToUpdate: {
+      username?: string | undefined
+      profileImage?: string | undefined
+      password?: string | undefined
+    }
+  ): Promise<User> {
+    const getCurrentInformations = await this.userRepository.findOneBy({
+      id: userId,
+    })
+
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+
+    let updatedUserSchema = getCurrentInformations ?? ({} as User)
+
+    for (let field of fieldsToUpdate) {
+      const fieldToChange = field as keyof typeof infosToUpdate
+
+      updatedUserSchema = {
+        ...getCurrentInformations,
+        ...updatedUserSchema,
+        [field]: infosToUpdate[fieldToChange],
+      }
+    }
+
+    const makeUpdate = await this.userRepository.save(updatedUserSchema)
+
+    return makeUpdate
+  }
 }

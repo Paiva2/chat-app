@@ -1,6 +1,9 @@
 import { Request, Response } from "express"
 import { cloudinaryInit } from "../../app"
+import { ErrorHandling } from "../@types/types"
 import fs from "fs"
+import Factory from "./factory"
+import decodeJwt from "../utils/decodeJwt"
 
 export default class UpdateUserProfileController {
   public static async handleUpload(req: Request, res: Response) {
@@ -25,6 +28,29 @@ export default class UpdateUserProfileController {
       return res.status(201).send({ url: uploadResult.url })
     } catch (error) {
       return res.status(500).send({ message: "Error while creating file URL..." })
+    }
+  }
+
+  public static async handle(req: Request, res: Response) {
+    const { infosToUpdate } = req.body
+
+    const authToken = decodeJwt(req.headers.authorization as string)
+
+    const { updateUserProfileService } = Factory.exec()
+
+    try {
+      await updateUserProfileService.exec({
+        infosToUpdate,
+        userId: authToken.data.id,
+      })
+
+      return res.status(204).send({ message: "Update success." })
+    } catch (e) {
+      const error = e as ErrorHandling
+
+      console.log(e)
+
+      return res.status(error.status).send({ message: error.error })
     }
   }
 }

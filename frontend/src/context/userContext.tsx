@@ -51,6 +51,21 @@ const UserContext = ({ children }: UserContextProviderProps) => {
   const userAuthToken = Cookies.get("chatapp-token")
 
   useQuery({
+    queryKey: ["getUserProfile"],
+    queryFn: async () => {
+      const getProfileRes = await getUserProfile(userAuthToken as string)
+
+      setUserProfile({
+        ...getProfileRes,
+        token: userAuthToken,
+      })
+
+      return getProfileRes
+    },
+    enabled: Boolean(userAuthToken),
+  })
+
+  useQuery({
     queryKey: ["getUserFriendList"],
     queryFn: async () => {
       const { data } = await api.get("/profile/friend-list", {
@@ -66,39 +81,23 @@ const UserContext = ({ children }: UserContextProviderProps) => {
     enabled: Boolean(userAuthToken),
   })
 
-  function handleWithUserAuthInformations(userAuthToken: string) {
-    // eslint-disable-next-line
-    ;(async () => {
-      const getProfile = (await getUserProfile(
-        userAuthToken as string
-      )) as UserProfileSchema
-
-      setUserProfile({
-        ...getProfile,
-        token: userAuthToken,
-      })
-    })()
-  }
-
   function handleWithUserNoAuthInformations() {
-    const userNoAuthListStorage = localStorage.getItem("chat-app-FL")
+    const userNoAuthFriendList = localStorage.getItem("chat-app-FL")
 
-    if (userNoAuthListStorage) {
-      const parseUserList = JSON.parse(userNoAuthListStorage)
+    if (userNoAuthFriendList) {
+      const parseUserFriendList = JSON.parse(userNoAuthFriendList)
 
-      if (parseUserList) {
-        setUserFriendList(parseUserList)
+      if (parseUserFriendList) {
+        setUserFriendList(parseUserFriendList)
       }
     }
   }
 
   useLayoutEffect(() => {
-    if (userAuthToken) {
-      handleWithUserAuthInformations(userAuthToken)
-    } else {
+    if (!userAuthToken) {
       handleWithUserNoAuthInformations()
     }
-  }, [window.location.href])
+  }, [window.location.href, userAuthToken])
 
   return (
     <UserContextProvider.Provider

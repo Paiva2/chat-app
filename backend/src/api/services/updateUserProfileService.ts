@@ -37,7 +37,7 @@ export default class UpdateUserProfileService {
       }
     }
 
-    if (infosToUpdate.password) {
+    if (infosToUpdate?.password) {
       if (infosToUpdate.newPasswordConfirmation !== infosToUpdate.password) {
         throw {
           status: 403,

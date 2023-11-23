@@ -8,11 +8,14 @@ import GetUserProfileService from "../../services/getUserProfileService"
 import InsertToFriendListService from "../../services/insertToFriendListService"
 import RegisterNewUserService from "../../services/registerNewUserService"
 import RemoveFromFriendListService from "../../services/removeFromFriendListService"
+import UpdateUserProfileService from "../../services/updateUserProfileService"
 
 export default class Factory {
   public static exec() {
     const userModel = new UserModel()
     const userFriendModel = new UserFriendModel()
+
+    const updateUserProfileService = new UpdateUserProfileService(userModel)
 
     const authUserService = new AuthUserService(userModel)
 
@@ -40,6 +43,7 @@ export default class Factory {
     )
 
     return {
+      updateUserProfileService,
       authUserService,
       changeUserPasswordService,
       getUserProfileService,
