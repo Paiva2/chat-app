@@ -47,4 +47,37 @@ export default class InMemoryUser implements UserInterface {
 
     return findUser
   }
+
+  async dynamicUpdate(
+    userId: string,
+    infosToUpdate: {
+      username?: string | undefined
+      profileImage?: string | undefined
+      password?: string | undefined
+    }
+  ): Promise<User> {
+    const getUser = this.users.find((user) => user.id === userId)!
+
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+
+    let updatedUser = {} as typeof getUser
+
+    for (let field of fieldsToUpdate) {
+      const fieldToChange = field as keyof typeof infosToUpdate
+
+      updatedUser = {
+        ...getUser,
+        ...updatedUser,
+        [field]: infosToUpdate[fieldToChange],
+      }
+    }
+
+    this.users.forEach((user) => {
+      if (user.id === userId) {
+        user = updatedUser
+      }
+    })
+
+    return updatedUser
+  }
 }
