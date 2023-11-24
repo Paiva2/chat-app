@@ -12,17 +12,17 @@ import s from "./styles.module.css"
 
 interface MiniProfileModalProps {
   user: { id: string; username: string; auth?: boolean }
-  toggleProfile: boolean
+  toggleProfile?: boolean
 }
 
 const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
   const {
     myId,
-    openedProfiles,
+    openedProfile,
     whoIsReceivingPrivate,
     privateMessagesList,
     setPrivateMessages,
-    setOpenedProfiles,
+    setOpenedProfile,
     setActiveMenu,
     setWhoIsReceivingPrivate,
   } = useContext(ChatContextProvider)
@@ -34,15 +34,28 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
 
   const queryClient = useQueryClient()
 
-  const defaultImage = "https://i.imgur.com/jOkraDo.png"
+  const defaultImage = "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
+
+  const { data: clickedUserData } = useQuery({
+    queryKey: ["getClickedUserOnListData"],
+    queryFn: async () => {
+      const { data } = await api.get(`/user/${user.id}`)
+
+      return data as FetchUserSchema | null
+    },
+    enabled:
+      Boolean(user.id) && user.auth && user.id !== myId?.id && openUserProfile,
+    retry: false,
+    refetchOnMount: true,
+  })
 
   useEffect(() => {
-    if (user?.id === openedProfiles) {
+    if (user?.id === openedProfile) {
       setOpenUserProfile(!openUserProfile)
     } else {
       setOpenUserProfile(false)
     }
-  }, [openedProfiles, toggleProfile])
+  }, [openedProfile, toggleProfile])
 
   const handleOpenPrivateMessage = () => {
     setActiveMenu("Messages")
@@ -69,20 +82,8 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
       setPrivateMessages(checkIfUserHasConversationsPreviously[0].data)
     }
 
-    setOpenedProfiles("")
+    setOpenedProfile("")
   }
-
-  const { data: clickedUserData } = useQuery({
-    queryKey: ["getClickedUserOnListData"],
-    queryFn: async () => {
-      const { data } = await api.get(`/user/${user.id}`)
-
-      return data as FetchUserSchema | null
-    },
-    enabled: Boolean(user.id) && user.auth && user.id !== myId?.id,
-    retry: false,
-    refetchOnMount: true,
-  })
 
   const insertNewFriend = useMutation({
     mutationKey: ["friendInsertion"],
@@ -278,7 +279,7 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
         <span className={s.userName}>{user.username}</span>
         <button
           onClick={() => {
-            setOpenedProfiles("")
+            setOpenedProfile("")
             setOpenUserProfile(false)
           }}
           className={s.closeProfileButton}

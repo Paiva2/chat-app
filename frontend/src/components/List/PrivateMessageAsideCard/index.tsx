@@ -57,12 +57,11 @@ const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
       to: {
         id: getIdToSend,
         username: usernameToSend,
-        profilePicture: userData?.profileImage ?? "https://i.imgur.com/jOkraDo.png",
+        profilePicture:
+          userData?.profileImage ?? "https://i.postimg.cc/hjvSCcM3/jOkraDo.png",
       },
     })
   }
-
-  console.log(userData)
 
   return connection.data.map((msg, index) => {
     const userSendingMessage =
@@ -84,7 +83,10 @@ const PrivateMessageAsideCard = ({ connection }: PrivateMessageProps) => {
               <div className={s.messageInformations}>
                 <div className={s.leftSideCard}>
                   <img
-                    src={userData?.profileImage ?? "https://i.imgur.com/jOkraDo.png"}
+                    src={
+                      userData?.profileImage ??
+                      "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
+                    }
                     className={s.userImage}
                   />
                   <span className={s.userInfos}>

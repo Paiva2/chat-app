@@ -7,13 +7,13 @@ interface UserOnListProps {
 }
 
 const UserOnList = ({ user }: UserOnListProps) => {
-  const { myId, setOpenedProfiles } = useContext(ChatContextProvider)
+  const { myId, setOpenedProfile } = useContext(ChatContextProvider)
 
   const [toggleProfile, setToggleProfile] = useState(false)
 
   const handleOpenUserProfile = (userId: string) => {
     if (userId !== myId?.id) {
-      setOpenedProfiles(userId)
+      setOpenedProfile(userId)
       setToggleProfile(!toggleProfile)
     }
   }

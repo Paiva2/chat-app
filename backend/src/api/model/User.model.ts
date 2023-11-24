@@ -11,7 +11,7 @@ export default class UserModel implements UserInterface {
     this.user.username = username
     this.user.email = email
     this.user.password = password
-    this.user.profileImage = "https://i.imgur.com/jOkraDo.png"
+    this.user.profileImage = "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
 
     await this.userRepository.save(this.user)
 

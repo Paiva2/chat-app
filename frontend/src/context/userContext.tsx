@@ -5,14 +5,11 @@ import React, {
   SetStateAction,
   useLayoutEffect,
 } from "react"
-import { getUserProfile } from "../utils/getUserProfile"
 import { UserFriend, UserProfileSchema } from "../@types/types"
-/* import { useMutation } from "@tanstack/react-query"
- */ import Cookies from "js-cookie"
+import Cookies from "js-cookie"
 import { useQuery } from "@tanstack/react-query"
 import api from "../lib/api"
-/* import api from "../lib/api"
- */
+
 interface UserContextProviderProps {
   children: React.ReactNode
 }
@@ -53,14 +50,18 @@ const UserContext = ({ children }: UserContextProviderProps) => {
   useQuery({
     queryKey: ["getUserProfile"],
     queryFn: async () => {
-      const getProfileRes = await getUserProfile(userAuthToken as string)
+      const getProfileRes = await api.get("/profile", {
+        headers: {
+          Authorization: `Bearer ${userAuthToken}`,
+        },
+      })
 
       setUserProfile({
-        ...getProfileRes,
+        ...getProfileRes.data,
         token: userAuthToken,
       })
 
-      return getProfileRes
+      return getProfileRes.data
     },
     enabled: Boolean(userAuthToken),
   })

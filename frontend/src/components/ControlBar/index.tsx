@@ -14,7 +14,7 @@ const ControlBar = () => {
     setPrivateMessages,
     setActiveMenu,
     setWhoIsReceivingPrivate,
-    setOpenedProfiles,
+    setOpenedProfile,
   } = useContext(ChatContextProvider)
 
   const { openLoginModal, userProfile, setOpenLoginModal } =
@@ -34,7 +34,7 @@ const ControlBar = () => {
       },
     })
 
-    setOpenedProfiles("")
+    setOpenedProfile("")
   }
 
   useEffect(() => {
@@ -77,8 +77,8 @@ const ControlBar = () => {
                 <img
                   src={
                     userProfile?.profileImage
-                      ? userProfile?.profileImage
-                      : "https://i.imgur.com/jOkraDo.png"
+                      ? userProfile.profileImage
+                      : "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
                   }
                   alt="Profile Picture"
                   className={s.icon}

@@ -32,8 +32,8 @@ interface ChatContextInterface {
 
   ws: WebSocket
 
-  openedProfiles: string
-  setOpenedProfiles: Dispatch<SetStateAction<string>>
+  openedProfile: string
+  setOpenedProfile: Dispatch<SetStateAction<string>>
 
   activeMenu: string
   setActiveMenu: Dispatch<SetStateAction<string>>
@@ -61,7 +61,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   const [messages, setMessages] = useState<WebSocketPayload[]>([])
   const [privateMessages, setPrivateMessages] = useState<WebSocketPayload[]>([])
 
-  const [openedProfiles, setOpenedProfiles] = useState("")
+  const [openedProfile, setOpenedProfile] = useState("")
   const [activeMenu, setActiveMenu] = useState("Home")
 
   const [usersList, setUsersList] = useState<UserOnListSchema[]>([])
@@ -210,7 +210,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         myId,
         usersList,
         ws,
-        openedProfiles,
+        openedProfile,
         activeMenu,
         privateMessages,
         privateMessagesList,
@@ -218,7 +218,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         setPrivateMessages,
         setWhoIsReceivingPrivate,
         setActiveMenu,
-        setOpenedProfiles,
+        setOpenedProfile,
         setMessages,
         setMyId,
         setUsersList,

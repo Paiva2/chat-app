@@ -32,7 +32,7 @@ interface PrivateMessageRequest {
   message: string
 }
 
-const defaultImg = "https://i.imgur.com/jOkraDo.png"
+const defaultImg = "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
 
 export default class WebSocketConnection {
   private server
@@ -142,7 +142,18 @@ export default class WebSocketConnection {
               }
             })
 
-            this.newUserConnection(ws.id, ws.username, ws)
+            const checkIfUserIsAlreadyConnected = this.connectedUsers.find(
+              (user) => user.id === ws.id
+            )
+
+            if (!checkIfUserIsAlreadyConnected) {
+              this.newUserConnection(ws.id, ws.username, ws)
+            } else {
+              checkIfUserIsAlreadyConnected.id = ws.id
+              checkIfUserIsAlreadyConnected.username = ws.username
+
+              this.getConnectedUsers()
+            }
           }
 
           default:

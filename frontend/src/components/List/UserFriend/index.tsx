@@ -10,13 +10,13 @@ interface UserFriendProps {
 }
 
 const UserFriend = ({ friend }: UserFriendProps) => {
-  const { myId, setOpenedProfiles, usersList } = useContext(ChatContextProvider)
+  const { myId, setOpenedProfile, usersList } = useContext(ChatContextProvider)
 
   const [toggleProfile, setToggleProfile] = useState(false)
 
   const handleOpenUserProfile = (userId: string) => {
     if (userId !== myId?.id) {
-      setOpenedProfiles(userId)
+      setOpenedProfile(userId)
       setToggleProfile(!toggleProfile)
     }
   }
@@ -29,7 +29,9 @@ const UserFriend = ({ friend }: UserFriendProps) => {
         <div className={s.userInformations}>
           <div className={s.cardLeftSide}>
             <img
-              src={friend?.profileImage ?? "https://i.imgur.com/jOkraDo.png"}
+              src={
+                friend?.profileImage ?? "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
+              }
               className={s.userImage}
             />
             <span className={s.userInfos}>

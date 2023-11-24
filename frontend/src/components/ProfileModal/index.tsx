@@ -9,10 +9,13 @@ import {
 } from "react"
 import { User2, X } from "lucide-react"
 import { UserContextProvider } from "../../context/userContext"
-import { useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import s from "./styles.module.css"
 import api from "../../lib/api"
+import { toast } from "../../utils/toast"
+import { getUserProfile } from "../../utils/getUserProfile"
 import ws from "../../lib/socket.config"
+import Cookies from "js-cookie"
 
 interface ProfileModalProps {
   openProfileModal: boolean
@@ -43,7 +46,6 @@ const ProfileModal = ({
 
   const [formErrors, setFormErrors] = useState<ErrorInput>({} as ErrorInput)
   const [updateSubmitting, setUpdateSubmitting] = useState(false)
-  const [updateLoading, setUpdateLoading] = useState(false)
   const [formFields, setFormFields] = useState(defaultValues)
 
   const queryClient = useQueryClient()
@@ -95,6 +97,46 @@ const ProfileModal = ({
     setFormErrors(errors)
   }
 
+  const submitProfileUpdateWithPic = useMutation({
+    mutationKey: ["updateProfileWithPic"],
+    mutationFn: ({
+      newUserData,
+      uploadUrl,
+    }: {
+      newUserData: typeof formFields
+      uploadUrl: string
+    }) => {
+      return api.patch(
+        "/profile",
+        {
+          infosToUpdate: {
+            ...newUserData,
+            profileImage: uploadUrl,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userProfile?.token}`,
+          },
+        }
+      )
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getUserProfile"],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ["getClickedUserOnListData"],
+      })
+
+      toast("success", "Profile updated.")
+
+      handleWithOpenConnectionWs()
+    },
+  })
+
   async function updateProfileWithFile(newUserData: typeof formFields) {
     const formData = new FormData()
 
@@ -107,16 +149,45 @@ const ProfileModal = ({
       },
     })
 
-    // TODO: TOAST ON SUCCESS OR ERRORS
-
     if (uploadUrl.status === 201) {
-      const updateProfile = await api.patch(
+      submitProfileUpdateWithPic.mutate({
+        newUserData,
+        uploadUrl: uploadUrl.data.url,
+      })
+    }
+  }
+
+  async function handleWithOpenConnectionWs() {
+    const authToken = Cookies.get("chatapp-token")
+
+    let determineUser: { id: string; username: string } | null = null
+
+    if (!authToken) {
+      determineUser = null
+    } else {
+      const userData = await getUserProfile(authToken)
+
+      determineUser = {
+        id: userData.id,
+        username: userData.username,
+      }
+    }
+
+    ws.send(
+      JSON.stringify({
+        action: "personal-user-id",
+        data: determineUser,
+      })
+    )
+  }
+
+  const updateProfileNoFile = useMutation({
+    mutationKey: ["updateProfileWithoutFile"],
+    mutationFn: (newUserData: typeof formFields) => {
+      return api.patch(
         "/profile",
         {
-          infosToUpdate: {
-            ...newUserData,
-            profileImage: uploadUrl.data.url,
-          },
+          infosToUpdate: newUserData,
         },
         {
           headers: {
@@ -124,37 +195,25 @@ const ProfileModal = ({
           },
         }
       )
+    },
 
-      if (updateProfile.status === 201) {
-        console.log("Sucess")
-      }
-    }
-  }
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getUserProfile"],
+      })
 
-  async function updateProfileWithoutFile(newUserData: typeof formFields) {
-    delete newUserData.profileImage
+      queryClient.invalidateQueries({
+        queryKey: ["getClickedUserOnListData"],
+      })
 
-    const updateProfileNoPicture = await api.patch(
-      "/profile",
-      {
-        infosToUpdate: newUserData,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userProfile?.token}`,
-        },
-      }
-    )
+      toast("success", "Profile updated.")
 
-    if (updateProfileNoPicture.status === 204) {
-      console.log("Sucess")
-    }
-  }
+      handleWithOpenConnectionWs()
+    },
+  })
 
   async function handleSendUpdateForm() {
     const newUserData = formFields
-
-    setUpdateLoading(true)
 
     if (newUserData.username === userProfile?.email) {
       delete newUserData.username
@@ -170,16 +229,14 @@ const ProfileModal = ({
       if (profileImage) {
         updateProfileWithFile(newUserData)
       } else {
-        updateProfileWithoutFile(newUserData)
-      }
+        delete newUserData.profileImage
 
-      queryClient.invalidateQueries({ queryKey: ["getUserProfile"] })
+        updateProfileNoFile.mutate(newUserData)
+      }
     } catch (e) {
       console.log(e)
     } finally {
       setUpdateSubmitting(false)
-
-      setUpdateLoading(false)
     }
   }
 
@@ -197,7 +254,7 @@ const ProfileModal = ({
     if (!getErrors.length && updateSubmitting) {
       handleSendUpdateForm()
     }
-  }, [updateSubmitting])
+  }, [formErrors])
 
   let displayimage = ""
 
@@ -206,7 +263,7 @@ const ProfileModal = ({
   } else if (!profileImage && userProfile?.profileImage) {
     displayimage = userProfile?.profileImage
   } else {
-    displayimage = "https://i.imgur.com/jOkraDo.png"
+    displayimage = "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
   }
 
   return (
@@ -295,7 +352,7 @@ const ProfileModal = ({
 
           <button
             disabled={
-              (!formFields.password && !formFields.username) || updateLoading
+              updateSubmitting || (!formFields.password && !formFields.username)
             }
             className={s.updateProfileButton}
             type="submit"
