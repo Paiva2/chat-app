@@ -1,14 +1,14 @@
 import UserModel from "../../model/User.model"
 import UserFriendModel from "../../model/UserFriend.model"
-import AuthUserService from "../../services/authUserService"
-import ChangeUserPasswordService from "../../services/changeUserPasswordService"
-import FetchUserService from "../../services/fetchUserService"
-import GetUserFriendListService from "../../services/getUserFriendListService"
-import GetUserProfileService from "../../services/getUserProfileService"
-import InsertToFriendListService from "../../services/insertToFriendListService"
-import RegisterNewUserService from "../../services/registerNewUserService"
-import RemoveFromFriendListService from "../../services/removeFromFriendListService"
-import UpdateUserProfileService from "../../services/updateUserProfileService"
+import AuthUserService from "../../services/user/authUserService"
+import ChangeUserPasswordService from "../../services/user/changeUserPasswordService"
+import FetchUserService from "../../services/user/fetchUserService"
+import GetUserFriendListService from "../../services/userFriendList/getUserFriendListService"
+import GetUserProfileService from "../../services/user/getUserProfileService"
+import InsertToFriendListService from "../../services/userFriendList/insertToFriendListService"
+import RegisterNewUserService from "../../services/user/registerNewUserService"
+import RemoveFromFriendListService from "../../services/userFriendList/removeFromFriendListService"
+import UpdateUserProfileService from "../../services/user/updateUserProfileService"
 
 export default class Factory {
   public static exec() {

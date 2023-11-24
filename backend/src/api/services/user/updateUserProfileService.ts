@@ -1,6 +1,6 @@
-import { User } from "../@types/types"
+import { User } from "../../@types/types"
 import { hash } from "bcryptjs"
-import UserInterface from "../interfaces/userInterface"
+import UserInterface from "../../interfaces/userInterface"
 
 type UpdateUserProfileServiceRequest = {
   userId: string

@@ -1,5 +1,5 @@
-import { User } from "../@types/types"
-import UserInterface from "../interfaces/userInterface"
+import { User } from "../../@types/types"
+import UserInterface from "../../interfaces/userInterface"
 
 type FetchUserServiceRequest = {
   userId: string

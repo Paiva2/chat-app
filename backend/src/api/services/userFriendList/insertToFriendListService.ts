@@ -1,6 +1,6 @@
-import { UserFriend } from "../@types/types"
-import { UserFriendInterface } from "../interfaces/userFriendInterface"
-import UserInterface from "../interfaces/userInterface"
+import { UserFriend } from "../../@types/types"
+import { UserFriendInterface } from "../../interfaces/userFriendInterface"
+import UserInterface from "../../interfaces/userInterface"
 
 type InsertToFriendListServiceRequest = {
   userId: string

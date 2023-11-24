@@ -8,6 +8,7 @@ import {
   JoinTable,
 } from "typeorm"
 import { UserFriendEntity } from "./UserFriend.entity"
+import { ConnectionsEntity } from "./Connections.entity"
 
 @Entity({ name: "user" })
 @Unique("my_unique_constraint", ["email"])

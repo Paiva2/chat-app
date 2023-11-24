@@ -1,6 +1,6 @@
 import InMemoryUser from "../../in-memory/inMemoryUser"
-import ChangeUserPasswordService from "../changeUserPasswordService"
-import RegisterNewUserService from "../registerNewUserService"
+import ChangeUserPasswordService from "../user/changeUserPasswordService"
+import RegisterNewUserService from "../user/registerNewUserService"
 import { compare } from "bcryptjs"
 
 let inMemoryUser: InMemoryUser

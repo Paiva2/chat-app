@@ -1,5 +1,5 @@
-import { User } from "../@types/types"
-import UserInterface from "../interfaces/userInterface"
+import { User } from "../../@types/types"
+import UserInterface from "../../interfaces/userInterface"
 import { compare } from "bcryptjs"
 
 type AuthUserServiceRequest = {

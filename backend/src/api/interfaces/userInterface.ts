@@ -16,4 +16,6 @@ export default interface UserInterface {
       password?: string
     }
   ): Promise<User>
+
+  findByConnection(connections: string[]): Promise<User[] | null>
 }

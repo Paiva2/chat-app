@@ -1,7 +1,7 @@
 import InMemoryUser from "../../in-memory/inMemoryUser"
-import RegisterNewUserService from "../registerNewUserService"
+import RegisterNewUserService from "../user/registerNewUserService"
 import { compare } from "bcryptjs"
-import UpdateUserProfileService from "../updateUserProfileService"
+import UpdateUserProfileService from "../user/updateUserProfileService"
 import { User } from "../../@types/types"
 
 let inMemoryUser: InMemoryUser

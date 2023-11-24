@@ -170,6 +170,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
           handleWithPrivateMessagesDisplaying(dataParsed)
 
+          console.log(copyPrivateMsgList)
+
           break
         }
 

@@ -20,3 +20,26 @@ export interface ErrorHandling {
   status: number
   error: string
 }
+
+export interface Connection {
+  id: string
+  connectionOne: string
+  connectionTwo: string
+  createdAt: Date
+  updatedAt: Date
+  messages?: Message[]
+}
+
+export interface Message {
+  id: string
+  message: string
+  sendToId: string
+  sendToUsername: string
+  time: Date
+  type: string
+  userId: string
+  userProfilePic: string
+  username: string
+  createdAt: Date
+  fkConnections: string
+}

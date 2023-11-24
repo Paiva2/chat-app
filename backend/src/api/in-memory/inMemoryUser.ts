@@ -80,4 +80,14 @@ export default class InMemoryUser implements UserInterface {
 
     return updatedUser
   }
+
+  async findByConnection(connections: string[]): Promise<User[] | null> {
+    const doesConnectionIncludeAnyAuthUser = this.users.filter((user) =>
+      connections.includes(user.id)
+    )
+
+    if (!doesConnectionIncludeAnyAuthUser) return null
+
+    return doesConnectionIncludeAnyAuthUser
+  }
 }

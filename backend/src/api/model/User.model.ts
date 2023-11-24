@@ -91,4 +91,18 @@ export default class UserModel implements UserInterface {
 
     return makeUpdate
   }
+
+  async findByConnection(connections: string[]): Promise<User[] | null> {
+    try {
+      const getUser = await this.userRepository.find({
+        where: [{ id: connections[0] }, { id: connections[1] }],
+      })
+
+      if (!getUser) return null
+
+      return getUser
+    } catch {
+      return null
+    }
+  }
 }
