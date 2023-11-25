@@ -1,12 +1,13 @@
 .privateCard {
   background-color: #fff;
   border-bottom: 2px solid #ededef;
-  transition: 0.2s ease-in-out;
   border-radius: 8px;
+  position: relative;
+  transition: all 0.1s ease-in-out;
 
   button {
     display: flex;
-    padding: 12px;
+    padding: 0.75rem;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -45,8 +46,8 @@
       }
 
       .userImage {
-        width: 35px;
-        height: 35px;
+        width: 2.1875rem;
+        height: 2.1875rem;
         border-radius: 100%;
       }
 
@@ -67,7 +68,52 @@
     }
   }
 
+  .miniMenuList {
+    position: absolute;
+    top: 75px;
+    width: 100%;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    gap: 0.625rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff;
+    color: #696391;
+    padding: 0.75rem 0px;
+    box-sizing: border-box;
+    box-shadow: -1px 5px 17px -5px rgba(186, 181, 181, 0.26);
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.4);
+    transition: all 0.2s ease-in-out;
+
+    &.activeMiniMenu {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    span {
+      button {
+        all: unset;
+        cursor: pointer;
+        width: 100%;
+        font-size: 0.9375rem;
+        box-sizing: border-box;
+        padding: 0.9375rem 20px;
+        font-weight: 500;
+
+        &:hover {
+          background-color: #f6f7fb;
+        }
+      }
+    }
+  }
+
   &:hover {
-    transform: scale(1.1);
+    background-color: #f6f7fb;
   }
 }

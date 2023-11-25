@@ -55,6 +55,9 @@ interface ChatContextInterface {
 
   multipleConnectionDetected: boolean
   setMultipleConnectionDetected: Dispatch<SetStateAction<boolean>>
+
+  openedMenuFromMessages: number | null
+  setOpenenedMenuFromMessages: Dispatch<SetStateAction<number | null>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -69,6 +72,9 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
   const [openedProfile, setOpenedProfile] = useState("")
   const [activeMenu, setActiveMenu] = useState("Home")
+  const [openedMenuFromMessages, setOpenenedMenuFromMessages] = useState<
+    number | null
+  >(null)
 
   const [usersList, setUsersList] = useState<UserOnListSchema[]>([])
   const [privateMessagesList, setPrivateMessagesList] = useState<
@@ -293,6 +299,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         privateMessagesList,
         whoIsReceivingPrivate,
         multipleConnectionDetected,
+        openedMenuFromMessages,
+        setOpenenedMenuFromMessages,
         setMultipleConnectionDetected,
         setPrivateMessages,
         setWhoIsReceivingPrivate,

@@ -1,11 +1,11 @@
 import { Fragment, useContext } from "react"
-import s from "./styles.module.css"
 import { ChatContextProvider } from "../../context/chatContext"
+import { UserContextProvider } from "../../context/userContext"
 import UserOnList from "./UserOnList"
 import PrivateMessageAsideCard from "./PrivateMessageAsideCard"
 import EmptyListPlaceholder from "../EmptyListPlaceholder"
 import UserFriend from "./UserFriend"
-import { UserContextProvider } from "../../context/userContext"
+import s from "./styles.module.css"
 
 const List = () => {
   const { usersList, myId, activeMenu, privateMessagesList } =
@@ -46,7 +46,11 @@ const List = () => {
                 <h1 className={s.roomName}>Messages</h1>
                 {privateMessagesList?.map((connection, idx) => {
                   return (
-                    <PrivateMessageAsideCard key={idx} connection={connection} />
+                    <PrivateMessageAsideCard
+                      key={idx}
+                      id={idx}
+                      connection={connection}
+                    />
                   )
                 })}
               </Fragment>
