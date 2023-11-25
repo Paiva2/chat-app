@@ -30,4 +30,12 @@ export default class InMemoryConnections implements ConnectionsInterface {
 
     return findConnectionWithThoseTwoIds
   }
+
+  async findUserConnections(userId: string): Promise<Connection[]> {
+    const userConnections = this.connections.filter(
+      (conn) => conn.connectionOne === userId || conn.connectionTwo === userId
+    )
+
+    return userConnections
+  }
 }

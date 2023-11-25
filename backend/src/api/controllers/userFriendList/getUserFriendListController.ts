@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ErrorHandling } from "../@types/types"
-import decodeJwt from "../utils/decodeJwt"
-import Factory from "./factory"
+import { ErrorHandling } from "../../@types/types"
+import decodeJwt from "../../utils/decodeJwt"
+import Factory from "../factory"
 
 export default class GetUserFriendListController {
   static async handle(req: Request, res: Response) {

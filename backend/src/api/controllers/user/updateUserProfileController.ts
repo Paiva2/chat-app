@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { cloudinaryInit } from "../../app"
-import { ErrorHandling } from "../@types/types"
+import { cloudinaryInit } from "../../../app"
+import { ErrorHandling } from "../../@types/types"
 import fs from "fs"
-import Factory from "./factory"
-import decodeJwt from "../utils/decodeJwt"
+import Factory from "../factory"
+import decodeJwt from "../../utils/decodeJwt"
 
 export default class UpdateUserProfileController {
   public static async handleUpload(req: Request, res: Response) {

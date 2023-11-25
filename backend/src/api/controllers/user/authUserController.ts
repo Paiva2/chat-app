@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ErrorHandling } from "../@types/types"
+import { ErrorHandling } from "../../@types/types"
 import jwt from "jsonwebtoken"
-import Factory from "./factory"
+import Factory from "../factory"
 
 export default class AuthUserController {
   static async handle(req: Request, res: Response) {

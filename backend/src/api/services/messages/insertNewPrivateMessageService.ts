@@ -17,6 +17,13 @@ export default class InsertNewPrivateMessageService {
   async exec({
     newMessage,
   }: InsertNewPrivateMessageServiceRequest): Promise<InsertNewPrivateMessageServiceResponse> {
+    if (!Object.keys(newMessage).length) {
+      throw {
+        status: 409,
+        error: "Invalid new private message format.",
+      }
+    }
+
     const getAnConnectionWithThoseIds =
       await this.connectionsInterface.findConnections([
         newMessage.sendToId,

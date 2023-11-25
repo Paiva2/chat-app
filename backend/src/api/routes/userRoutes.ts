@@ -1,17 +1,18 @@
 import { Express } from "express"
 import { upload } from "../../app"
 import verifyJwt from "../middleware/verifyJwt"
-import RegisterNewUserController from "../controllers/registerNewUserController"
-import ChangeUserPasswordControler from "../controllers/changeUserPasswordController"
-import AuthUserController from "../controllers/authUserController"
-import GetUserProfileController from "../controllers/getUserProfileController"
-import FetchUserController from "../controllers/fetchUserController"
-import InsertToFriendListController from "../controllers/InsertToFriendListController"
-import GetUserFriendListController from "../controllers/getUserFriendListController"
-import RemoveFromFriendListController from "../controllers/removeFromFriendListController"
-import UpdateUserProfileController from "../controllers/updateUserProfileController"
-import InsertNewPrivateMessageController from "../controllers/insertNewPrivateMessageController"
-import HandleConnectionController from "../controllers/handleConnectionController"
+import AuthUserController from "../controllers/user/authUserController"
+import HandleConnectionController from "../controllers/connections/handleConnectionController"
+import InsertNewPrivateMessageController from "../controllers/messages/insertNewPrivateMessageController"
+import ChangeUserPasswordControler from "../controllers/user/changeUserPasswordController"
+import FetchUserController from "../controllers/user/fetchUserController"
+import GetUserProfileController from "../controllers/user/getUserProfileController"
+import RegisterNewUserController from "../controllers/user/registerNewUserController"
+import UpdateUserProfileController from "../controllers/user/updateUserProfileController"
+import InsertToFriendListController from "../controllers/userFriendList/InsertToFriendListController"
+import GetUserFriendListController from "../controllers/userFriendList/getUserFriendListController"
+import RemoveFromFriendListController from "../controllers/userFriendList/removeFromFriendListController"
+import GetUserMessagesController from "../controllers/messages/getUserMessagesController"
 
 export default function userRoutes(app: Express) {
   app.post("/register", RegisterNewUserController.handle)
@@ -43,4 +44,6 @@ export default function userRoutes(app: Express) {
   app.post("/private-message", [verifyJwt], InsertNewPrivateMessageController.handle)
 
   app.post("/connection", [verifyJwt], HandleConnectionController.handle)
+
+  app.get("/private-messages", [verifyJwt], GetUserMessagesController.handle)
 }

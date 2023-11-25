@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto"
-import { User } from "../../@types/types"
-import InMemoryUser from "../../in-memory/inMemoryUser"
-import InMemoryUserFriend from "../../in-memory/inMemoryUserFriend"
-import GetUserFriendListService from "../userFriendList/getUserFriendListService"
-import InsertToFriendListService from "../userFriendList/insertToFriendListService"
-import RegisterNewUserService from "../user/registerNewUserService"
+import { User } from "../../../@types/types"
+import InMemoryUser from "../../../in-memory/inMemoryUser"
+import InMemoryUserFriend from "../../../in-memory/inMemoryUserFriend"
+import GetUserFriendListService from "../../userFriendList/getUserFriendListService"
+import InsertToFriendListService from "../../userFriendList/insertToFriendListService"
+import RegisterNewUserService from "../../user/registerNewUserService"
 
 let inMemoryUser: InMemoryUser
 let registerNewUserService: RegisterNewUserService

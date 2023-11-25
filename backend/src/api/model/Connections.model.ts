@@ -28,4 +28,12 @@ export default class ConnectionsModel implements ConnectionsInterface {
 
     return findSimilarConnection
   }
+
+  async findUserConnections(userId: string): Promise<Connection[]> {
+    const getAllUserConnections = await this.connectionsRepository.find({
+      where: [{ connectionOne: userId }, { connectionTwo: userId }],
+    })
+
+    return getAllUserConnections
+  }
 }

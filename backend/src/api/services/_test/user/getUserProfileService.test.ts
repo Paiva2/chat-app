@@ -1,7 +1,7 @@
-import { User } from "../../@types/types"
-import InMemoryUser from "../../in-memory/inMemoryUser"
-import GetUserProfileService from "../user/getUserProfileService"
-import RegisterNewUserService from "../user/registerNewUserService"
+import { User } from "../../../@types/types"
+import InMemoryUser from "../../../in-memory/inMemoryUser"
+import GetUserProfileService from "../../user/getUserProfileService"
+import RegisterNewUserService from "../../user/registerNewUserService"
 
 let inMemoryUser: InMemoryUser
 let registerNewUserService: RegisterNewUserService

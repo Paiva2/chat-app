@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import Factory from "./factory"
-import { ErrorHandling } from "../@types/types"
+import Factory from "../factory"
+import { ErrorHandling } from "../../@types/types"
 
 export default class HandleConnectionController {
   public static async handle(req: Request, res: Response) {

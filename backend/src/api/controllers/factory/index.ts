@@ -13,6 +13,7 @@ import RemoveFromFriendListService from "../../services/userFriendList/removeFro
 import UpdateUserProfileService from "../../services/user/updateUserProfileService"
 import InsertNewPrivateMessageService from "../../services/messages/insertNewPrivateMessageService"
 import HandleConnectionService from "../../services/connections/handleConnectionService"
+import GetUserMessagesService from "../../services/messages/getUserMessagesService"
 
 export default class Factory {
   public static exec() {
@@ -20,6 +21,12 @@ export default class Factory {
     const userFriendModel = new UserFriendModel()
     const connectionsModel = new ConnectionsModel()
     const messageModel = new MessageModel()
+
+    const getUserMessagesService = new GetUserMessagesService(
+      userModel,
+      connectionsModel,
+      messageModel
+    )
 
     const insertNewPrivateMessageService = new InsertNewPrivateMessageService(
       connectionsModel,
@@ -59,6 +66,7 @@ export default class Factory {
     )
 
     return {
+      getUserMessagesService,
       insertNewPrivateMessageService,
       handleConnectionService,
       updateUserProfileService,

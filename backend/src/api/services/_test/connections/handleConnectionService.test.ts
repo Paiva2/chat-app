@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto"
-import InMemoryConnections from "../../in-memory/inMemoryConnections"
-import InMemoryUser from "../../in-memory/inMemoryUser"
-import { User } from "../../@types/types"
-import HandleConnectionService from "../connections/handleConnectionService"
+import { User } from "../../../@types/types"
+import InMemoryConnections from "../../../in-memory/inMemoryConnections"
+import InMemoryUser from "../../../in-memory/inMemoryUser"
+import HandleConnectionService from "../../connections/handleConnectionService"
 
 let inMemoryConnections: InMemoryConnections
 let inMemoryUser: InMemoryUser
@@ -11,7 +11,7 @@ let sut: HandleConnectionService
 
 let userCreated: User
 
-describe("Create new connections", () => {
+describe("Handle connection service", () => {
   beforeEach(async () => {
     inMemoryConnections = new InMemoryConnections()
     inMemoryUser = new InMemoryUser()

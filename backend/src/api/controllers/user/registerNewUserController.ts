@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import { ErrorHandling } from "../@types/types"
-import Factory from "./factory"
+import { ErrorHandling } from "../../@types/types"
+import Factory from "../factory"
 
 export default class RegisterNewUserController {
   static async handle(req: Request, res: Response) {

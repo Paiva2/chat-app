@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ErrorHandling } from "../@types/types"
-import UserModel from "../model/User.model"
-import Factory from "./factory"
+import { ErrorHandling } from "../../@types/types"
+import UserModel from "../../model/User.model"
+import Factory from "../factory"
 
 export default class ChangeUserPasswordControler {
   static async handle(req: Request, res: Response) {

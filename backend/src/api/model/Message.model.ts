@@ -27,4 +27,12 @@ export default class MessageModel implements MessageInterface {
 
     return this.messageEntity
   }
+
+  async findUserIdMessages(userId: string): Promise<Message[]> {
+    const getAllMessagesContainingThisUser = await this.messageRepository.find({
+      where: [{ userId: userId }, { sendToId: userId }],
+    })
+
+    return getAllMessagesContainingThisUser
+  }
 }

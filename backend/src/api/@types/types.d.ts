@@ -43,3 +43,8 @@ export interface Message {
   createdAt: Date
   fkConnections: string
 }
+
+interface UserMessages {
+  connections: string[]
+  data: Message[]
+}
