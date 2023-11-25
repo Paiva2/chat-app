@@ -61,12 +61,14 @@ export default class GetUserMessagesService {
               messages.connections.includes(conn.connectionTwo)
           )
 
-          conversationMessages?.data.push(msg)
-
-          formatMessages.push({
-            connections: [conn.connectionOne, conn.connectionTwo],
-            data: conversationMessages?.data || [msg],
-          })
+          if (conversationMessages) {
+            conversationMessages?.data.push(msg)
+          } else {
+            formatMessages.push({
+              connections: [conn.connectionOne, conn.connectionTwo],
+              data: [msg],
+            })
+          }
         }
       }
     }

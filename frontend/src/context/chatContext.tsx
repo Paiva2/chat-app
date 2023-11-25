@@ -13,10 +13,10 @@ import {
   WebSocketPayload,
   INewMessage,
 } from "../@types/types"
-import ws from "../lib/socket.config"
-import Cookies from "js-cookie"
 import { getUserProfile } from "../utils/getUserProfile"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import ws from "../lib/socket.config"
+import Cookies from "js-cookie"
 import api from "../lib/api"
 
 interface ChatContextProviderProps {
@@ -52,6 +52,9 @@ interface ChatContextInterface {
 
   privateMessages: WebSocketPayload[]
   setPrivateMessages: Dispatch<SetStateAction<WebSocketPayload[]>>
+
+  multipleConnectionDetected: boolean
+  setMultipleConnectionDetected: Dispatch<SetStateAction<boolean>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -80,6 +83,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     },
   })
 
+  const [multipleConnectionDetected, setMultipleConnectionDetected] = useState(false)
+
   const authToken = Cookies.get("chatapp-token")
 
   const handleConnection = useMutation({
@@ -106,7 +111,20 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
   useQuery({
     queryKey: ["getStoredMessages"],
-    queryFn: () => {},
+    queryFn: async () => {
+      const getMessages = await api.get("/private-messages", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+
+      if (getMessages.status === 200) {
+        setPrivateMessagesList(getMessages.data)
+      }
+
+      return getMessages.data
+    },
+    retry: false,
     enabled: Boolean(authToken),
   })
 
@@ -160,6 +178,12 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
       const dataParsed: WebSocketPayload = parseData.data
 
       switch (parseData.action) {
+        case "multiple-connections-not-allowed": {
+          setMultipleConnectionDetected(true)
+
+          break
+        }
+
         case "stored_global_msgs": {
           setMessages(parseData.data)
 
@@ -202,21 +226,25 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
           handleWithPrivateMessagesDisplaying(dataParsed)
 
           if (myId?.auth) {
-            await handleConnection.mutateAsync({
+            const handlingConnection = await handleConnection.mutateAsync({
               connections: [parseData.data.sendToId, parseData.data.userId],
             })
 
-            insertNewPrivateMessage.mutate({
-              newMessage: {
-                sendToId: parseData.data.sendToId,
-                sendToUsername: parseData.data.sendToUsername,
-                username: parseData.data.username,
-                userId: parseData.data.userId,
-                userProfilePic: parseData.data.userProfilePic,
-                time: parseData.data.time,
-                message: parseData.data.message,
-              },
-            })
+            if (handlingConnection.status === 201) {
+              setTimeout(() => {
+                insertNewPrivateMessage.mutate({
+                  newMessage: {
+                    sendToId: parseData.data.sendToId,
+                    sendToUsername: parseData.data.sendToUsername,
+                    username: parseData.data.username,
+                    userId: parseData.data.userId,
+                    userProfilePic: parseData.data.userProfilePic,
+                    time: parseData.data.time,
+                    message: parseData.data.message,
+                  },
+                })
+              }, 1500)
+            }
           }
 
           break
@@ -264,6 +292,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         privateMessages,
         privateMessagesList,
         whoIsReceivingPrivate,
+        multipleConnectionDetected,
+        setMultipleConnectionDetected,
         setPrivateMessages,
         setWhoIsReceivingPrivate,
         setActiveMenu,

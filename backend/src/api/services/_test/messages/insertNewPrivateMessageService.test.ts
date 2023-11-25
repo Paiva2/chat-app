@@ -57,7 +57,7 @@ describe("Insert new private message service", () => {
 
     expect(storedMessage).toEqual(
       expect.objectContaining({
-        id: expect.any(String),
+        messageId: expect.any(String),
         message: "Hey test message",
         sendToId: secondConnectionId,
         sendToUsername: "Random User",

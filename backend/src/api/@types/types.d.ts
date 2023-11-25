@@ -31,7 +31,7 @@ export interface Connection {
 }
 
 export interface Message {
-  id: string
+  messageId: string
   message: string
   sendToId: string
   sendToUsername: string

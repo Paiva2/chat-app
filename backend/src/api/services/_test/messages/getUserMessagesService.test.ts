@@ -101,7 +101,7 @@ describe("Get user messages service", () => {
         connections: expect.arrayContaining([userCreated.id, fakeUserId]),
         data: [
           {
-            id: expect.any(String),
+            messageId: expect.any(String),
             message: "Message to first fake user id",
             sendToId: fakeUserId,
             sendToUsername: "Fake user one",
@@ -120,7 +120,7 @@ describe("Get user messages service", () => {
         connections: expect.arrayContaining([userCreated.id, secondFakeUserId]),
         data: [
           {
-            id: expect.any(String),
+            messageId: expect.any(String),
             message: "Message to second fake user id",
             sendToId: secondFakeUserId,
             sendToUsername: "Fake user two",

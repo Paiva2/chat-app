@@ -11,7 +11,7 @@ import { ConnectionsEntity } from "./Connections.entity"
 @Entity({ name: "message" })
 export class MessageEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string
+  messageId: string
 
   @Column("varchar", { length: 500 })
   message: string

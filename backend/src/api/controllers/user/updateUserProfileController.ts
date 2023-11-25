@@ -48,8 +48,6 @@ export default class UpdateUserProfileController {
     } catch (e) {
       const error = e as ErrorHandling
 
-      console.log(e)
-
       return res.status(error.status).send({ message: error.error })
     }
   }

@@ -2,12 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm"
-import { UserEntity } from "./User.entity"
 import { MessageEntity } from "./Message.entity"
 
 @Entity({ name: "connections" })

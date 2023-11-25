@@ -7,7 +7,7 @@ export default class InMemoryMessage implements MessageInterface {
 
   async create(newMessage: Omit<Message, "id" | "createdAt">): Promise<Message> {
     const message = {
-      id: randomUUID(),
+      messageId: randomUUID(),
       message: newMessage.message,
       sendToId: newMessage.sendToId,
       sendToUsername: newMessage.sendToUsername,

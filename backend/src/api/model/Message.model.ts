@@ -16,7 +16,7 @@ export default class MessageModel implements MessageInterface {
       if (
         field !== "time" &&
         field !== "createdAt" &&
-        field !== "id" &&
+        field !== "messageId" &&
         field !== "user"
       ) {
         this.messageEntity[field] = newMessage[field]

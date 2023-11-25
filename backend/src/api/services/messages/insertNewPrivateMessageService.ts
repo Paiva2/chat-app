@@ -3,7 +3,7 @@ import { ConnectionsInterface } from "../../interfaces/connectionsInterface"
 import { MessageInterface } from "../../interfaces/messageInterface"
 
 interface InsertNewPrivateMessageServiceRequest {
-  newMessage: Omit<Message, "id" | "fkConnections" | "createdAt">
+  newMessage: Omit<Message, "messageId" | "fkConnections" | "createdAt">
 }
 
 type InsertNewPrivateMessageServiceResponse = Message

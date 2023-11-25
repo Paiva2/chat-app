@@ -1,36 +1,15 @@
 import { faker } from "@faker-js/faker"
 import { WebSocketServer, WebSocket } from "ws"
 import { randomUUID } from "crypto"
+import { redisConn } from "../app"
+import { Request } from "express"
+import {
+  CustomWebSocket,
+  GlobalMessagesStored,
+  PrivateMessageRequest,
+} from "./@types/types"
 import http from "http"
 import "url"
-import { redisConn } from "../app"
-
-interface GlobalMessagesStored {
-  type: string
-  messageId: string
-  userId: string
-  userProfilePic: string
-  username: string
-  message: string
-  time: string
-}
-interface CustomWebSocket extends WebSocket {
-  id: string
-  username: string
-  auth: boolean
-}
-
-interface PrivateMessageRequest {
-  from: { id: string; username: string; profilePic: string | null }
-  destiny: {
-    to: {
-      id: string
-      username: string
-      profilePic: string | null
-    }
-  }
-  message: string
-}
 
 const defaultImg = "https://i.postimg.cc/hjvSCcM3/jOkraDo.png"
 
@@ -56,7 +35,7 @@ export default class WebSocketConnection {
   }
 
   public init() {
-    this.wsServer.on("connection", async (ws: CustomWebSocket) => {
+    this.wsServer.on("connection", async (ws: CustomWebSocket, req: Request) => {
       this.globalMessagesStored = []
 
       const randomUserId = randomUUID()
@@ -120,28 +99,16 @@ export default class WebSocketConnection {
               ws.username = randomUserName
               ws.auth = false
             } else {
+              this.handleMultipleConnectionWithSameId(clientData.id)
+
               ws.id = clientData.id
               ws.username = clientData.username
               ws.auth = true
             }
 
-            this.wsServer.clients.forEach((client) => {
-              if (client.readyState === WebSocket.OPEN) {
-                if (client["id" as keyof typeof client] === ws.id) {
-                  client.send(
-                    JSON.stringify({
-                      action: "my-personal-id",
-                      data: {
-                        id: ws.id,
-                        username: ws.username,
-                        auth: ws.auth,
-                      },
-                    })
-                  )
-                }
-              }
-            })
+            this.sendClientId(ws)
 
+            //In case an auth user changes his username trigger the changes in real time
             const checkIfUserIsAlreadyConnected = this.connectedUsers.find(
               (user) => user.id === ws.id
             )
@@ -327,6 +294,42 @@ export default class WebSocketConnection {
             data: formatUsersList,
           })
         )
+      }
+    })
+  }
+
+  private handleMultipleConnectionWithSameId(idToCheck: string) {
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        if (client["id" as keyof typeof client] === idToCheck) {
+          client.send(
+            JSON.stringify({
+              action: "multiple-connections-not-allowed",
+              data: {},
+            })
+          )
+
+          client.close()
+        }
+      }
+    })
+  }
+
+  private sendClientId(ws: CustomWebSocket) {
+    this.wsServer.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        if (client["id" as keyof typeof client] === ws.id) {
+          client.send(
+            JSON.stringify({
+              action: "my-personal-id",
+              data: {
+                id: ws.id,
+                username: ws.username,
+                auth: ws.auth,
+              },
+            })
+          )
+        }
       }
     })
   }
