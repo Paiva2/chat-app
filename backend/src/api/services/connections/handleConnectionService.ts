@@ -1,17 +1,22 @@
+import { Connection } from "../../@types/types"
 import { ConnectionsInterface } from "../../interfaces/connectionsInterface"
 import UserInterface from "../../interfaces/userInterface"
 
-interface CreateNewConnectionServiceRequest {
+interface HandleConnectionServiceRequest {
   connections: string[]
 }
 
-export default class CreateNewConnectionService {
+type HandleConnectionServiceRequestResponse = Connection
+
+export default class HandleConnectionService {
   constructor(
     private connectionsInterface: ConnectionsInterface,
     private userInteface: UserInterface
   ) {}
 
-  async exec({ connections }: CreateNewConnectionServiceRequest) {
+  async exec({
+    connections,
+  }: HandleConnectionServiceRequest): Promise<HandleConnectionServiceRequestResponse> {
     const checkIfSomeConnectionIdAreRegistered =
       await this.userInteface.findByConnection(connections)
 
@@ -22,15 +27,10 @@ export default class CreateNewConnectionService {
       }
     }
 
-    const checkIfAlreadyHasAnConnectionWithThoseTwoIds =
+    const doesExistsAnConnectionWithThoseIds =
       await this.connectionsInterface.findConnections(connections)
 
-    if (checkIfAlreadyHasAnConnectionWithThoseTwoIds) {
-      throw {
-        status: 409,
-        error: "An connection with those two id's already exists.",
-      }
-    }
+    if (doesExistsAnConnectionWithThoseIds) return doesExistsAnConnectionWithThoseIds
 
     if (connections.length < 2) {
       throw {

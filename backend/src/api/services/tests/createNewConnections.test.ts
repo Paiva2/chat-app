@@ -1,13 +1,13 @@
 import { randomUUID } from "crypto"
 import InMemoryConnections from "../../in-memory/inMemoryConnections"
-import CreateNewConnectionService from "../connections/createNewConnectionService"
 import InMemoryUser from "../../in-memory/inMemoryUser"
 import { User } from "../../@types/types"
+import HandleConnectionService from "../connections/handleConnectionService"
 
 let inMemoryConnections: InMemoryConnections
 let inMemoryUser: InMemoryUser
 
-let sut: CreateNewConnectionService
+let sut: HandleConnectionService
 
 let userCreated: User
 
@@ -18,7 +18,7 @@ describe("Create new connections", () => {
 
     userCreated = await inMemoryUser.create("John Doe", "johndoe@email.com", "12345")
 
-    sut = new CreateNewConnectionService(inMemoryConnections, inMemoryUser)
+    sut = new HandleConnectionService(inMemoryConnections, inMemoryUser)
   })
 
   it("should be possible to create an new connection", async () => {

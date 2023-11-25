@@ -11,10 +11,13 @@ import {
   PrivateMessageSchema,
   UserOnListSchema,
   WebSocketPayload,
+  INewMessage,
 } from "../@types/types"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import { getUserProfile } from "../utils/getUserProfile"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import api from "../lib/api"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
@@ -77,6 +80,36 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
     },
   })
 
+  const authToken = Cookies.get("chatapp-token")
+
+  const handleConnection = useMutation({
+    mutationKey: ["handleConnection"],
+    mutationFn: (newMessage: Pick<INewMessage, "connections">) => {
+      return api.post("/connection", newMessage, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+    },
+  })
+
+  const insertNewPrivateMessage = useMutation({
+    mutationKey: ["insertNewPrivateMessage"],
+    mutationFn: (newMessage: Pick<INewMessage, "newMessage">) => {
+      return api.post("/private-message", newMessage, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+    },
+  })
+
+  useQuery({
+    queryKey: ["getStoredMessages"],
+    queryFn: () => {},
+    enabled: Boolean(authToken),
+  })
+
   function handleWithPrivateMessagesDisplaying(dataParsed: WebSocketPayload) {
     if (whoIsReceivingPrivate.to.id) {
       const checkIfUserHasConversationsPreviously = privateMessagesList.filter(
@@ -98,8 +131,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
   function handleWithOpenConnectionWs() {
     ws.onopen = async () => {
-      const authToken = Cookies.get("chatapp-token")
-
       let determineUser: { id: string; username: string } | null = null
 
       if (!authToken) {
@@ -123,7 +154,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   }
 
   function handleEventMessagesWs() {
-    ws.onmessage = ({ data }) => {
+    ws.onmessage = async ({ data }) => {
       const parseData = JSON.parse(data)
 
       const dataParsed: WebSocketPayload = parseData.data
@@ -170,7 +201,23 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
           handleWithPrivateMessagesDisplaying(dataParsed)
 
-          console.log(copyPrivateMsgList)
+          if (myId?.auth) {
+            await handleConnection.mutateAsync({
+              connections: [parseData.data.sendToId, parseData.data.userId],
+            })
+
+            insertNewPrivateMessage.mutate({
+              newMessage: {
+                sendToId: parseData.data.sendToId,
+                sendToUsername: parseData.data.sendToUsername,
+                username: parseData.data.username,
+                userId: parseData.data.userId,
+                userProfilePic: parseData.data.userProfilePic,
+                time: parseData.data.time,
+                message: parseData.data.message,
+              },
+            })
+          }
 
           break
         }

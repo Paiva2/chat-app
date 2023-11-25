@@ -62,3 +62,16 @@ export interface UserFriend {
   addedAt: Date
   fkUser: string
 }
+
+export interface INewMessage {
+  connections: string[]
+  newMessage: {
+    sendToId: string
+    sendToUsername: string
+    username: string
+    userId: string
+    userProfilePic: string
+    time: Date
+    message: string
+  }
+}

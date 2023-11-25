@@ -60,7 +60,7 @@ const ChatBox = () => {
     }
   }
 
-  function privateMessage() {
+  async function privateMessage() {
     const from = {
       id: myId?.id,
       username: myId?.username,

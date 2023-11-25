@@ -21,11 +21,8 @@ export default class ConnectionsModel implements ConnectionsInterface {
 
     const [findSimilarConnection] = await this.connectionsRepository.find({
       where: [
-        { connectionOne: firstId },
-        { connectionTwo: secondId },
-
-        { connectionOne: secondId },
-        { connectionTwo: firstId },
+        { connectionOne: firstId, connectionTwo: secondId },
+        { connectionOne: secondId, connectionTwo: firstId },
       ],
     })
 

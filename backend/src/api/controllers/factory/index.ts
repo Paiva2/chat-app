@@ -1,4 +1,6 @@
 import UserModel from "../../model/User.model"
+import ConnectionsModel from "../../model/Connections.model"
+import MessageModel from "../../model/Message.model"
 import UserFriendModel from "../../model/UserFriend.model"
 import AuthUserService from "../../services/user/authUserService"
 import ChangeUserPasswordService from "../../services/user/changeUserPasswordService"
@@ -9,11 +11,25 @@ import InsertToFriendListService from "../../services/userFriendList/insertToFri
 import RegisterNewUserService from "../../services/user/registerNewUserService"
 import RemoveFromFriendListService from "../../services/userFriendList/removeFromFriendListService"
 import UpdateUserProfileService from "../../services/user/updateUserProfileService"
+import InsertNewPrivateMessageService from "../../services/messages/insertNewPrivateMessageService"
+import HandleConnectionService from "../../services/connections/handleConnectionService"
 
 export default class Factory {
   public static exec() {
     const userModel = new UserModel()
     const userFriendModel = new UserFriendModel()
+    const connectionsModel = new ConnectionsModel()
+    const messageModel = new MessageModel()
+
+    const insertNewPrivateMessageService = new InsertNewPrivateMessageService(
+      connectionsModel,
+      messageModel
+    )
+
+    const handleConnectionService = new HandleConnectionService(
+      connectionsModel,
+      userModel
+    )
 
     const updateUserProfileService = new UpdateUserProfileService(userModel)
 
@@ -43,6 +59,8 @@ export default class Factory {
     )
 
     return {
+      insertNewPrivateMessageService,
+      handleConnectionService,
       updateUserProfileService,
       authUserService,
       changeUserPasswordService,
