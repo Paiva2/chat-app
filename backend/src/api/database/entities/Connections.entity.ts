@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm"
 import { MessageEntity } from "./Message.entity"
+import { UserEntity } from "./User.entity"
 
 @Entity({ name: "connections" })
 export class ConnectionsEntity {
@@ -23,6 +26,16 @@ export class ConnectionsEntity {
 
   @CreateDateColumn({ default: () => "NOW()" })
   updatedAt: Date
+
+  @Column("varchar", { nullable: false })
+  fkUser: string
+
+  @ManyToOne(() => UserEntity, (user) => user.id, {
+    onDelete: "CASCADE",
+    eager: false,
+  })
+  @JoinColumn({ name: "fkUser" })
+  user: UserEntity
 
   @OneToMany(() => MessageEntity, (message) => message.fkConnections, {
     onDelete: "CASCADE",

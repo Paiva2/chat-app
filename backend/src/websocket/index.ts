@@ -198,7 +198,8 @@ export default class WebSocketConnection {
         userId: myId,
         username: myUsername,
         sendToId: destinationId,
-        sendToUsername: sendToUsername?.username,
+        sendToUsername:
+          sendToUsername?.username ?? messageInformations.destiny.to.username,
         message: messageInformations.message,
         userProfilePic:
           messageInformations.from.profilePic ?? this.defaultProfilePic,

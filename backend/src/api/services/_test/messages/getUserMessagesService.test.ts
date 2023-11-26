@@ -69,10 +69,11 @@ describe("Get user messages service", () => {
     const secondFakeUserId = randomUUID()
 
     // First conversation
-    const firstConnection = await inMemoryConnections.create([
+    const [firstConnection] = await inMemoryConnections.create(
+      [userCreated.id, fakeUserId],
       userCreated.id,
-      fakeUserId,
-    ])
+      fakeUserId
+    )
 
     await createNewPrivateMessage(
       fakeUserId,
@@ -81,10 +82,11 @@ describe("Get user messages service", () => {
     )
 
     // Second conversation
-    const secondConnection = await inMemoryConnections.create([
+    const [secondConnection] = await inMemoryConnections.create(
+      [userCreated.id, secondFakeUserId],
       userCreated.id,
-      secondFakeUserId,
-    ])
+      secondFakeUserId
+    )
 
     await createNewPrivateMessage(
       secondFakeUserId,
@@ -100,7 +102,7 @@ describe("Get user messages service", () => {
       expect.objectContaining({
         connections: expect.arrayContaining([userCreated.id, fakeUserId]),
         data: [
-          {
+          expect.objectContaining({
             messageId: expect.any(String),
             message: "Message to first fake user id",
             sendToId: fakeUserId,
@@ -112,14 +114,14 @@ describe("Get user messages service", () => {
             username: userCreated.username,
             createdAt: expect.any(Date),
             fkConnections: firstConnection.id,
-          },
+          }),
         ],
       }),
 
       expect.objectContaining({
         connections: expect.arrayContaining([userCreated.id, secondFakeUserId]),
         data: [
-          {
+          expect.objectContaining({
             messageId: expect.any(String),
             message: "Message to second fake user id",
             sendToId: secondFakeUserId,
@@ -131,7 +133,7 @@ describe("Get user messages service", () => {
             username: userCreated.username,
             createdAt: expect.any(Date),
             fkConnections: secondConnection.id,
-          },
+          }),
         ],
       }),
     ])

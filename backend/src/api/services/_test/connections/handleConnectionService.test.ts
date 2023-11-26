@@ -29,15 +29,50 @@ describe("Handle connection service", () => {
       connections: [firstConnectionId, secondConnectionId],
     })
 
-    expect(newConnection).toEqual(
+    expect(newConnection).toEqual([
       expect.objectContaining({
         id: expect.any(String),
         connectionOne: firstConnectionId,
         connectionTwo: secondConnectionId,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
-      })
+      }),
+    ])
+  })
+
+  it("should be possible to create an new connection between two auth users", async () => {
+    const secondUserCreated = await inMemoryUser.create(
+      "John Doe 2",
+      "johndoe2@email.com",
+      "12345"
     )
+
+    const firstConnectionId = userCreated.id
+    const secondConnectionId = secondUserCreated.id
+
+    const newConnection = await sut.exec({
+      connections: [firstConnectionId, secondConnectionId],
+    })
+
+    expect(newConnection).toEqual([
+      expect.objectContaining({
+        id: expect.any(String),
+        connectionOne: firstConnectionId,
+        connectionTwo: secondConnectionId,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        fkUser: firstConnectionId,
+      }),
+
+      expect.objectContaining({
+        id: expect.any(String),
+        connectionOne: firstConnectionId,
+        connectionTwo: secondConnectionId,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        fkUser: secondConnectionId,
+      }),
+    ])
   })
 
   it("should not be possible to create a new connection if none user on connection is registered", async () => {

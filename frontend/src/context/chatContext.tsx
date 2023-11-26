@@ -11,10 +11,9 @@ import {
   PrivateMessageSchema,
   UserOnListSchema,
   WebSocketPayload,
-  INewMessage,
 } from "../@types/types"
 import { getUserProfile } from "../utils/getUserProfile"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import api from "../lib/api"
@@ -92,28 +91,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   const [multipleConnectionDetected, setMultipleConnectionDetected] = useState(false)
 
   const authToken = Cookies.get("chatapp-token")
-
-  const handleConnection = useMutation({
-    mutationKey: ["handleConnection"],
-    mutationFn: (newMessage: Pick<INewMessage, "connections">) => {
-      return api.post("/connection", newMessage, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-    },
-  })
-
-  const insertNewPrivateMessage = useMutation({
-    mutationKey: ["insertNewPrivateMessage"],
-    mutationFn: (newMessage: Pick<INewMessage, "newMessage">) => {
-      return api.post("/private-message", newMessage, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-    },
-  })
 
   useQuery({
     queryKey: ["getStoredMessages"],
@@ -230,28 +207,6 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
           setPrivateMessagesList(sortByDate)
 
           handleWithPrivateMessagesDisplaying(dataParsed)
-
-          if (myId?.auth) {
-            const handlingConnection = await handleConnection.mutateAsync({
-              connections: [parseData.data.sendToId, parseData.data.userId],
-            })
-
-            if (handlingConnection.status === 201) {
-              setTimeout(() => {
-                insertNewPrivateMessage.mutate({
-                  newMessage: {
-                    sendToId: parseData.data.sendToId,
-                    sendToUsername: parseData.data.sendToUsername,
-                    username: parseData.data.username,
-                    userId: parseData.data.userId,
-                    userProfilePic: parseData.data.userProfilePic,
-                    time: parseData.data.time,
-                    message: parseData.data.message,
-                  },
-                })
-              }, 1500)
-            }
-          }
 
           break
         }

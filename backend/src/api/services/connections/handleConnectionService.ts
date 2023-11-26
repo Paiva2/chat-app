@@ -6,7 +6,7 @@ interface HandleConnectionServiceRequest {
   connections: string[]
 }
 
-type HandleConnectionServiceRequestResponse = Connection
+type HandleConnectionServiceRequestResponse = Connection[] | void
 
 export default class HandleConnectionService {
   constructor(
@@ -17,10 +17,11 @@ export default class HandleConnectionService {
   async exec({
     connections,
   }: HandleConnectionServiceRequest): Promise<HandleConnectionServiceRequestResponse> {
-    const checkIfSomeConnectionIdAreRegistered =
-      await this.userInteface.findByConnection(connections)
+    const doesConnectionIdIsFromAnUser = await this.userInteface.findByConnection(
+      connections
+    )
 
-    if (!checkIfSomeConnectionIdAreRegistered?.length) {
+    if (!doesConnectionIdIsFromAnUser?.length) {
       throw {
         status: 404,
         error: "None of the connection id's are registered.",
@@ -30,7 +31,7 @@ export default class HandleConnectionService {
     const doesExistsAnConnectionWithThoseIds =
       await this.connectionsInterface.findConnections(connections)
 
-    if (doesExistsAnConnectionWithThoseIds) return doesExistsAnConnectionWithThoseIds
+    if (doesExistsAnConnectionWithThoseIds.length > 0) return
 
     if (connections.length < 2) {
       throw {
@@ -39,7 +40,15 @@ export default class HandleConnectionService {
       }
     }
 
-    const newConnection = await this.connectionsInterface.create(connections)
+    let userIdToCreateNewConnection = doesConnectionIdIsFromAnUser.map(
+      ({ id }) => id
+    )
+
+    const newConnection = await this.connectionsInterface.create(
+      userIdToCreateNewConnection,
+      connections[0],
+      connections[1]
+    )
 
     return newConnection
   }

@@ -27,6 +27,7 @@ export interface Connection {
   connectionTwo: string
   createdAt: Date
   updatedAt: Date
+  fkUser: string
   messages?: Message[]
 }
 

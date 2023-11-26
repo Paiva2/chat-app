@@ -7,19 +7,37 @@ export default class ConnectionsModel implements ConnectionsInterface {
   private connectionsEntity = new ConnectionsEntity()
   private connectionsRepository = TypeOrm.getRepository(ConnectionsEntity)
 
-  async create(connections: string[]): Promise<Connection> {
-    this.connectionsEntity.connectionOne = connections[0]
-    this.connectionsEntity.connectionTwo = connections[1]
+  async create(
+    connections: string[],
+    connectionOne: string,
+    connectionTwo: string
+  ): Promise<Connection[]> {
+    let newConnectionsArr = [] as Connection[]
 
-    this.connectionsRepository.save(this.connectionsEntity)
+    connections.forEach(async (userId) => {
+      await this.connectionsRepository
+        .createQueryBuilder()
+        .insert()
+        .into(ConnectionsEntity)
+        .values([
+          {
+            connectionOne,
+            connectionTwo,
+            fkUser: userId,
+          },
+        ])
+        .execute()
 
-    return this.connectionsEntity
+      newConnectionsArr.push(this.connectionsEntity)
+    })
+
+    return newConnectionsArr
   }
 
-  async findConnections(connections: string[]): Promise<Connection | null> {
+  async findConnections(connections: string[]): Promise<Connection[]> {
     const [firstId, secondId] = connections
 
-    const [findSimilarConnection] = await this.connectionsRepository.find({
+    const findSimilarConnection = await this.connectionsRepository.find({
       where: [
         { connectionOne: firstId, connectionTwo: secondId },
         { connectionOne: secondId, connectionTwo: firstId },
@@ -31,7 +49,9 @@ export default class ConnectionsModel implements ConnectionsInterface {
 
   async findUserConnections(userId: string): Promise<Connection[]> {
     const getAllUserConnections = await this.connectionsRepository.find({
-      where: [{ connectionOne: userId }, { connectionTwo: userId }],
+      where: {
+        fkUser: userId,
+      },
     })
 
     return getAllUserConnections

@@ -10,6 +10,8 @@ export default class MessageModel implements MessageInterface {
   async create(newMessage: Omit<Message, "id" | "createdAt">): Promise<Message> {
     const fieldsToCreate = Object.keys(newMessage)
 
+    const message = {} as Message
+
     for (let createField of fieldsToCreate) {
       const field = createField as keyof typeof this.messageEntity
 
@@ -19,11 +21,16 @@ export default class MessageModel implements MessageInterface {
         field !== "messageId" &&
         field !== "user"
       ) {
-        this.messageEntity[field] = newMessage[field]
+        message[field] = newMessage[field]
       }
     }
 
-    this.messageRepository.save(this.messageEntity)
+    await this.messageRepository
+      .createQueryBuilder()
+      .insert()
+      .into(MessageEntity)
+      .values([message])
+      .execute()
 
     return this.messageEntity
   }

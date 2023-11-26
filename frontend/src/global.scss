@@ -13,6 +13,10 @@
   width: 100%;
   height: 100vh;
   background-color: #f8f9fb;
+
+  @media (max-width: 1080px) {
+    flex-direction: column-reverse;
+  }
 }
 
 ul {

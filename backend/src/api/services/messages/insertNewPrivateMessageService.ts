@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto"
 import { Message } from "../../@types/types"
 import { ConnectionsInterface } from "../../interfaces/connectionsInterface"
 import { MessageInterface } from "../../interfaces/messageInterface"
@@ -6,7 +7,7 @@ interface InsertNewPrivateMessageServiceRequest {
   newMessage: Omit<Message, "messageId" | "fkConnections" | "createdAt">
 }
 
-type InsertNewPrivateMessageServiceResponse = Message
+type InsertNewPrivateMessageServiceResponse = Message[]
 
 export default class InsertNewPrivateMessageService {
   constructor(
@@ -30,24 +31,30 @@ export default class InsertNewPrivateMessageService {
         newMessage.userId, // send from
       ])
 
-    if (!getAnConnectionWithThoseIds) {
+    if (!getAnConnectionWithThoseIds.length) {
       throw {
         status: 404,
         error: "Connection for private message not found.",
       }
     }
 
-    const message = await this.messageInterface.create({
-      type: "private-message",
-      sendToId: newMessage.sendToId,
-      sendToUsername: newMessage.sendToUsername,
-      username: newMessage.username,
-      userId: newMessage.userId,
-      userProfilePic: newMessage.userProfilePic,
-      time: newMessage.time || new Date(),
-      message: newMessage.message,
-      fkConnections: getAnConnectionWithThoseIds.id,
-    })
+    let message = [] as Message[]
+
+    for (let connUserId of getAnConnectionWithThoseIds) {
+      const messageCreated = await this.messageInterface.create({
+        type: "private-message",
+        sendToId: newMessage.sendToId,
+        sendToUsername: newMessage.sendToUsername,
+        username: newMessage.username,
+        userId: newMessage.userId,
+        userProfilePic: newMessage.userProfilePic,
+        time: newMessage.time || new Date(),
+        message: newMessage.message,
+        fkConnections: connUserId.id,
+      })
+
+      message.push(messageCreated)
+    }
 
     return message
   }

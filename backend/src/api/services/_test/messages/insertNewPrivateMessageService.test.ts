@@ -12,7 +12,7 @@ let inMemoryMessage: InMemoryMessage
 
 let registerNewUserService: RegisterNewUserService
 let userCreated: User
-let connectionBetweenUsers: Connection
+let connectionBetweenUsers: Connection[]
 
 let sut: InsertNewPrivateMessageService
 
@@ -37,12 +37,14 @@ describe("Insert new private message service", () => {
   it("should be possible to save a new private message", async () => {
     const secondConnectionId = randomUUID()
 
-    connectionBetweenUsers = await inMemoryConnections.create([
+    //This connection has only one user registered "userCreated"
+    connectionBetweenUsers = await inMemoryConnections.create(
+      [userCreated.id],
       userCreated.id,
-      secondConnectionId,
-    ])
+      secondConnectionId
+    )
 
-    const storedMessage = await sut.exec({
+    const messageForOneUser = await sut.exec({
       newMessage: {
         message: "Hey test message",
         sendToId: secondConnectionId,
@@ -55,7 +57,7 @@ describe("Insert new private message service", () => {
       },
     })
 
-    expect(storedMessage).toEqual(
+    expect(messageForOneUser).toEqual([
       expect.objectContaining({
         messageId: expect.any(String),
         message: "Hey test message",
@@ -67,9 +69,69 @@ describe("Insert new private message service", () => {
         userProfilePic: userCreated.profileImage,
         username: userCreated.username,
         createdAt: expect.any(Date),
-        fkConnections: connectionBetweenUsers.id,
-      })
+        fkConnections: connectionBetweenUsers[0].id,
+      }),
+    ])
+  })
+
+  it("should be possible to save a new private message for two users registered", async () => {
+    const secondUserCreated = await registerNewUserService.exec({
+      email: "johndoe2@email.com",
+      username: "John Doe 2",
+      password: "123456",
+      passwordConfirmation: "123456",
+    })
+    const secondConnectionId = secondUserCreated.id
+
+    //This connection has two users registered "userCreated"
+    connectionBetweenUsers = await inMemoryConnections.create(
+      [userCreated.id, secondConnectionId],
+      userCreated.id,
+      secondConnectionId
     )
+
+    const messageForOneUser = await sut.exec({
+      newMessage: {
+        message: "Hey test message",
+        sendToId: secondConnectionId,
+        sendToUsername: "Random User",
+        time: new Date(),
+        type: "private-message",
+        userId: userCreated.id,
+        username: userCreated.username,
+        userProfilePic: userCreated.profileImage,
+      },
+    })
+
+    expect(messageForOneUser).toEqual([
+      expect.objectContaining({
+        messageId: expect.any(String),
+        message: "Hey test message",
+        sendToId: secondConnectionId,
+        sendToUsername: "Random User",
+        time: expect.any(Date),
+        type: "private-message",
+        userId: userCreated.id,
+        userProfilePic: userCreated.profileImage,
+        username: userCreated.username,
+        createdAt: expect.any(Date),
+        fkConnections: connectionBetweenUsers[0].id,
+      }),
+
+      expect.objectContaining({
+        messageId: expect.any(String),
+        message: "Hey test message",
+        sendToId: secondConnectionId,
+        sendToUsername: "Random User",
+        time: expect.any(Date),
+        type: "private-message",
+        userId: userCreated.id,
+        userProfilePic: userCreated.profileImage,
+        username: userCreated.username,
+        createdAt: expect.any(Date),
+        fkConnections: connectionBetweenUsers[1].id,
+      }),
+    ])
   })
 
   it("should not be possible to save a new private message if there's no connection between users created before", async () => {

@@ -1,11 +1,13 @@
 import { FormEvent, useRef, useContext, useEffect } from "react"
 import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
-import { WebSocketPayload } from "../../@types/types"
+import { INewMessage, WebSocketPayload } from "../../@types/types"
 import { displayTimeOptions } from "../../utils/displayTimeOptions"
 import { UserContextProvider } from "../../context/userContext"
 import ws from "../../lib/socket.config"
 import s from "./styles.module.css"
+import { useMutation } from "@tanstack/react-query"
+import api from "../../lib/api"
 
 const ChatBox = () => {
   const {
@@ -31,6 +33,28 @@ const ChatBox = () => {
   } else if (activeMenu === "Home") {
     messagesToDisplay = messages
   }
+
+  const handleConnection = useMutation({
+    mutationKey: ["handleConnection"],
+    mutationFn: (newMessage: Pick<INewMessage, "connections">) => {
+      return api.post("/connection", newMessage, {
+        headers: {
+          Authorization: `Bearer ${userProfile?.token}`,
+        },
+      })
+    },
+  })
+
+  const insertNewPrivateMessage = useMutation({
+    mutationKey: ["insertNewPrivateMessage"],
+    mutationFn: (newMessage: Pick<INewMessage, "newMessage">) => {
+      return api.post("/private-message", newMessage, {
+        headers: {
+          Authorization: `Bearer ${userProfile?.token}`,
+        },
+      })
+    },
+  })
 
   useEffect(() => {
     if (messagesListRef.current) {
@@ -78,6 +102,30 @@ const ChatBox = () => {
           },
         })
       )
+
+      if (myId?.auth) {
+        const handlingConnection = await handleConnection.mutateAsync({
+          connections: [whoIsReceivingPrivate.to.id, myId?.id],
+        })
+
+        const messageValue = newMessageInputRef.current.value
+
+        if (handlingConnection.status === 201) {
+          setTimeout(() => {
+            insertNewPrivateMessage.mutate({
+              newMessage: {
+                sendToId: whoIsReceivingPrivate.to.id,
+                sendToUsername: whoIsReceivingPrivate.to.username,
+                username: myId?.username,
+                userId: myId?.id,
+                userProfilePic: userProfile?.profileImage as string,
+                time: new Date(),
+                message: messageValue,
+              },
+            })
+          }, 1500)
+        }
+      }
 
       newMessageInputRef.current.value = ""
       newMessageInputRef.current.focus()

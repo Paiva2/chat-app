@@ -54,7 +54,7 @@ export default class GetUserMessagesService {
 
     for (const conn of getUserConnections) {
       for (let msg of getUserMessages) {
-        if (msg.fkConnections === conn.id) {
+        if (msg.fkConnections === conn.id && conn.fkUser === userId) {
           const conversationMessages = formatMessages.find(
             (messages) =>
               messages.connections.includes(conn.connectionOne) &&

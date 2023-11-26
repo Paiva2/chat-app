@@ -5,28 +5,37 @@ import { ConnectionsInterface } from "../interfaces/connectionsInterface"
 export default class InMemoryConnections implements ConnectionsInterface {
   private connections: Connection[] = []
 
-  async create(connections: string[]): Promise<Connection> {
-    const newConnection: Connection = {
-      id: randomUUID(),
-      connectionOne: connections[0],
-      connectionTwo: connections[1],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+  async create(
+    userToCreateConnection: string[],
+    connectionOne: string,
+    connectionTwo: string
+  ): Promise<Connection[]> {
+    let newConnections = [] as Connection[]
 
-    this.connections.push(newConnection)
+    userToCreateConnection.forEach((userId) => {
+      const newConnection: Connection = {
+        id: randomUUID(),
+        connectionOne: connectionOne,
+        connectionTwo: connectionTwo,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        fkUser: userId,
+      }
 
-    return newConnection
+      newConnections.push(newConnection)
+    })
+
+    this.connections = this.connections.concat(newConnections)
+
+    return newConnections
   }
 
-  async findConnections(connections: string[]): Promise<Connection | null> {
-    const findConnectionWithThoseTwoIds = this.connections.find(
+  async findConnections(connections: string[]): Promise<Connection[]> {
+    const findConnectionWithThoseTwoIds = this.connections.filter(
       (conn) =>
         connections.includes(conn.connectionOne) &&
         connections.includes(conn.connectionTwo)
     )
-
-    if (!findConnectionWithThoseTwoIds) return null
 
     return findConnectionWithThoseTwoIds
   }

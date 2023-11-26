@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from "typeorm"
 import { UserFriendEntity } from "./UserFriend.entity"
+import { ConnectionsEntity } from "./Connections.entity"
 
 @Entity({ name: "user" })
 @Unique("my_unique_constraint", ["email"])
@@ -36,4 +37,9 @@ export class UserEntity {
     onDelete: "CASCADE",
   })
   friendList: UserFriendEntity[]
+
+  @OneToMany(() => ConnectionsEntity, (connection) => connection.fkUser, {
+    onDelete: "CASCADE",
+  })
+  connections: ConnectionsEntity[]
 }
