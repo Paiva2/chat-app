@@ -6,4 +6,20 @@
   justify-content: center;
   height: 100%;
   gap: 0.625rem;
+  position: relative;
+
+  .openMenuSideButton {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: #6263fb;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (min-width: 940px) {
+      display: none;
+    }
+  }
 }

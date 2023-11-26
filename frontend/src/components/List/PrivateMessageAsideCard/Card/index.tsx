@@ -29,6 +29,8 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     privateMessagesList,
     whoIsReceivingPrivate,
     openedMenuFromMessages,
+    showListMobile,
+    setShowListMobile,
     setOpenenedMenuFromMessages,
     setPrivateMessages,
     setWhoIsReceivingPrivate,
@@ -94,6 +96,11 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     }
   }, [openedMenuFromMessages])
 
+  useEffect(() => {
+    setOpenMiniMenu(false)
+    setOpenenedMenuFromMessages(null)
+  }, [showListMobile])
+
   //TODO
   function handleDeleteConversation() {}
 
@@ -102,6 +109,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
       onContextMenu={handleOpenMiniMenu}
       onClick={() => {
         handleSetPrivateMessageToShow(connection.connections, userSendingMessage)
+        setShowListMobile(false)
       }}
       className={s.privateCard}
     >
@@ -132,12 +140,12 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
       <div className={`${s.miniMenuList} ${openMiniMenu ? s.activeMiniMenu : ""}`}>
         <span>
           <button
-            onClick={() =>
+            onClick={() => {
               handleSetPrivateMessageToShow(
                 connection.connections,
                 userSendingMessage
               )
-            }
+            }}
             type="button"
           >
             Open

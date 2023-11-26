@@ -116,4 +116,18 @@
   &:hover {
     background-color: #f6f7fb;
   }
+
+  @media (max-width: 940px) {
+    border: 1px solid #ededef;
+
+    button {
+      max-width: 100%;
+    }
+
+    .messageInformations {
+      .timeSent {
+        max-width: 5rem;
+      }
+    }
+  }
 }

@@ -31,7 +31,9 @@ export class MessageEntity {
   @Column("varchar", { length: 100 })
   userId: string
 
-  @Column("varchar", { length: 200 })
+  @Column("varchar", {
+    length: 200,
+  })
   userProfilePic: string
 
   @Column("varchar", { length: 200 })

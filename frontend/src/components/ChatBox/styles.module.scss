@@ -210,4 +210,10 @@
       }
     }
   }
+
+  @media (max-width: 940px) {
+    max-width: 100%;
+    padding: 1.25rem;
+    max-height: 90vh;
+  }
 }

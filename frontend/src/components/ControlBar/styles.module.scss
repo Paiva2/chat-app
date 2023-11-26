@@ -17,6 +17,15 @@
     position: relative;
     height: 100%;
 
+    li {
+      display: flex;
+      align-items: center;
+
+      button {
+        display: flex;
+      }
+    }
+
     .loginButton {
       font-weight: 600;
 
@@ -52,6 +61,11 @@
           width: 3.4375rem;
           height: 3.4375rem;
           object-fit: cover;
+
+          @media (max-width: 940px) {
+            width: 45px;
+            height: 45px;
+          }
         }
 
         .loadingProfile {
@@ -66,6 +80,22 @@
     .logoutButton {
       position: absolute;
       bottom: 0;
+    }
+  }
+
+  @media (max-width: 1080px) {
+    width: 100%;
+    border-radius: 0;
+    max-height: 5rem;
+
+    .menuList {
+      flex-direction: row;
+      align-items: center;
+      gap: 2.5rem;
+
+      .logoutButton {
+        position: unset;
+      }
     }
   }
 }

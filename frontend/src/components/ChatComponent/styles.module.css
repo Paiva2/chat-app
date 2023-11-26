@@ -1,1 +1,1 @@
-.chatComponentWrapper{display:flex;align-items:center;width:100%;max-width:940px;justify-content:center;height:100%;gap:.625rem}
+.chatComponentWrapper{display:flex;align-items:center;width:100%;max-width:940px;justify-content:center;height:100%;gap:.625rem;position:relative}.chatComponentWrapper .openMenuSideButton{position:absolute;top:0px;right:0px;background-color:#6263fb;padding:.75rem;display:flex;align-items:center;justify-content:center}@media(min-width: 940px){.chatComponentWrapper .openMenuSideButton{display:none}}

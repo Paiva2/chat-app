@@ -57,6 +57,9 @@ interface ChatContextInterface {
 
   openedMenuFromMessages: number | null
   setOpenenedMenuFromMessages: Dispatch<SetStateAction<number | null>>
+
+  showListMobile: boolean
+  setShowListMobile: Dispatch<SetStateAction<boolean>>
 }
 
 export const ChatContextProvider = createContext<ChatContextInterface>(
@@ -89,6 +92,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   })
 
   const [multipleConnectionDetected, setMultipleConnectionDetected] = useState(false)
+
+  const [showListMobile, setShowListMobile] = useState(false)
 
   const authToken = Cookies.get("chatapp-token")
 
@@ -255,6 +260,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         whoIsReceivingPrivate,
         multipleConnectionDetected,
         openedMenuFromMessages,
+        showListMobile,
+        setShowListMobile,
         setOpenenedMenuFromMessages,
         setMultipleConnectionDetected,
         setPrivateMessages,

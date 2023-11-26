@@ -21,6 +21,7 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
     openedProfile,
     whoIsReceivingPrivate,
     privateMessagesList,
+    setShowListMobile,
     setPrivateMessages,
     setOpenedProfile,
     setActiveMenu,
@@ -59,6 +60,7 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
 
   const handleOpenPrivateMessage = () => {
     setActiveMenu("Messages")
+    setShowListMobile(false)
 
     setWhoIsReceivingPrivate({
       ...whoIsReceivingPrivate,

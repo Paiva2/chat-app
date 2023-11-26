@@ -11,6 +11,7 @@ const ControlBar = () => {
   const {
     activeMenu,
     whoIsReceivingPrivate,
+    setShowListMobile,
     setPrivateMessages,
     setActiveMenu,
     setWhoIsReceivingPrivate,
@@ -57,6 +58,23 @@ const ControlBar = () => {
     }
   }
 
+  function handleItemMenu(menuName: string) {
+    if (menuName === "Home") {
+      handleClearProfilePopup()
+      setPrivateMessages([])
+    }
+
+    if (menuName === "Friend List") {
+      handleClearProfilePopup()
+    }
+
+    setActiveMenu(menuName)
+
+    if (menuName !== "Home") {
+      setShowListMobile(true)
+    }
+  }
+
   return (
     <div className={s.controlBarContainer}>
       <ul className={s.menuList}>
@@ -100,21 +118,7 @@ const ControlBar = () => {
               key={item.id}
               className={`${activeMenu === item.name ? s.active : ""}`}
             >
-              <button
-                onClick={() => {
-                  if (item.name === "Home") {
-                    handleClearProfilePopup()
-                    setPrivateMessages([])
-                  }
-
-                  if (item.name === "Friend List") {
-                    handleClearProfilePopup()
-                  }
-
-                  setActiveMenu(item.name)
-                }}
-                type="button"
-              >
+              <button onClick={() => handleItemMenu(item.name)} type="button">
                 {item.icon}
               </button>
             </li>

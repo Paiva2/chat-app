@@ -6,10 +6,17 @@ import PrivateMessageAsideCard from "./PrivateMessageAsideCard"
 import EmptyListPlaceholder from "../EmptyListPlaceholder"
 import UserFriend from "./UserFriend"
 import s from "./styles.module.css"
+import { X } from "lucide-react"
 
 const List = () => {
-  const { usersList, myId, activeMenu, privateMessagesList } =
-    useContext(ChatContextProvider)
+  const {
+    usersList,
+    myId,
+    activeMenu,
+    privateMessagesList,
+    showListMobile,
+    setShowListMobile,
+  } = useContext(ChatContextProvider)
 
   const { userFriendList } = useContext(UserContextProvider)
 
@@ -26,7 +33,17 @@ const List = () => {
   }
 
   return (
-    <div className={s.listContainer}>
+    <div
+      className={`${s.listContainer} ${
+        showListMobile ? s.visibleList : s.invisibleList
+      }`}
+    >
+      <span className={s.mobileClose}>
+        <button onClick={() => setShowListMobile(false)} type="button">
+          <X color="#e64545" size={40} />
+        </button>
+      </span>
+
       {activeMenu === "Home" && (
         <Fragment>
           <h1 className={s.onlineText}>Online Users</h1>

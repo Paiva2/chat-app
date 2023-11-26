@@ -47,7 +47,8 @@ export default class InsertNewPrivateMessageService {
         sendToUsername: newMessage.sendToUsername,
         username: newMessage.username,
         userId: newMessage.userId,
-        userProfilePic: newMessage.userProfilePic,
+        userProfilePic:
+          newMessage.userProfilePic ?? "https://i.postimg.cc/hjvSCcM3/jOkraDo.png",
         time: newMessage.time || new Date(),
         message: newMessage.message,
         fkConnections: connUserId.id,

@@ -1,1 +1,1 @@
-.placeHolderWrapper{display:flex;height:100%;align-items:center;text-align:center;justify-content:center;flex-direction:column;gap:.9375rem}.placeHolderWrapper h1{font-weight:600;font-size:1.5625rem;color:#0f084e}
+.placeHolderWrapper{display:flex;height:100%;align-items:center;text-align:center;justify-content:center;flex-direction:column;gap:.9375rem}.placeHolderWrapper h1{font-weight:600;font-size:1.5625rem;color:#0f084e}@media(max-width: 940px){.placeHolderWrapper h1{font-size:1.375rem}.placeHolderWrapper svg{width:3.4375rem;height:3.4375rem}}

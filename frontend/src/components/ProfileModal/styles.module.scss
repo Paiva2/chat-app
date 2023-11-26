@@ -153,4 +153,18 @@
       }
     }
   }
+
+  @media (max-width: 940px) {
+    .profileModal {
+      width: 90%;
+
+      .profileForm {
+        .updateProfileButton {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
 }

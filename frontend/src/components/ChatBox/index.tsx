@@ -4,9 +4,9 @@ import { ChatContextProvider } from "../../context/chatContext"
 import { INewMessage, WebSocketPayload } from "../../@types/types"
 import { displayTimeOptions } from "../../utils/displayTimeOptions"
 import { UserContextProvider } from "../../context/userContext"
+import { useMutation } from "@tanstack/react-query"
 import ws from "../../lib/socket.config"
 import s from "./styles.module.css"
-import { useMutation } from "@tanstack/react-query"
 import api from "../../lib/api"
 
 const ChatBox = () => {
@@ -103,7 +103,7 @@ const ChatBox = () => {
         })
       )
 
-      if (myId?.auth) {
+      if (myId) {
         const handlingConnection = await handleConnection.mutateAsync({
           connections: [whoIsReceivingPrivate.to.id, myId?.id],
         })

@@ -37,13 +37,13 @@ export default function userRoutes(app: Express) {
     UpdateUserProfileController.handleUpload
   )
 
+  app.post("/private-message", InsertNewPrivateMessageController.handle)
+
+  app.post("/connection", HandleConnectionController.handle)
+
   app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
 
   app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
-
-  app.post("/private-message", [verifyJwt], InsertNewPrivateMessageController.handle)
-
-  app.post("/connection", [verifyJwt], HandleConnectionController.handle)
 
   app.get("/private-messages", [verifyJwt], GetUserMessagesController.handle)
 }
