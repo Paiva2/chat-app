@@ -1,10 +1,11 @@
 import { useState, useContext, useEffect } from "react"
 import { displayTimeOptions } from "../../../../utils/displayTimeOptions"
 import { ChatContextProvider } from "../../../../context/chatContext"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FetchUserSchema, PrivateMessageSchema } from "../../../../@types/types"
 import api from "../../../../lib/api"
 import s from "./styles.module.css"
+import { UserContextProvider } from "../../../../context/userContext"
 
 interface ICardProps {
   connection: PrivateMessageSchema
@@ -30,17 +31,22 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     whoIsReceivingPrivate,
     openedMenuFromMessages,
     showListMobile,
+    setActiveMenu,
     setShowListMobile,
     setOpenenedMenuFromMessages,
     setPrivateMessages,
     setWhoIsReceivingPrivate,
   } = useContext(ChatContextProvider)
 
+  const { userProfile } = useContext(UserContextProvider)
+
   const [openMiniMenu, setOpenMiniMenu] = useState(false)
 
   const getOthersideUserId = connection.connections.find(
     (conn) => !conn?.includes(myId?.id as string)
   )
+
+  const queryClient = useQueryClient()
 
   const { data: userData } = useQuery({
     queryKey: ["getOthersideUserId"],
@@ -101,8 +107,40 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     setOpenenedMenuFromMessages(null)
   }, [showListMobile])
 
-  //TODO
-  function handleDeleteConversation() {}
+  const deleteConnection = useMutation({
+    mutationKey: ["connectionRemoval"],
+    mutationFn: (connectionId: string) => {
+      return api.delete("/connection", {
+        data: {
+          connectionId,
+        },
+        headers: {
+          Authorization: `Bearer ${userProfile?.token}`,
+        },
+      })
+    },
+  })
+
+  //TODO: REFETCH LIST AFTER DELETE - MESSAGE DELETING WITHOUT LOGIN
+  async function handleDeleteConversation(connectionId: string) {
+    await deleteConnection.mutateAsync(connectionId)
+
+    queryClient.invalidateQueries({ queryKey: ["getStoredMessages"] })
+
+    setOpenMiniMenu(false)
+
+    setOpenenedMenuFromMessages(null)
+
+    setActiveMenu("Home")
+
+    setWhoIsReceivingPrivate({
+      to: {
+        id: "",
+        username: "",
+        profilePicture: "",
+      },
+    })
+  }
 
   return (
     <li
@@ -152,7 +190,12 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
           </button>
         </span>
         <span>
-          <button onClick={handleDeleteConversation} type="button">
+          <button
+            onClick={() =>
+              handleDeleteConversation(connection?.connectionId as string)
+            }
+            type="button"
+          >
             Delete
           </button>
         </span>

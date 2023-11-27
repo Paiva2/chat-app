@@ -3,7 +3,7 @@ import { Request, Response } from "express"
 import decodeJwt from "../../utils/decodeJwt"
 import Factory from "../factory"
 
-export default class DeleteConnectionServicesController {
+export default class DeleteConnectionController {
   public static async handle(req: Request, res: Response) {
     const { connectionId } = req.body
     const authToken = decodeJwt(req.headers.authorization as string)

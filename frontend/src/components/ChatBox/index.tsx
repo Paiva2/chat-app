@@ -4,7 +4,7 @@ import { ChatContextProvider } from "../../context/chatContext"
 import { INewMessage, WebSocketPayload } from "../../@types/types"
 import { displayTimeOptions } from "../../utils/displayTimeOptions"
 import { UserContextProvider } from "../../context/userContext"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ws from "../../lib/socket.config"
 import s from "./styles.module.css"
 import api from "../../lib/api"
@@ -23,6 +23,8 @@ const ChatBox = () => {
 
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
+
+  const queryClient = useQueryClient()
 
   let messagesToDisplay: WebSocketPayload[] = messages
 
@@ -53,6 +55,10 @@ const ChatBox = () => {
           Authorization: `Bearer ${userProfile?.token}`,
         },
       })
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getStoredMessages"] })
     },
   })
 

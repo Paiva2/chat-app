@@ -1,3 +1,4 @@
+import { DeleteResult } from "typeorm"
 import { Connection } from "../../@types/types"
 import { ConnectionsInterface } from "../../interfaces/connectionsInterface"
 import UserInterface from "../../interfaces/userInterface"
@@ -7,7 +8,7 @@ interface DeleteConnectionServiceRequest {
   connectionId: string
 }
 
-type DeleteConnectionServiceResponse = Connection
+type DeleteConnectionServiceResponse = Connection | DeleteResult
 export default class DeleteConnectionService {
   constructor(
     private userInterface: UserInterface,

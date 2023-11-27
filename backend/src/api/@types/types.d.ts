@@ -46,6 +46,7 @@ export interface Message {
 }
 
 interface UserMessages {
+  connectionId: string
   connections: string[]
   data: Message[]
 }

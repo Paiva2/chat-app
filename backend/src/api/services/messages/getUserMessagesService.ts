@@ -65,6 +65,7 @@ export default class GetUserMessagesService {
             conversationMessages?.data.push(msg)
           } else {
             formatMessages.push({
+              connectionId: conn.id,
               connections: [conn.connectionOne, conn.connectionTwo],
               data: [msg],
             })

@@ -13,6 +13,7 @@ import InsertToFriendListController from "../controllers/userFriendList/InsertTo
 import GetUserFriendListController from "../controllers/userFriendList/getUserFriendListController"
 import RemoveFromFriendListController from "../controllers/userFriendList/removeFromFriendListController"
 import GetUserMessagesController from "../controllers/messages/getUserMessagesController"
+import DeleteConnectionController from "../controllers/connections/deleteConnectionServicesController"
 
 export default function userRoutes(app: Express) {
   app.post("/register", RegisterNewUserController.handle)
@@ -46,4 +47,6 @@ export default function userRoutes(app: Express) {
   app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
 
   app.get("/private-messages", [verifyJwt], GetUserMessagesController.handle)
+
+  app.delete("/connection", [verifyJwt], DeleteConnectionController.handle)
 }

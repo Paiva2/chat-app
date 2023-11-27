@@ -141,6 +141,9 @@
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.2s ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         &:hover {
           opacity: 0.8;
@@ -157,14 +160,6 @@
   @media (max-width: 940px) {
     .profileModal {
       width: 90%;
-
-      .profileForm {
-        .updateProfileButton {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-      }
     }
   }
 }

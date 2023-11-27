@@ -108,6 +108,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
       if (getMessages.status === 200) {
         setPrivateMessagesList(getMessages.data)
+      } else {
+        setPrivateMessagesList([])
       }
 
       return getMessages.data
