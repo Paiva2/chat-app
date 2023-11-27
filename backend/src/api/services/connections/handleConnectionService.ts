@@ -6,7 +6,7 @@ interface HandleConnectionServiceRequest {
   connections: string[]
 }
 
-type HandleConnectionServiceRequestResponse = Connection[] | void
+type HandleConnectionServiceRequestResponse = Connection[]
 
 export default class HandleConnectionService {
   constructor(
@@ -31,7 +31,8 @@ export default class HandleConnectionService {
     const doesExistsAnConnectionWithThoseIds =
       await this.connectionsInterface.findConnections(connections)
 
-    if (doesExistsAnConnectionWithThoseIds.length > 0) return
+    if (doesExistsAnConnectionWithThoseIds.length > 0)
+      return doesExistsAnConnectionWithThoseIds
 
     if (connections.length < 2) {
       throw {

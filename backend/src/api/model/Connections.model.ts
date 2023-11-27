@@ -1,3 +1,4 @@
+import { DeleteResult } from "typeorm"
 import { TypeOrm } from "../../data-source"
 import { Connection } from "../@types/types"
 import { ConnectionsEntity } from "../database/entities/Connections.entity"
@@ -55,5 +56,27 @@ export default class ConnectionsModel implements ConnectionsInterface {
     })
 
     return getAllUserConnections
+  }
+
+  async delete(
+    userId: string,
+    connectionId: string
+  ): Promise<Connection | DeleteResult> {
+    const deleteConnection = await this.connectionsRepository.delete({
+      id: connectionId,
+      fkUser: userId,
+    })
+
+    return deleteConnection
+  }
+
+  async findConnectionById(connectionId: string): Promise<Connection | null> {
+    const [findConnection] = await this.connectionsRepository.find({
+      where: {
+        id: connectionId,
+      },
+    })
+
+    return findConnection
   }
 }

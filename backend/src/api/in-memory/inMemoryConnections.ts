@@ -47,4 +47,26 @@ export default class InMemoryConnections implements ConnectionsInterface {
 
     return userConnections
   }
+
+  async findConnectionById(connectionId: string): Promise<Connection | null> {
+    const connection = this.connections.find(
+      (connection) => connection.id === connectionId
+    )
+
+    if (!connection) return null
+
+    return connection
+  }
+
+  async delete(userId: string, connectionId: string): Promise<Connection> {
+    const connection = this.connections.find(
+      (connection) => connection.id === connectionId && connection.fkUser === userId
+    )!
+
+    const getConnectionIndex = this.connections.indexOf(connection)
+
+    this.connections.splice(getConnectionIndex, 1)
+
+    return connection
+  }
 }

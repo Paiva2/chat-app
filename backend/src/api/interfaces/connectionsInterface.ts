@@ -1,3 +1,4 @@
+import { DeleteResult } from "typeorm"
 import { Connection } from "../@types/types"
 
 export interface ConnectionsInterface {
@@ -10,4 +11,8 @@ export interface ConnectionsInterface {
   findConnections(connections: string[]): Promise<Connection[]>
 
   findUserConnections(userId: string): Promise<Connection[]>
+
+  findConnectionById(connectionId: string): Promise<Connection | null>
+
+  delete(userId: string, connectionId: string): Promise<Connection | DeleteResult>
 }
