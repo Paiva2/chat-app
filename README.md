@@ -15,8 +15,7 @@
 # Doing
 
 - DTO validations;
-- Refetch private messages list after deleting one;
-- Handle with private messages removal for guest users;
+- Remove unused API requests when using as a guest
 
 # Techologies used
 
@@ -29,13 +28,13 @@
 - TypeORM;
 - Pure WebSocket;
 - Jest for unit tests;
-- Docker;
+- Docker.
 
 ## Front-end
 
-- TypeScript
-- React
-- Sass
+- TypeScript;
+- React;
+- Sass.
 
 # Screenshots
 
