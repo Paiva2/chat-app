@@ -14,11 +14,9 @@ import {
 } from "../@types/types"
 import { getUserProfile } from "../utils/getUserProfile"
 import { useQuery } from "@tanstack/react-query"
-import { v4 as uuidv4 } from "uuid"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import api from "../lib/api"
-import { AxiosError } from "axios"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
@@ -49,6 +47,7 @@ interface ChatContextInterface {
     SetStateAction<{ to: { id: string; username: string; profilePicture: string } }>
   >
 
+  setPrivateMessagesList: Dispatch<SetStateAction<PrivateMessageSchema[]>>
   privateMessagesList: PrivateMessageSchema[]
 
   privateMessages: WebSocketPayload[]
@@ -111,25 +110,23 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
 
         const messages = getMessages.data as PrivateMessageSchema[]
 
-        setPrivateMessagesList(messages?.length ? messages : [])
+        if (authToken) {
+          setPrivateMessagesList(messages?.length ? messages : [])
+        }
 
         return messages
-      } catch (e) {
-        if (e instanceof AxiosError) {
-          setPrivateMessagesList([])
-        }
+      } catch {
+        setPrivateMessagesList([])
 
         return []
       }
     },
-
-    retry: false,
     enabled: Boolean(authToken),
   })
 
   function handleWithPrivateMessagesDisplaying(dataParsed: WebSocketPayload) {
     if (whoIsReceivingPrivate.to.id) {
-      const checkIfUserHasConversationsPreviously = privateMessagesList.filter(
+      const checkIfUserHasConversationsPreviously = privateMessagesList.find(
         (message) => {
           return (
             message.connections.includes(whoIsReceivingPrivate.to.id) &&
@@ -138,8 +135,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
       )
 
-      if (checkIfUserHasConversationsPreviously.length > 0) {
-        setPrivateMessages(checkIfUserHasConversationsPreviously[0].data)
+      if (checkIfUserHasConversationsPreviously) {
+        setPrivateMessages(checkIfUserHasConversationsPreviously.data)
       } else {
         setPrivateMessages(Array(dataParsed))
       }
@@ -209,10 +206,8 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
             findSimilarConnections.data.push(parseData.data)
             findSimilarConnections.updatedAt = parseData.data.time
           } else {
-            const createConnectionId = uuidv4()
-
             copyPrivateMsgList.push({
-              connectionId: createConnectionId,
+              connectionId: parseData.data.fromConnectionId,
               updatedAt: parseData.data.time,
               connections: [parseData.data.sendToId, parseData.data.userId],
               data: [parseData.data],
@@ -275,6 +270,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         multipleConnectionDetected,
         openedMenuFromMessages,
         showListMobile,
+        setPrivateMessagesList,
         setShowListMobile,
         setOpenenedMenuFromMessages,
         setMultipleConnectionDetected,

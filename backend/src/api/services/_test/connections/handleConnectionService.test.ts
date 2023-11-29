@@ -27,6 +27,7 @@ describe("Handle connection service", () => {
 
     const newConnection = await sut.exec({
       connections: [firstConnectionId, secondConnectionId],
+      connectionId: null,
     })
 
     expect(newConnection).toEqual([
@@ -52,6 +53,7 @@ describe("Handle connection service", () => {
 
     const newConnection = await sut.exec({
       connections: [firstConnectionId, secondConnectionId],
+      connectionId: null,
     })
 
     expect(newConnection).toEqual([
@@ -82,6 +84,7 @@ describe("Handle connection service", () => {
     await expect(() => {
       return sut.exec({
         connections: [firstConnectionId, secondConnectionId],
+        connectionId: null,
       })
     }).rejects.toEqual(
       expect.objectContaining({
@@ -96,6 +99,7 @@ describe("Handle connection service", () => {
     await expect(() => {
       return sut.exec({
         connections: [firstConnectionId],
+        connectionId: null,
       })
     }).rejects.toEqual(
       expect.objectContaining({

@@ -3,9 +3,9 @@ import { displayTimeOptions } from "../../../../utils/displayTimeOptions"
 import { ChatContextProvider } from "../../../../context/chatContext"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FetchUserSchema, PrivateMessageSchema } from "../../../../@types/types"
+import { UserContextProvider } from "../../../../context/userContext"
 import api from "../../../../lib/api"
 import s from "./styles.module.css"
-import { UserContextProvider } from "../../../../context/userContext"
 
 interface ICardProps {
   connection: PrivateMessageSchema
@@ -31,6 +31,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     whoIsReceivingPrivate,
     openedMenuFromMessages,
     showListMobile,
+    setPrivateMessagesList,
     setShowListMobile,
     setOpenenedMenuFromMessages,
     setPrivateMessages,
@@ -141,7 +142,29 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
   })
 
   async function handleDeleteConversation(connectionId: string) {
-    deleteConnection.mutate(connectionId)
+    if (myId?.auth) {
+      deleteConnection.mutate(connectionId)
+    } else {
+      const removeFromList = privateMessagesList.filter(
+        (connection) => connection.connectionId !== connectionId
+      )
+
+      setPrivateMessages([])
+
+      setPrivateMessagesList(removeFromList)
+
+      setOpenMiniMenu(false)
+
+      setOpenenedMenuFromMessages(null)
+
+      setWhoIsReceivingPrivate({
+        to: {
+          id: "",
+          username: "",
+          profilePicture: "",
+        },
+      })
+    }
   }
 
   return (
@@ -193,9 +216,11 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
         </span>
         <span>
           <button
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation()
+
               handleDeleteConversation(connection?.connectionId as string)
-            }
+            }}
             type="button"
           >
             Delete

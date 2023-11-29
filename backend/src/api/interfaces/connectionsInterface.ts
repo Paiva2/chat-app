@@ -5,7 +5,8 @@ export interface ConnectionsInterface {
   create(
     userToCreateConnection: string[],
     connectionOne: string,
-    connectionTwo: string
+    connectionTwo: string,
+    connectionId: string | null
   ): Promise<Connection[]>
 
   findConnections(connections: string[]): Promise<Connection[]>

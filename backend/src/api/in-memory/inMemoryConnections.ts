@@ -8,13 +8,14 @@ export default class InMemoryConnections implements ConnectionsInterface {
   async create(
     userToCreateConnection: string[],
     connectionOne: string,
-    connectionTwo: string
+    connectionTwo: string,
+    connectionId: string | null
   ): Promise<Connection[]> {
     let newConnections = [] as Connection[]
 
     userToCreateConnection.forEach((userId) => {
       const newConnection: Connection = {
-        id: randomUUID(),
+        id: connectionId ? connectionId : randomUUID(),
         connectionOne: connectionOne,
         connectionTwo: connectionTwo,
         createdAt: new Date(),

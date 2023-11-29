@@ -17,6 +17,7 @@ export interface CustomWebSocket extends WebSocket {
 }
 
 export interface PrivateMessageRequest {
+  fromConnectionId: string | null
   from: { id: string; username: string; profilePic: string | null }
   destiny: {
     to: {

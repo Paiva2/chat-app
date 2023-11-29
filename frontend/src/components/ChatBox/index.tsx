@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useContext, useEffect } from "react"
+import { FormEvent, useRef, useContext, useEffect, useState } from "react"
 import { SendHorizontal } from "lucide-react"
 import { ChatContextProvider } from "../../context/chatContext"
 import { INewMessage, WebSocketPayload } from "../../@types/types"
@@ -9,6 +9,11 @@ import ws from "../../lib/socket.config"
 import s from "./styles.module.css"
 import api from "../../lib/api"
 
+interface INewConnection {
+  connections: string[]
+  connectionId: string | null
+}
+
 const ChatBox = () => {
   const {
     messages,
@@ -16,6 +21,7 @@ const ChatBox = () => {
     activeMenu,
     whoIsReceivingPrivate,
     privateMessages,
+    privateMessagesList,
     usersList,
   } = useContext(ChatContextProvider)
 
@@ -23,6 +29,9 @@ const ChatBox = () => {
 
   const newMessageInputRef = useRef<HTMLInputElement | null>(null)
   const messagesListRef = useRef<HTMLUListElement | null>(null)
+
+  const [handleWithConnectionAndMessage, setHandleWithConnectionAndMessage] =
+    useState(false)
 
   const queryClient = useQueryClient()
 
@@ -38,8 +47,8 @@ const ChatBox = () => {
 
   const handleConnection = useMutation({
     mutationKey: ["handleConnection"],
-    mutationFn: (newMessage: Pick<INewMessage, "connections">) => {
-      return api.post("/connection", newMessage, {
+    mutationFn: (newConnection: INewConnection) => {
+      return api.post("/connection", newConnection, {
         headers: {
           Authorization: `Bearer ${userProfile?.token}`,
         },
@@ -90,7 +99,52 @@ const ChatBox = () => {
     }
   }
 
-  async function privateMessage() {
+  useEffect(() => {
+    if (privateMessagesList.length > 0 && handleWithConnectionAndMessage) {
+      handleSendNewMessageAndConnection()
+    }
+  }, [privateMessagesList])
+
+  async function handleSendNewMessageAndConnection() {
+    if (myId && newMessageInputRef.current) {
+      const getRecentlyCreatedConnId = privateMessagesList.find((conn) => {
+        return (
+          conn.connections.includes(whoIsReceivingPrivate.to.id) &&
+          conn.connections.includes(myId?.id)
+        )
+      })
+
+      const handlingConnection = await handleConnection.mutateAsync({
+        connectionId: getRecentlyCreatedConnId?.connectionId || null,
+        connections: [whoIsReceivingPrivate.to.id, myId?.id],
+      })
+
+      const messageValue = newMessageInputRef.current.value
+
+      if (handlingConnection.status === 201) {
+        setTimeout(() => {
+          insertNewPrivateMessage.mutate({
+            newMessage: {
+              sendToId: whoIsReceivingPrivate.to.id,
+              sendToUsername: whoIsReceivingPrivate.to.username,
+              username: myId?.username,
+              userId: myId?.id,
+              userProfilePic: userProfile?.profileImage as string,
+              time: new Date(),
+              message: messageValue,
+            },
+          })
+        }, 600)
+      }
+
+      newMessageInputRef.current.value = ""
+      newMessageInputRef?.current?.focus()
+    }
+
+    setHandleWithConnectionAndMessage(false)
+  }
+
+  function privateMessage() {
     const from = {
       id: myId?.id,
       username: myId?.username,
@@ -98,10 +152,21 @@ const ChatBox = () => {
     }
 
     if (newMessageInputRef?.current) {
+      const checkIfConnectionForThisMessageExistsAlready = privateMessagesList.find(
+        (conn) => {
+          return (
+            conn.connections.includes(whoIsReceivingPrivate.to.id) &&
+            conn.connections.includes(from.id as string)
+          )
+        }
+      )
+
       ws.send(
         JSON.stringify({
           action: "new-private-message",
           data: {
+            fromConnectionId:
+              checkIfConnectionForThisMessageExistsAlready?.connectionId,
             from: from,
             destiny: whoIsReceivingPrivate,
             message: newMessageInputRef.current.value,
@@ -109,32 +174,7 @@ const ChatBox = () => {
         })
       )
 
-      if (myId) {
-        const handlingConnection = await handleConnection.mutateAsync({
-          connections: [whoIsReceivingPrivate.to.id, myId?.id],
-        })
-
-        const messageValue = newMessageInputRef.current.value
-
-        if (handlingConnection.status === 201) {
-          setTimeout(() => {
-            insertNewPrivateMessage.mutate({
-              newMessage: {
-                sendToId: whoIsReceivingPrivate.to.id,
-                sendToUsername: whoIsReceivingPrivate.to.username,
-                username: myId?.username,
-                userId: myId?.id,
-                userProfilePic: userProfile?.profileImage as string,
-                time: new Date(),
-                message: messageValue,
-              },
-            })
-          }, 1000)
-        }
-      }
-
-      newMessageInputRef.current.value = ""
-      newMessageInputRef.current.focus()
+      setHandleWithConnectionAndMessage(true)
     }
   }
 

@@ -3,6 +3,7 @@ import { TypeOrm } from "../../data-source"
 import { Connection } from "../@types/types"
 import { ConnectionsEntity } from "../database/entities/Connections.entity"
 import { ConnectionsInterface } from "../interfaces/connectionsInterface"
+import { randomUUID } from "node:crypto"
 
 export default class ConnectionsModel implements ConnectionsInterface {
   private connectionsEntity = new ConnectionsEntity()
@@ -11,7 +12,8 @@ export default class ConnectionsModel implements ConnectionsInterface {
   async create(
     connections: string[],
     connectionOne: string,
-    connectionTwo: string
+    connectionTwo: string,
+    connectionId: string | null
   ): Promise<Connection[]> {
     let newConnectionsArr = [] as Connection[]
 
@@ -22,6 +24,7 @@ export default class ConnectionsModel implements ConnectionsInterface {
         .into(ConnectionsEntity)
         .values([
           {
+            id: connectionId ? connectionId : randomUUID(),
             connectionOne,
             connectionTwo,
             fkUser: userId,

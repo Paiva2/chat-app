@@ -71,7 +71,7 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
       },
     })
 
-    const checkIfUserHasConversationsPreviously = privateMessagesList.filter(
+    const checkIfUserHasConversationsPreviously = privateMessagesList.find(
       (message) => {
         return (
           message.connections.includes(user.id) &&
@@ -80,8 +80,8 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
       }
     )
 
-    if (checkIfUserHasConversationsPreviously.length) {
-      setPrivateMessages(checkIfUserHasConversationsPreviously[0].data)
+    if (checkIfUserHasConversationsPreviously) {
+      setPrivateMessages(checkIfUserHasConversationsPreviously.data)
     }
 
     setOpenedProfile("")

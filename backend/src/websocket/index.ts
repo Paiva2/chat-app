@@ -195,6 +195,7 @@ export default class WebSocketConnection {
       data: {
         type: "private-message",
         messageId: randomUUID(),
+        fromConnectionId: messageInformations.fromConnectionId || randomUUID(),
         userId: myId,
         username: myUsername,
         sendToId: destinationId,

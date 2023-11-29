@@ -72,7 +72,8 @@ describe("Get user messages service", () => {
     const [firstConnection] = await inMemoryConnections.create(
       [userCreated.id, fakeUserId],
       userCreated.id,
-      fakeUserId
+      fakeUserId,
+      null
     )
 
     await createNewPrivateMessage(
@@ -85,7 +86,8 @@ describe("Get user messages service", () => {
     const [secondConnection] = await inMemoryConnections.create(
       [userCreated.id, secondFakeUserId],
       userCreated.id,
-      secondFakeUserId
+      secondFakeUserId,
+      null
     )
 
     await createNewPrivateMessage(

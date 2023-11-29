@@ -41,7 +41,8 @@ describe("Insert new private message service", () => {
     connectionBetweenUsers = await inMemoryConnections.create(
       [userCreated.id],
       userCreated.id,
-      secondConnectionId
+      secondConnectionId,
+      null
     )
 
     const messageForOneUser = await sut.exec({
@@ -87,7 +88,8 @@ describe("Insert new private message service", () => {
     connectionBetweenUsers = await inMemoryConnections.create(
       [userCreated.id, secondConnectionId],
       userCreated.id,
-      secondConnectionId
+      secondConnectionId,
+      null
     )
 
     const messageForOneUser = await sut.exec({

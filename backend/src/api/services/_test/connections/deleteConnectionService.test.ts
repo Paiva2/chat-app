@@ -35,6 +35,7 @@ describe("Delete connection service", () => {
 
     const newConnection = await handleConnectionService.exec({
       connections: [firstConnectionId, secondConnectionId],
+      connectionId: null,
     })
 
     await sut.exec({

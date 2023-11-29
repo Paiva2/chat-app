@@ -3,6 +3,7 @@ import { ConnectionsInterface } from "../../interfaces/connectionsInterface"
 import UserInterface from "../../interfaces/userInterface"
 
 interface HandleConnectionServiceRequest {
+  connectionId: string | null
   connections: string[]
 }
 
@@ -16,6 +17,7 @@ export default class HandleConnectionService {
 
   async exec({
     connections,
+    connectionId,
   }: HandleConnectionServiceRequest): Promise<HandleConnectionServiceRequestResponse> {
     const doesConnectionIdIsFromAnUser = await this.userInteface.findByConnection(
       connections
@@ -48,7 +50,8 @@ export default class HandleConnectionService {
     const newConnection = await this.connectionsInterface.create(
       userIdToCreateNewConnection,
       connections[0],
-      connections[1]
+      connections[1],
+      connectionId
     )
 
     return newConnection
