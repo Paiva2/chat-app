@@ -1,6 +1,6 @@
-## Chat Application
+# Chat Application
 
-# Users are able to
+## Users are able to
 
 - Use app as an guest;
 - Send private messages;
@@ -12,14 +12,14 @@
 - Add and remove an user from friend list;
 - Check other online users mini-profile;
 
-# Doing
+## Doing
 
 - DTO validations;
 - Remove unused API requests when using as a guest
 
-# Techologies used
+## Techologies used
 
-## Backend
+### Backend
 
 - TypeScript;
 - Node (Express);
@@ -30,12 +30,12 @@
 - Jest for unit tests;
 - Docker.
 
-## Front-end
+### Front-end
 
 - TypeScript;
 - React;
 - Sass.
 
-# Screenshots
+## Screenshots
 
 ### Soon.
