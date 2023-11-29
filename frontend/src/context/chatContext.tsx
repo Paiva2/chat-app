@@ -14,9 +14,11 @@ import {
 } from "../@types/types"
 import { getUserProfile } from "../utils/getUserProfile"
 import { useQuery } from "@tanstack/react-query"
+import { v4 as uuidv4 } from "uuid"
 import ws from "../lib/socket.config"
 import Cookies from "js-cookie"
 import api from "../lib/api"
+import { AxiosError } from "axios"
 
 interface ChatContextProviderProps {
   children: React.ReactNode
@@ -100,20 +102,27 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   useQuery({
     queryKey: ["getStoredMessages"],
     queryFn: async () => {
-      const getMessages = await api.get("/private-messages", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
+      try {
+        const getMessages = await api.get("/private-messages", {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
 
-      if (getMessages.status === 200) {
-        setPrivateMessagesList(getMessages.data)
-      } else {
-        setPrivateMessagesList([])
+        const messages = getMessages.data as PrivateMessageSchema[]
+
+        setPrivateMessagesList(messages?.length ? messages : [])
+
+        return messages
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          setPrivateMessagesList([])
+        }
+
+        return []
       }
-
-      return getMessages.data
     },
+
     retry: false,
     enabled: Boolean(authToken),
   })
@@ -200,7 +209,10 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
             findSimilarConnections.data.push(parseData.data)
             findSimilarConnections.updatedAt = parseData.data.time
           } else {
+            const createConnectionId = uuidv4()
+
             copyPrivateMsgList.push({
+              connectionId: createConnectionId,
               updatedAt: parseData.data.time,
               connections: [parseData.data.sendToId, parseData.data.userId],
               data: [parseData.data],

@@ -129,7 +129,7 @@ const ChatBox = () => {
                 message: messageValue,
               },
             })
-          }, 1500)
+          }, 1000)
         }
       }
 

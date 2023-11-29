@@ -31,7 +31,6 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     whoIsReceivingPrivate,
     openedMenuFromMessages,
     showListMobile,
-    setActiveMenu,
     setShowListMobile,
     setOpenenedMenuFromMessages,
     setPrivateMessages,
@@ -119,27 +118,30 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
         },
       })
     },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getStoredMessages"],
+      })
+
+      setOpenMiniMenu(false)
+
+      setOpenenedMenuFromMessages(null)
+
+      setPrivateMessages([])
+
+      setWhoIsReceivingPrivate({
+        to: {
+          id: "",
+          username: "",
+          profilePicture: "",
+        },
+      })
+    },
   })
 
-  //TODO: REFETCH LIST AFTER DELETE - MESSAGE DELETING WITHOUT LOGIN
   async function handleDeleteConversation(connectionId: string) {
-    await deleteConnection.mutateAsync(connectionId)
-
-    queryClient.invalidateQueries({ queryKey: ["getStoredMessages"] })
-
-    setOpenMiniMenu(false)
-
-    setOpenenedMenuFromMessages(null)
-
-    setActiveMenu("Home")
-
-    setWhoIsReceivingPrivate({
-      to: {
-        id: "",
-        username: "",
-        profilePicture: "",
-      },
-    })
+    deleteConnection.mutate(connectionId)
   }
 
   return (
