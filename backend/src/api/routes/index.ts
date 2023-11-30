@@ -13,14 +13,31 @@ import InsertToFriendListController from "../controllers/userFriendList/InsertTo
 import GetUserFriendListController from "../controllers/userFriendList/getUserFriendListController"
 import RemoveFromFriendListController from "../controllers/userFriendList/removeFromFriendListController"
 import GetUserMessagesController from "../controllers/messages/getUserMessagesController"
-import DeleteConnectionController from "../controllers/connections/deleteConnectionServicesController"
+import dtoValidator from "../middleware/dtoValidator"
+import {
+  authUserDto,
+  changeUserPasswordDto,
+  registerNewUserDto,
+} from "../dto/userDto"
+import { insertToFriendListDto, removeFromFriendListDto } from "../dto/friendListDto"
+import { insertNewPrivateMessageDto } from "../dto/messagesDto"
+import DeleteConnectionController from "../controllers/connections/deleteConnectionController"
+import { deleteConnectionDto, handleConnectionDto } from "../dto/connectionsDto"
 
-export default function userRoutes(app: Express) {
-  app.post("/register", RegisterNewUserController.handle)
+export default function routes(app: Express) {
+  app.post(
+    "/register",
+    [dtoValidator(registerNewUserDto)],
+    RegisterNewUserController.handle
+  )
 
-  app.patch("/update-password", ChangeUserPasswordControler.handle)
+  app.patch(
+    "/update-password",
+    [dtoValidator(changeUserPasswordDto)],
+    ChangeUserPasswordControler.handle
+  )
 
-  app.post("/login", AuthUserController.handle)
+  app.post("/login", [dtoValidator(authUserDto)], AuthUserController.handle)
 
   app.get("/user/:userId", FetchUserController.handle)
 
@@ -38,15 +55,35 @@ export default function userRoutes(app: Express) {
     UpdateUserProfileController.handleUpload
   )
 
-  app.post("/private-message", InsertNewPrivateMessageController.handle)
+  app.post(
+    "/private-message",
+    [dtoValidator(insertNewPrivateMessageDto)],
+    InsertNewPrivateMessageController.handle
+  )
 
-  app.post("/connection", HandleConnectionController.handle)
+  app.post(
+    "/connection",
+    [dtoValidator(handleConnectionDto)],
+    HandleConnectionController.handle
+  )
 
-  app.post("/friend", [verifyJwt], InsertToFriendListController.handle)
+  app.post(
+    "/friend",
+    [verifyJwt, dtoValidator(insertToFriendListDto)],
+    InsertToFriendListController.handle
+  )
 
-  app.delete("/friend", [verifyJwt], RemoveFromFriendListController.handle)
+  app.delete(
+    "/friend",
+    [verifyJwt, dtoValidator(removeFromFriendListDto)],
+    RemoveFromFriendListController.handle
+  )
 
   app.get("/private-messages", [verifyJwt], GetUserMessagesController.handle)
 
-  app.delete("/connection", [verifyJwt], DeleteConnectionController.handle)
+  app.delete(
+    "/connection",
+    [verifyJwt, dtoValidator(deleteConnectionDto)],
+    DeleteConnectionController.handle
+  )
 }

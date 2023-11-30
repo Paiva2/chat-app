@@ -1,13 +1,10 @@
 import { Request, Response } from "express"
 import { ErrorHandling } from "../../@types/types"
-import UserModel from "../../model/User.model"
 import Factory from "../factory"
 
 export default class ChangeUserPasswordControler {
   static async handle(req: Request, res: Response) {
     const { email, newPassword, confirmNewPassword } = req.body
-
-    const userModel = new UserModel()
 
     const { changeUserPasswordService } = Factory.exec()
 

@@ -3,11 +3,11 @@ import { TypeOrm } from "./data-source"
 import http from "node:http"
 import express from "express"
 import WebSocketConnection from "./websocket"
-import userRoutes from "./api/routes/userRoutes"
 import cors from "cors"
 import Redis from "ioredis"
 import cloudinary from "cloudinary"
 import multer from "multer"
+import routes from "./api/routes"
 import "dotenv/config"
 
 export const app: Express = express()
@@ -31,7 +31,7 @@ const port = process.env.WS_PORT as string
 
 const ws = new WebSocketConnection(webSocketServer, port)
 
-userRoutes(app)
+routes(app)
 
 export const redisConn = new Redis()
 
