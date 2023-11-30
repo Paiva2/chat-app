@@ -80,7 +80,9 @@ const List = () => {
 
       {activeMenu === "Friend List" && (
         <Fragment>
-          <h1 className={s.friendListTitle}>Friend List</h1>
+          {userFriendList.length > 0 && (
+            <h1 className={s.friendListTitle}>Friend List</h1>
+          )}
           <ul>
             {userFriendList.length > 0 ? (
               userFriendList.map((friend) => {

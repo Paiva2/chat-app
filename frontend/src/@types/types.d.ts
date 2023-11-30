@@ -76,3 +76,10 @@ export interface INewMessage {
     message: string
   }
 }
+
+export interface IWhoIsReceivingMessage {
+  id: string
+  username: string
+  profilePicture: string
+  auth?: boolean
+}

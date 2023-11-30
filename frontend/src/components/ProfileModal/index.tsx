@@ -10,10 +10,10 @@ import {
 import { User2, X } from "lucide-react"
 import { UserContextProvider } from "../../context/userContext"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import s from "./styles.module.css"
-import api from "../../lib/api"
 import { toast } from "../../utils/toast"
 import { getUserProfile } from "../../utils/getUserProfile"
+import s from "./styles.module.css"
+import api from "../../lib/api"
 import ws from "../../lib/socket.config"
 import Cookies from "js-cookie"
 
@@ -133,7 +133,7 @@ const ProfileModal = ({
 
       toast("success", "Profile updated.")
 
-      handleWithOpenConnectionWs()
+      handleWithConnectionUpdate()
     },
   })
 
@@ -157,7 +157,7 @@ const ProfileModal = ({
     }
   }
 
-  async function handleWithOpenConnectionWs() {
+  async function handleWithConnectionUpdate() {
     const authToken = Cookies.get("chatapp-token")
 
     let determineUser: { id: string; username: string } | null = null
@@ -175,7 +175,7 @@ const ProfileModal = ({
 
     ws.send(
       JSON.stringify({
-        action: "personal-user-id",
+        action: "update-user",
         data: determineUser,
       })
     )
@@ -208,7 +208,7 @@ const ProfileModal = ({
 
       toast("success", "Profile updated.")
 
-      handleWithOpenConnectionWs()
+      handleWithConnectionUpdate()
     },
   })
 

@@ -68,11 +68,13 @@ const MiniProfileModal = ({ user, toggleProfile }: MiniProfileModalProps) => {
         id: user.id,
         username: user.username,
         profilePicture: clickedUserData?.profileImage ?? defaultImage,
+        auth: Boolean(user.auth),
       },
     })
 
     const checkIfUserHasConversationsPreviously = privateMessagesList.find(
       (message) => {
+        console.log(message)
         return (
           message.connections.includes(user.id) &&
           message.connections.includes(myId?.id as string)

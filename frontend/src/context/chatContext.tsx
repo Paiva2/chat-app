@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from "react"
 import {
+  IWhoIsReceivingMessage,
   MyIdSchema,
   PrivateMessageSchema,
   UserOnListSchema,
@@ -41,10 +42,12 @@ interface ChatContextInterface {
   setActiveMenu: Dispatch<SetStateAction<string>>
 
   whoIsReceivingPrivate: {
-    to: { id: string; username: string; profilePicture: string }
+    to: IWhoIsReceivingMessage
   }
   setWhoIsReceivingPrivate: Dispatch<
-    SetStateAction<{ to: { id: string; username: string; profilePicture: string } }>
+    SetStateAction<{
+      to: IWhoIsReceivingMessage
+    }>
   >
 
   setPrivateMessagesList: Dispatch<SetStateAction<PrivateMessageSchema[]>>
@@ -85,11 +88,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
   >([])
 
   const [whoIsReceivingPrivate, setWhoIsReceivingPrivate] = useState({
-    to: {
-      id: "",
-      username: "",
-      profilePicture: "",
-    },
+    to: {} as IWhoIsReceivingMessage,
   })
 
   const [multipleConnectionDetected, setMultipleConnectionDetected] = useState(false)
@@ -226,9 +225,7 @@ const ChatContext = ({ children }: ChatContextProviderProps) => {
         }
 
         case "my-personal-id": {
-          if (!myId) {
-            setMyId(parseData.data)
-          }
+          setMyId(parseData.data)
 
           break
         }

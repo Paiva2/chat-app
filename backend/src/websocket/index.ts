@@ -91,6 +91,25 @@ export default class WebSocketConnection {
 
           case "get-connected-users": {
             this.getConnectedUsers()
+
+            break
+          }
+
+          case "update-user": {
+            const findUserToUpdate = this.connectedUsers.find(
+              (user) => user.id === clientData.id
+            )
+
+            if (findUserToUpdate) {
+              findUserToUpdate.username = clientData.username
+              ws.username = clientData.username
+
+              this.sendClientId(ws)
+
+              this.getConnectedUsers()
+            }
+
+            break
           }
 
           case "personal-user-id": {
@@ -108,19 +127,7 @@ export default class WebSocketConnection {
 
             this.sendClientId(ws)
 
-            //In case an auth user changes his username trigger the changes in real time
-            const checkIfUserIsAlreadyConnected = this.connectedUsers.find(
-              (user) => user.id === ws.id
-            )
-
-            if (!checkIfUserIsAlreadyConnected) {
-              this.newUserConnection(ws.id, ws.username, ws)
-            } else {
-              checkIfUserIsAlreadyConnected.id = ws.id
-              checkIfUserIsAlreadyConnected.username = ws.username
-
-              this.getConnectedUsers()
-            }
+            this.newUserConnection(ws.id, ws.username, ws)
           }
 
           default:

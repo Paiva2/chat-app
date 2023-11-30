@@ -27,7 +27,7 @@ export default class FetchUserService {
 
     if (!getUser) {
       throw {
-        status: 404,
+        status: 202,
         error: "User not found.",
       }
     }

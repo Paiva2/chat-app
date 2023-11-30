@@ -40,10 +40,7 @@ export default class GetUserMessagesService {
     )
 
     if (!getUserConnections.length) {
-      throw {
-        status: 404,
-        error: "User has no connections with other users.",
-      }
+      return [] as UserMessages[]
     }
 
     const getUserMessages = await this.messageInterface.findUserIdMessages(

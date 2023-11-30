@@ -36,7 +36,7 @@ export interface Message {
   message: string
   sendToId: string
   sendToUsername: string
-  time: Date
+  time: string
   type: string
   userId: string
   userProfilePic: string

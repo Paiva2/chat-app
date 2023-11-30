@@ -49,7 +49,7 @@ export default class InsertNewPrivateMessageService {
         userId: newMessage.userId,
         userProfilePic:
           newMessage.userProfilePic ?? "https://i.postimg.cc/hjvSCcM3/jOkraDo.png",
-        time: newMessage.time || new Date(),
+        time: newMessage.time || new Date().toString(),
         message: newMessage.message,
         fkConnections: connUserId.id,
       })

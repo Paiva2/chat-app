@@ -28,7 +28,7 @@ async function createNewPrivateMessage(
       message,
       sendToId: sendToId,
       sendToUsername,
-      time: new Date(),
+      time: new Date().toString(),
       type: "private-message",
       userId: userCreated.id,
       username: userCreated.username,
@@ -173,14 +173,10 @@ describe("Get user messages service", () => {
       passwordConfirmation: "123456",
     })
 
-    await expect(() => {
-      return sut.exec({
-        userId: createdUserWithoutConnections.id,
-      })
-    }).rejects.toEqual(
-      expect.objectContaining({
-        error: "User has no connections with other users.",
-      })
-    )
+    const getUserConnections = await sut.exec({
+      userId: createdUserWithoutConnections.id,
+    })
+
+    expect(getUserConnections).toEqual([])
   })
 })

@@ -22,8 +22,8 @@ export class MessageEntity {
   @Column("varchar", { length: 100 })
   sendToUsername: string
 
-  @Column({ default: () => "NOW()" })
-  time: Date
+  @Column("varchar", { length: 100 })
+  time: string
 
   @Column("varchar", { length: 100 })
   type: string

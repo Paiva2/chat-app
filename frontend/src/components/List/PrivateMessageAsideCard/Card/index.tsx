@@ -61,10 +61,10 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
   })
 
   function handleSetPrivateMessageToShow(
-    connectionsId: string[],
+    connection: PrivateMessageSchema,
     usernameToSend: string
   ) {
-    const [sendToId, idFrom] = connectionsId
+    const [sendToId, idFrom] = connection.connections
 
     const getPreviousConversation = privateMessagesList.filter((message) => {
       return (
@@ -73,7 +73,9 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
       )
     })
 
-    const getIdToSend = connectionsId.find((conn) => conn !== myId?.id) as string
+    const getIdToSend = connection.connections.find(
+      (conn) => conn !== myId?.id
+    ) as string
 
     setPrivateMessages(getPreviousConversation[0].data)
 
@@ -136,6 +138,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
           id: "",
           username: "",
           profilePicture: "",
+          auth: false,
         },
       })
     },
@@ -162,6 +165,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
           id: "",
           username: "",
           profilePicture: "",
+          auth: false,
         },
       })
     }
@@ -171,7 +175,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
     <li
       onContextMenu={handleOpenMiniMenu}
       onClick={() => {
-        handleSetPrivateMessageToShow(connection.connections, userSendingMessage)
+        handleSetPrivateMessageToShow(connection, userSendingMessage)
         setShowListMobile(false)
       }}
       className={s.privateCard}
@@ -204,10 +208,7 @@ const Card = ({ connection, userSendingMessage, msg, componentId }: ICardProps) 
         <span>
           <button
             onClick={() => {
-              handleSetPrivateMessageToShow(
-                connection.connections,
-                userSendingMessage
-              )
+              handleSetPrivateMessageToShow(connection, userSendingMessage)
             }}
             type="button"
           >

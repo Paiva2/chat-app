@@ -107,6 +107,8 @@ const ChatBox = () => {
 
   async function handleSendNewMessageAndConnection() {
     if (myId && newMessageInputRef.current) {
+      const newMessage = newMessageInputRef.current.value
+
       const getRecentlyCreatedConnId = privateMessagesList.find((conn) => {
         return (
           conn.connections.includes(whoIsReceivingPrivate.to.id) &&
@@ -119,11 +121,9 @@ const ChatBox = () => {
         connections: [whoIsReceivingPrivate.to.id, myId?.id],
       })
 
-      const messageValue = newMessageInputRef.current.value
-
       if (handlingConnection.status === 201) {
-        setTimeout(() => {
-          insertNewPrivateMessage.mutate({
+        setTimeout(async () => {
+          await insertNewPrivateMessage.mutateAsync({
             newMessage: {
               sendToId: whoIsReceivingPrivate.to.id,
               sendToUsername: whoIsReceivingPrivate.to.username,
@@ -131,17 +131,17 @@ const ChatBox = () => {
               userId: myId?.id,
               userProfilePic: userProfile?.profileImage as string,
               time: new Date(),
-              message: messageValue,
+              message: newMessage as string,
             },
           })
+
+          setHandleWithConnectionAndMessage(false)
         }, 600)
       }
 
       newMessageInputRef.current.value = ""
       newMessageInputRef?.current?.focus()
     }
-
-    setHandleWithConnectionAndMessage(false)
   }
 
   function privateMessage() {
@@ -174,7 +174,12 @@ const ChatBox = () => {
         })
       )
 
-      setHandleWithConnectionAndMessage(true)
+      if (myId?.auth || whoIsReceivingPrivate.to.auth) {
+        setHandleWithConnectionAndMessage(true)
+      } else {
+        newMessageInputRef.current.value = ""
+        newMessageInputRef?.current?.focus()
+      }
     }
   }
 
@@ -273,7 +278,7 @@ const ChatBox = () => {
         <div className={s.sendMessageBox}>
           <span className={s.sendMessageInput}>
             <input ref={newMessageInputRef} placeholder="New message" type="text" />
-            <button type="submit">
+            <button disabled={handleWithConnectionAndMessage} type="submit">
               <SendHorizontal color="#261F5D" />
             </button>
           </span>
