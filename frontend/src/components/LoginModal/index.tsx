@@ -109,6 +109,8 @@ const LoginModal = () => {
 
     if (!doesFormHasErrors.length && isLoginSubmitting) {
       handleSubmitLogin()
+    } else {
+      setIsLoginSubmitting(false)
     }
   }, [formErrors])
 

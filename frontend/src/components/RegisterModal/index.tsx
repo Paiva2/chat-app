@@ -122,6 +122,8 @@ const RegisterModal = () => {
 
     if (!getErrors.length && formSubmitting) {
       handleSubmitRegister()
+    } else {
+      setFormSubmitting(false)
     }
   }, [formErrors])
 

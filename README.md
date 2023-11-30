@@ -12,11 +12,6 @@
 - Add and remove an user from friend list;
 - Check other online users mini-profile;
 
-## Doing
-
-- DTO validations;
-- Remove unused API requests when using as a guest
-
 ## Techologies used
 
 ### Backend

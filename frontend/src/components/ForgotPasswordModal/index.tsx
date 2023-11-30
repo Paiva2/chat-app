@@ -118,6 +118,8 @@ const ForgotPasswordModal = () => {
 
     if (!doesFormHasErrors.length && formSubmitting) {
       handleUpdatePasswordSubmit()
+    } else {
+      setFormSubmitting(false)
     }
   }, [inputErrors])
 

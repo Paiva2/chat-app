@@ -23,12 +23,19 @@
     flex-direction: column;
     background-color: #f8f9fb;
     border-radius: 8px;
-    width: 100%;
+    width: 90%;
     height: auto;
     min-height: 36.5625rem;
     max-width: 34.375rem;
     padding: 3.125rem;
     gap: 1.25rem;
     justify-content: space-evenly;
+
+    @media (max-width: 768px) {
+      padding: 1.875rem;
+      min-height: auto;
+      max-height: 95%;
+      overflow-y: auto;
+    }
   }
 }
