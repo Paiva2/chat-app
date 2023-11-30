@@ -33,6 +33,6 @@
 
 ## Video
 
-See a video demo[https://vimeo.com/889738886?share=copy]
+[See a video demo](https://vimeo.com/889738886?share=copy)
 
 ### Soon.
